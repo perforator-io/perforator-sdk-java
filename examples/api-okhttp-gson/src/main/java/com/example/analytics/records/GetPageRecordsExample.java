@@ -1,0 +1,103 @@
+/*
+ * Copyright Perforator, Inc. and contributors. All rights reserved.
+ *
+ * Use of this software is governed by the Business Source License
+ * included in the LICENSE file.
+ *
+ * As of the Change Date specified in that file, in accordance with
+ * the Business Source License, use of this software will be governed
+ * by the Apache License, Version 2.0.
+ */
+package com.example.analytics.records;
+
+import io.perforator.sdk.api.okhttpgson.ApiClientBuilder;
+import io.perforator.sdk.api.okhttpgson.model.*;
+import io.perforator.sdk.api.okhttpgson.operations.AnalyticsApi;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class GetPageRecordsExample {
+
+    Logger logger = LoggerFactory.getLogger(
+            GetPageRecordsExample.class
+    );
+
+    String apiBaseUrl = ApiClientBuilder.DEFAULT_API_BASE_URL;
+
+    //Please replace YOUR_CLIENT_ID with you own client id
+    String apiClientId = "YOUR_CLIENT_ID";
+
+    //Please replace YOUR_CLIENT_SECRET with you own client secret
+    String apiClientSecret = "YOUR_CLIENT_SECRET";
+
+    //Please replace YOUR_PROJECT_KEY with you own project key
+    String projectKey = "YOUR_PROJECT_KEY";
+
+    //Please replace YOUR_EXECUTION_KEY with you own execution key
+    String executionKey = "YOUR_EXECUTION_KEY";
+
+    public void run() throws Exception {
+        ApiClientBuilder builder = new ApiClientBuilder(
+                apiClientId,
+                apiClientSecret,
+                apiBaseUrl
+        );
+
+        AnalyticsApi analyticsApi = builder.getApi(
+                AnalyticsApi.class
+        );
+        
+        AnalyticsRecordsRequest request = new AnalyticsRecordsRequest();
+        request.setNamespace(AnalyticsNamespace.PAGES.getValue());
+        request.setFields(List.of(
+                PagesField.PAGE_URL.getValue(),
+                PagesField.SESSION_ID.getValue(),
+                PagesField.START_TIME.getValue(),
+                PagesField.FINISH_TIME.getValue(),
+                PagesField.DOM_CONTENT_LOAD.getValue(),
+                PagesField.PAGE_LOAD.getValue(),
+                PagesField.REQUESTS_COUNT.getValue(),
+                PagesField.PROBLEMATIC_REQUESTS_PERCENTAGE.getValue()
+        ));
+        request.setFilters(List.of(
+                filter(
+                        PagesField.PAGE_URL.getValue(), 
+                        AnalyticsStringFieldCondition.CONTAINS.getValue(), 
+                        "https"
+                ),
+                filter(
+                        PagesField.PAGE_LOAD.getValue(), 
+                        AnalyticsLongFieldCondition.GREATER_THAN_OR_EQUALS.getValue(), 
+                        "1000"
+                )
+        ));
+        
+        AnalyticsRecordsResult response = analyticsApi.getNamespaceRecords(
+                projectKey, 
+                executionKey, 
+                request
+        );
+        
+        logger.info(
+                "There are {} page records found: {}", 
+                response.getRecords().size(),
+                response.getRecords()
+        );
+    }
+    
+    private static AnalyticsFilter filter(String field, String condition, String value) {
+        AnalyticsFilter result = new AnalyticsFilter();
+        
+        result.setField(field);
+        result.setCondition(condition);
+        result.setValue(value);
+        
+        return result;
+    }
+
+    public static void main(String[] args) throws Exception {
+        new GetPageRecordsExample().run();
+    }
+
+}

@@ -1,0 +1,19 @@
+<!--
+  Copyright Perforator, Inc. and contributors. All rights reserved.
+  
+  Use of this software is governed by the Business Source License
+  included in the LICENSE file.
+  
+  As of the Change Date specified in that file, in accordance with
+  the Business Source License, use of this software will be governed
+  by the Apache License, Version 2.0.
+-->
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Example Performance Testing Suite">
+    <test name="Verify navigation and upload with 2000ms delay">
+        <parameter name="page" value="https://verifications.perforator.io" />
+        <classes>
+            <class name="io.perforator.sdk.maven.OpenVerificationSiteTestNG"/>
+        </classes>
+    </test>
+</suite>

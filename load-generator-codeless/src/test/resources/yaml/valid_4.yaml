@@ -1,0 +1,50 @@
+#  Copyright Perforator, Inc. and contributors. All rights reserved.
+#
+#  Use of this software is governed by the Business Source License
+#  included in the LICENSE file.
+#
+#  As of the Change Date specified in that file, in accordance with
+#  the Business Source License, use of this software will be governed
+#  by the Apache License, Version 2.0.
+
+---
+suites:
+  Suite One:
+    steps:
+      Open and upload file successfully:
+        - awaitElementToBeClickable: '#upload-btn'
+        - awaitElementToBeVisible: '#upload-btn'
+        - awaitElementToBeInvisible: '#uploading-span'
+        - awaitElementToBeEnabled: '#uploading-span'
+        - awaitElementToBeDisabled: '#uploading-span'
+        - awaitAlertToBePresent: '30s'
+        - awaitPageLoad: '30s'
+        - awaitElementToBeClickable:
+            cssSelector: '#upload-success-span'
+        - awaitElementToBeVisible:
+            cssSelector: '#upload-btn'
+        - awaitElementToBeInvisible:
+            cssSelector: '#upload-btn'
+        - awaitElementToBeEnabled:
+            cssSelector: '#upload-btn'
+        - awaitElementToBeDisabled:
+            cssSelector: '#upload-btn'
+        - awaitAlertToBePresent:
+            timeout: '30s'
+        - awaitPageLoad:
+            timeout: '30s'
+        - awaitElementToBeClickable:
+            cssSelector: '#upload-success-span'
+            timeout: '30s'
+        - awaitElementToBeVisible:
+            cssSelector: '#upload-btn'
+            timeout: '30s'
+        - awaitElementToBeInvisible:
+            cssSelector: '#upload-btn'
+            timeout: '30s'
+        - awaitElementToBeEnabled:
+            cssSelector: '#upload-btn'
+            timeout: '30s'
+        - awaitElementToBeDisabled:
+            cssSelector: '#upload-btn'
+            timeout: '30s'

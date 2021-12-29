@@ -1,0 +1,442 @@
+/*
+ * Copyright Perforator, Inc. and contributors. All rights reserved.
+ *
+ * Use of this software is governed by the Business Source License
+ * included in the LICENSE file.
+ *
+ * As of the Change Date specified in that file, in accordance with
+ * the Business Source License, use of this software will be governed
+ * by the Apache License, Version 2.0.
+ */
+package io.perforator.sdk.loadgenerator.core;
+
+import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
+import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
+import io.perforator.sdk.loadgenerator.core.context.SuiteContext;
+import io.perforator.sdk.loadgenerator.core.context.TransactionContext;
+import io.perforator.sdk.loadgenerator.core.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+//TODO: add javadoc
+public abstract class AbstractLoadGenerator implements Runnable, StatisticsService {
+
+    public static final String TERMINATION_EXCEPTION_MESSAGE = "Process was terminated manually";
+    public static final String TERMINATION_BANNER = "\n"
+            + " -------------------------------------------------------------------------------------------------------------------------------\n"
+            + "|                                                                                                                               |\n"
+            + "|    |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||    |\n"
+            + "|                                                                                                                               |\n"
+            + "|                                          Process termination(^C) has been requested.                                          |\n"
+            + "|                                                                                                                               |\n"
+            + "|                            Please wait a bit till all resources are cleaned up and closed properly.                           |\n"
+            + "|                                                                                                                               |\n"
+            + "|    |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||    |\n"
+            + "|                                                                                                                               |\n"
+            + " -------------------------------------------------------------------------------------------------------------------------------\n";
+
+    static {
+        System.setProperty("log4j.shutdownHookEnabled", "false");
+    }
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final AtomicInteger workerSequence = new AtomicInteger(0);
+    private final AtomicBoolean started = new AtomicBoolean(false);
+    private final AtomicBoolean cancelled = new AtomicBoolean(false);
+    private final AtomicBoolean finished = new AtomicBoolean(false);
+    private final LoadGeneratorConfig loadGeneratorConfig;
+    private final List<SuiteConfig> suiteConfigs;
+    private final IntegrationService mediator;
+    private final ExecutorService executor;
+
+    public AbstractLoadGenerator(LoadGeneratorConfig loadGeneratorConfig, List<SuiteConfig> suiteConfigs) {
+        this(null, loadGeneratorConfig, suiteConfigs);
+    }
+
+    protected AbstractLoadGenerator(IntegrationService mediator, LoadGeneratorConfig loadGeneratorConfig, List<SuiteConfig> suiteConfigs) {
+        if(loadGeneratorConfig == null) {
+            throw new RuntimeException("loadGeneratorConfig is required");
+        }
+        
+        if(suiteConfigs == null || suiteConfigs.isEmpty()) {
+            throw new RuntimeException("suiteConfigs is required");
+        }
+        
+        if(loadGeneratorConfig.isPrioritizeSystemProperties()) {
+            loadGeneratorConfig.applyDefaults();
+            
+            for (SuiteConfig suiteConfig : suiteConfigs) {
+                suiteConfig.applyDefaults();
+            }
+        }
+        
+        if (mediator == null) {
+            try {
+                Class<?> clazz = getClass().getClassLoader().loadClass(
+                        "io.perforator.sdk.loadgenerator.core.internal.MediatingIntegrationServiceImpl"
+                );
+                Constructor<?> constructor = clazz.getDeclaredConstructor(
+                        LoadGeneratorConfig.class,
+                        List.class,
+                        Runnable.class
+                );
+                constructor.setAccessible(true);
+                this.mediator = (IntegrationService) constructor.newInstance(
+                        loadGeneratorConfig,
+                        suiteConfigs,
+                        (Runnable) this::onShutdown
+                );
+                constructor.setAccessible(false);
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException("Can't instantiate default mediator", e);
+            }
+        } else {
+            this.mediator = mediator;
+        }
+        this.loadGeneratorConfig = loadGeneratorConfig;
+        this.suiteConfigs = copy(suiteConfigs);
+        this.executor = Executors.newCachedThreadPool(this::buildWorkerThread);
+    }
+
+    protected static final <T> List<T> copy(List<?> items) {
+        if (items == null || items.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<T> result = new ArrayList<>();
+        for (Object item : items) {
+            result.add((T) item);
+        }
+
+        return result;
+    }
+
+    protected abstract void runSuite(SuiteContext suiteContext);
+
+    @Override
+    public final void run() {
+        if (started.getAndSet(true)) {
+            throw new RuntimeException(
+                    "Can't run the same runner multiple times"
+            );
+        }
+
+        Runtime.getRuntime().addShutdownHook(new Thread(this::cancel));
+
+        try {
+            mediator.onLoadGeneratorStarted();
+        } catch (RuntimeException e) {
+            this.onShutdown();
+            throw e;
+        }
+
+        List<Future> futures = new ArrayList<>();
+        for (SuiteConfig suiteConfig : suiteConfigs) {
+            for (int i = 0; i < suiteConfig.getConcurrency(); i++) {
+                futures.add(
+                        executor.submit(
+                                new SuiteRunner(suiteConfig, i)
+                        )
+                );
+            }
+        }
+
+        try {
+            for (Future future : futures) {
+                future.get();
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            if (logger.isDebugEnabled()) {
+                logger.error("Process is interrupted", e);
+            }
+            cancel();
+            throw new RuntimeException(TERMINATION_EXCEPTION_MESSAGE, e);
+        }
+
+        onShutdown();
+        
+        long failedSuites = getFailedSuiteInstancesCount();
+        if(failedSuites > 0 && loadGeneratorConfig.isFailOnSuiteErrors()) {
+            throw new RuntimeException(
+                    "There are " + failedSuites + " failed suites"
+            );
+        }
+        
+        long failedTransactions = getFailedTransactionsCount();
+        if(failedTransactions > 0 && loadGeneratorConfig.isFailOnTransactionErrors()) {
+            throw new RuntimeException(
+                    "There are " + failedTransactions + " failed transactions"
+            );
+        }
+    }
+
+    @Override
+    public final long getSuccessfulSuiteInstancesCount() {
+        return mediator.getSuccessfulSuiteInstancesCount();
+    }
+
+    @Override
+    public final long getFailedSuiteInstancesCount() {
+        return mediator.getFailedSuiteInstancesCount();
+    }
+
+    @Override
+    public final long getActiveSuiteInstancesCount() {
+        return mediator.getActiveSuiteInstancesCount();
+    }
+
+    @Override
+    public final long getSuccessfulTransactionsCount() {
+        return mediator.getSuccessfulTransactionsCount();
+    }
+
+    @Override
+    public final long getFailedTransactionsCount() {
+        return mediator.getFailedTransactionsCount();
+    }
+
+    @Override
+    public final long getActiveTransactionsCount() {
+        return mediator.getActiveTransactionsCount();
+    }
+    
+    protected final boolean shouldBeFinished() {
+        return finished.get() || cancelled.get() || Threaded.isInterrupted();
+    }
+
+    protected final boolean isStarted() {
+        return started.get();
+    }
+
+    protected final boolean isCancelled() {
+        return cancelled.get();
+    }
+
+    protected final boolean isFinished() {
+        return finished.get();
+    }
+
+    protected final RemoteWebDriverService getRemoteWebDriverService() {
+        return mediator;
+    }
+
+    protected final TransactionsService getTransactionsService() {
+        return mediator;
+    }
+
+    protected final StatisticsService getStatisticsService() {
+        return mediator;
+    }
+    
+    protected final TransactionContext startTransaction(SuiteContext suiteContext, String transactionName) {
+        return mediator.startTransaction(suiteContext, transactionName);
+    }
+    
+    protected final void finishTransaction(TransactionContext transactionContext, Throwable transactionError) {
+        if(shouldBeFinished()) {
+            mediator.finishTransaction(
+                    transactionContext, 
+                    new RuntimeException(TERMINATION_EXCEPTION_MESSAGE)
+            );
+        } else {
+            mediator.finishTransaction(
+                    transactionContext, 
+                    transactionError
+            );
+        }
+    }
+
+    private void propagateConsumerContext(SuiteContext suiteContext) {
+        Perforator.SUITE_CONTEXT.set(suiteContext);
+        Perforator.REMOTE_WEBDRIVER_SERVICE.set(mediator);
+        Perforator.TRANSACTIONS_SERVICE.set(mediator);
+        Perforator.TRANSACTIONS.set(new HashMap<>());
+    }
+
+    private void cleanupConsumerContext() {
+        Perforator.SUITE_CONTEXT.remove();
+        Perforator.REMOTE_WEBDRIVER_SERVICE.remove();
+        Perforator.TRANSACTIONS_SERVICE.remove();
+        Perforator.TRANSACTIONS.remove();
+    }
+
+    private synchronized void cancel() {
+        if (!finished.get()) {
+            cancelled.set(true);
+        }
+        this.onShutdown();
+    }
+
+    private synchronized void onShutdown() {
+        if (finished.getAndSet(true)) {
+            return;
+        }
+
+        if (cancelled.get()) {
+            logger.info(TERMINATION_BANNER);
+        }
+
+        executor.shutdownNow();
+
+        try {
+            executor.awaitTermination(30, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            if (logger.isDebugEnabled()) {
+                logger.error(
+                        "Problem awaiting for executor to be finished",
+                        e
+                );
+            }
+        }
+
+        if (cancelled.get()) {
+            mediator.onLoadGeneratorFinished(
+                    new RuntimeException(TERMINATION_EXCEPTION_MESSAGE)
+            );
+        } else {
+            mediator.onLoadGeneratorFinished(
+                    null
+            );
+        }
+
+        shutDownLogger();
+    }
+
+    private void shutDownLogger() {
+        try {
+            getClass().getClassLoader().loadClass(
+                    "org.apache.logging.log4j.LogManager"
+            ).getDeclaredMethod(
+                    "shutdown"
+            ).invoke(
+                    null
+            );
+        } catch (ReflectiveOperationException e) {
+            //ignore
+        }
+    }
+
+    private Thread buildWorkerThread(Runnable runnable) {
+        Thread thread = new Thread(runnable);
+        thread.setName("perforator-worker-" + workerSequence.getAndIncrement());
+        thread.setUncaughtExceptionHandler((t, e) -> {
+            if (logger.isDebugEnabled()) {
+                logger.error("Unexpected issue happened", e);
+            }
+        });
+
+        return thread;
+    }
+
+    private class SuiteRunner implements Runnable {
+
+        private final int workerNumber;
+        private final SuiteConfig suiteConfig;
+
+        public SuiteRunner(SuiteConfig suiteConfig, int workerNumber) {
+            this.suiteConfig = suiteConfig;
+            this.workerNumber = workerNumber;
+        }
+
+        @Override
+        public void run() {
+            long startTime = System.currentTimeMillis();
+            long endTime = startTime + suiteConfig.getDuration().toMillis() - suiteConfig.getRampDown().toMillis();
+            long delay = suiteConfig.getDelay().toMillis() + (suiteConfig.getRampUp().toMillis() / suiteConfig.getConcurrency()) * workerNumber;
+
+            if (delay > 0) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(
+                            "Sleeping {}ms for the worker {} processing suite {}",
+                            delay,
+                            workerNumber,
+                            suiteConfig.getName()
+                    );
+                }
+                Threaded.sleep(delay);
+            }
+
+            long slowdown = 0;
+            while (System.currentTimeMillis() < endTime && !shouldBeFinished()) {
+
+                if (slowdown > 0) {
+                    logger.warn(
+                            "Worker {} is slowing down by {} ms, because there are too many transaction errors",
+                            workerNumber,
+                            slowdown
+                    );
+                    Threaded.sleep(slowdown);
+                }
+
+                SuiteContext suiteContext = mediator.onSuiteInstanceStarted(
+                        workerNumber,
+                        suiteConfig
+                );
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug(
+                            "Worker {} has started processing suite {} using suite instance id {}",
+                            workerNumber,
+                            suiteConfig.getName(),
+                            suiteContext.getSuiteInstanceID()
+                    );
+                }
+
+                try {
+                    propagateConsumerContext(suiteContext);
+                    runSuite(suiteContext);
+                    slowdown = mediator.onSuiteInstanceFinished(
+                            suiteContext,
+                            isCancelled() ? new RuntimeException(TERMINATION_EXCEPTION_MESSAGE) : null
+                    );
+
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(
+                                "Worker {} has successfully completed processing suite {} using suite instance id {}",
+                                workerNumber,
+                                suiteConfig.getName(),
+                                suiteContext.getSuiteInstanceID()
+                        );
+                    }
+
+                } catch (RuntimeException e) {
+                    if (!isCancelled() && logger.isDebugEnabled()) {
+                        logger.error(
+                                "Worker {} has failed processing suite {} using suite instance id {}",
+                                workerNumber,
+                                suiteConfig.getName(),
+                                suiteContext.getSuiteInstanceID(),
+                                e
+                        );
+                    }
+
+                    if (shouldBeFinished()) {
+                        mediator.onSuiteInstanceFinished(
+                                suiteContext,
+                                new RuntimeException(TERMINATION_EXCEPTION_MESSAGE)
+                        );
+                        return;
+                    } else {
+                        slowdown = mediator.onSuiteInstanceFinished(
+                                suiteContext,
+                                e
+                        );
+                    }
+                } finally {
+                    cleanupConsumerContext();
+                }
+            }
+        }
+
+    }
+
+}

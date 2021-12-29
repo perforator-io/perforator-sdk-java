@@ -1,0 +1,45 @@
+<!--
+  Copyright Perforator, Inc. and contributors. All rights reserved.
+  
+  Use of this software is governed by the Business Source License
+  included in the LICENSE file.
+  
+  As of the Change Date specified in that file, in accordance with
+  the Business Source License, use of this software will be governed
+  by the Apache License, Version 2.0.
+-->
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Example Performance Testing Suite - Navigation Flow">
+    
+    <listeners>
+        <listener class-name="com.example.PerSuiteRemoteWebDriverManager" />
+    </listeners>
+    
+    <test name="Verify navigation without any delay">
+        <parameter name="page" value="/" />
+        <parameter name="delay" value="0ms" />
+        <parameter name="file" value="example_upload_file.txt" />
+        <classes>
+            <class name="com.example.NavigationTest"/>
+        </classes>
+    </test>
+    
+    <test name="Verify navigation with 500ms delay">
+        <parameter name="page" value="/" />
+        <parameter name="delay" value="500ms" />
+        <parameter name="file" value="example_upload_file.txt" />
+        <classes>
+            <class name="com.example.NavigationTest"/>
+        </classes>
+    </test>
+    
+    <test name="Verify navigation with 2000ms delay">
+        <parameter name="page" value="/" />
+        <parameter name="delay" value="2000ms" />
+        <parameter name="file" value="example_upload_file.txt" />
+        <classes>
+            <class name="com.example.NavigationTest"/>
+        </classes>
+    </test>
+    
+</suite>

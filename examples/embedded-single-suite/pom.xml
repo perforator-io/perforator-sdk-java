@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright Perforator, Inc. and contributors. All rights reserved.
+  
+  Use of this software is governed by the Business Source License
+  included in the LICENSE file.
+  
+  As of the Change Date specified in that file, in accordance with
+  the Business Source License, use of this software will be governed
+  by the Apache License, Version 2.0.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.perforator.sdk.examples</groupId>
+    <artifactId>perforator-sdk-examples-embedded-single-suite</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    
+    <description>
+        This project is an example of how to execute performance tests using 
+        Perforator and hand-written logic operating RemoteWebDriver directly
+        without any external wrappers like TestNG.
+        
+        We have prepared dedicated maven plugin 'perforator-maven-plugin' with 
+        the maven goal 'embedded'. Your custom logic should be implemented in 
+        the class which either implements io.perforator.sdk.loadgenerator.embedded.EmbeddedSuiteProcessor
+        interface or extends abstract class io.perforator.sdk.loadgenerator.embedded.AbstractSuiteProcessor
+        
+        The main difference between EmbeddedSuiteProcessor interface and 
+        AbstractSuiteProcessor is that the latter automatically opens/closes 
+        RemoteWebDriver and exposes you valuable methods to report transactions.
+        
+        Once you implement your suite processor, please specify its class name 
+        using the property 'suite.processorClass'.
+        
+        Typical flow of preparing and executing your performance test:
+        
+        1. Please make sure that the functionality of your suite processor 
+        works as expected: `mvn clean test` - it will run unit test(s) for your 
+        suite processor locally.
+        
+        2. The next step, once you verify that functionality works correctly 
+        according to unit test(s), is to make sure that the same logic works 
+        correctly in a multi-threaded environment:
+        `mvn clean test-compile perforator:embedded@local` - it will execute  
+        suites concurrently with the browsers running locally using Perforator 
+        load generator.
+        
+        3. Once you made sure that the multi-threaded environment behaves as expected, 
+        it is a time to verify the same using browsers spawned in the cloud:
+        `mvn clean test-compile perforator:embedded@cloud-dry-run`
+        
+        4. And the final step to run your performance test at a full scale:
+        `mvn clean test-compile perforator:embedded@cloud-full-run`
+        
+        Sometimes, when there are no changes inside your performance test logic, 
+        and you have confidence that there are no UI changes of the target system 
+        - you can skip preparational steps #1..#3 and proceed directly 
+        to the full-scale performance test execution #4.
+        But it is still advisable to make at least lightweight validation 
+        as a part of step #3.
+    </description>
+    
+    <properties>
+        <!-- build level versions -->
+        <java.version>11</java.version>
+        <maven.minimal.version>3.6.3</maven.minimal.version>
+        <maven.enforcer.plugin.version>3.0.0</maven.enforcer.plugin.version>
+        <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+        <maven.surefire.plugin.version>3.0.0-M4</maven.surefire.plugin.version>
+        
+        <!-- dependency versions -->
+        <perforator.version>1.0.0-SNAPSHOT</perforator.version>
+        <log4j.version>2.17.0</log4j.version>
+        <junit.version>5.5.2</junit.version>
+        
+        <!-- 
+             API Client ID property is required and youn can specify it using the following methods:
+             * POM property in the properties section: 
+               <loadGenerator.apiClientId>YOUR_API_CLIENT_ID</loadGenerator.apiClientId>
+             * Environment variable: 
+               export LOADGENERATOR_APICLIENTID="YOUR_API_CLIENT_ID"
+             * System property / Command line argument:
+               mvn ... -DloadGenerator.apiClientId=YOUR_API_CLIENT_ID
+     
+             You can get your API Client ID on Settings / API page: https://app.perforator.io/settings/api
+        -->
+        
+        <!-- 
+             API Client Secret property is required and youn can specify it using the following methods:
+             * POM property in the properties section: 
+               <loadGenerator.apiClientSecret>YOUR_API_CLIENT_SECRET</loadGenerator.apiClientSecret>
+             * Environment variable: 
+               export LOADGENERATOR_APICLIENTSECRET="YOUR_API_CLIENT_SECRET"
+             * System property / Command line argument:
+               mvn ... -DloadGenerator.apiClientSecret=YOUR_API_CLIENT_SECRET
+       
+             You can get your API Client Secret on Settings / API page: https://app.perforator.io/settings/api
+        -->
+        
+        <!-- 
+             Project Key property is required and youn can specify it using the following methods:
+             * POM property in the properties section: 
+               <loadGenerator.projectKey>YOUR_PROJECT_KEY</loadGenerator.projectKey>
+             * Environment variable: 
+               export LOADGENERATOR_PROJECTKEY="YOUR_PROJECT_KEY"
+             * System property / Command line argument:
+               mvn ... -DloadGenerator.projectKey=YOUR_PROJECT_KEY
+              
+             You can get your Project Key on dashboard page: https://app.perforator.io/dashboard
+             Project Key is also available on project details page
+        -->
+        
+        <!-- perforator suite related parameters -->
+        <suite.name>Example Suite</suite.name>
+        <suite.processorClass>com.example.ExampleSuiteProcessor</suite.processorClass>
+    </properties>
+    
+    <pluginRepositories>
+        <pluginRepository>
+            <id>perforator-gitlab-maven</id>
+            <url>https://gitlab.com/api/v4/projects/perforator-labs%2Fperforator-sdk-java/packages/maven</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+    
+    <repositories>
+        <repository>
+            <id>perforator-gitlab-maven</id>
+            <url>https://gitlab.com/api/v4/projects/perforator-labs%2Fperforator-sdk-java/packages/maven</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven.enforcer.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>${java.version}</version>
+                                </requireJavaVersion>
+                                <requireMavenVersion>
+                                    <version>${maven.minimal.version}</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
+                <configuration>
+                    <failIfNoTests>true</failIfNoTests>
+                    <trimStackTrace>false</trimStackTrace>
+                    <includes>
+                        <include>**/*Spec.java</include>
+                        <include>**/*Test.java</include>
+                    </includes>
+                    <systemProperties>
+                        <!--
+                        It is not technically possible to run a headful chrome instance
+                        locally if you are executing your tests in a headless environment, 
+                        for example, on a server or as a part of the CI pipeline.
+                        
+                        So, we need to force changing chrome mode from headful 
+                        to headless.
+                        
+                        Feel free to uncomment the section below or expose system
+                        variable via command-line arguments, for example:
+                        mvn clean test -Dsuite.chromeMode=headless
+                        -->
+                        <!--
+                        <suite.chromeMode>headless</suite.chromeMode>
+                        -->
+                        
+                        <suite.processorClass>${suite.processorClass}</suite.processorClass>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.perforator.sdk</groupId>
+                <artifactId>perforator-maven-plugin</artifactId>
+                <version>${perforator.version}</version>
+                <executions>
+                    <execution>
+                        <!--
+                            Verify execution in local environment spawning 
+                            headful chrome browsers locally.
+                            Feel free to adjust suite.concurrency property, 
+                            which determines how many concurrent threads and 
+                            browsers should be running, but please do is reasonable,
+                            because too many parallel browsers locally might 
+                            overload your system from a hardware perspective, 
+                            for example, not enough CPU or RAM.
+                            
+                            This execution is essential to see and debug what is 
+                            happening inside the browsers during concurrent execution.
+                            
+                            Example of running this execution:
+                            mvn clean test-compile perforator:embedded@local
+                        -->
+                        <id>local</id>
+                        <goals>
+                            <goal>embedded</goal>
+                        </goals>
+                        <configuration>
+                            <name>${suite.name}</name>
+                            <processorClass>${suite.processorClass}</processorClass>
+                            <webDriverMode>local</webDriverMode>
+                            <concurrency>10</concurrency>
+                            <duration>5m</duration>
+                            <rampUp>1m</rampUp>
+                            <rampDown>1m</rampDown>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!--
+                            This execution is similar to the one above(local), 
+                            with the only difference spawning chrome instances 
+                            in headless mode.
+                            
+                            Example of running this execution:
+                            mvn clean test-compile perforator:embedded@local-headless
+                        -->
+                        <id>local-headless</id>
+                        <goals>
+                            <goal>embedded</goal>
+                        </goals>
+                        <configuration>
+                            <name>${suite.name}</name>
+                            <processorClass>${suite.processorClass}</processorClass>
+                            <webDriverMode>local</webDriverMode>
+                            <chromeMode>headless</chromeMode>
+                            <concurrency>10</concurrency>
+                            <duration>5m</duration>
+                            <rampUp>1m</rampUp>
+                            <rampDown>1m</rampDown>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!--
+                            This execution is very lightweight and helpful to validate
+                            how your performance test logic behaves in a multi-threaded
+                            environment with the browsers spawned in the cloud.
+                            
+                            Example of running this execution:
+                            mvn clean test-compile perforator:embedded@cloud-dry-run
+                        -->
+                        <id>cloud-dry-run</id>
+                        <goals>
+                            <goal>embedded</goal>
+                        </goals>
+                        <configuration>
+                            <name>${suite.name}</name>
+                            <processorClass>${suite.processorClass}</processorClass>
+                            <webDriverMode>cloud</webDriverMode>
+                            <concurrency>10</concurrency>
+                            <duration>5m</duration>
+                            <rampUp>1m</rampUp>
+                            <rampDown>1m</rampDown>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!--
+                            This execution is a real-world performance test.
+                            Please run it once you made sure that the logic 
+                            of your performance test behaves correctly in a multi-threaded
+                            environment with browsers spawned in the cloud.
+                            
+                            Please adjust the following parameters according to 
+                            your performance test requirements: 
+                            * suite.concurrency - target concurrency of your performance test.
+                            * suite.duration - target duration of your performance test.
+                            
+                            Example of running this execution:
+                            mvn clean test-compile perforator:embedded@cloud-full-run
+                        -->
+                        <id>cloud-full-run</id>
+                        <goals>
+                            <goal>embedded</goal>
+                        </goals>
+                        <configuration>
+                            <name>${suite.name}</name>
+                            <processorClass>${suite.processorClass}</processorClass>
+                            <webDriverMode>cloud</webDriverMode>
+                            <concurrency>100</concurrency>
+                            <duration>30m</duration>
+                            <rampUp>5m</rampUp>
+                            <rampDown>5m</rampDown>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.perforator.sdk</groupId>
+            <artifactId>perforator-sdk-load-generator-embedded</artifactId>
+            <version>${perforator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

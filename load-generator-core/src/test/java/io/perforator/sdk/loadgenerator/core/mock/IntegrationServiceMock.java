@@ -1,0 +1,188 @@
+/*
+ * Copyright Perforator, Inc. and contributors. All rights reserved.
+ *
+ * Use of this software is governed by the Business Source License
+ * included in the LICENSE file.
+ *
+ * As of the Change Date specified in that file, in accordance with
+ * the Business Source License, use of this software will be governed
+ * by the Apache License, Version 2.0.
+ */
+package io.perforator.sdk.loadgenerator.core.mock;
+
+import io.perforator.sdk.loadgenerator.core.RemoteWebDriverHelper;
+import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
+import io.perforator.sdk.loadgenerator.core.service.IntegrationService;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class IntegrationServiceMock implements IntegrationService<SuiteContextMock, TransactionContextMock, RemoteWebDriverContextMock> {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationServiceMock.class);
+
+    private final ConcurrentHashMap<String, AtomicLong> counters = new ConcurrentHashMap<>();
+    private final AtomicBoolean started = new AtomicBoolean(false);
+    private final AtomicBoolean finished = new AtomicBoolean(false);
+    private final AtomicInteger suiteInstancesActive = new AtomicInteger(0);
+    private final AtomicInteger suiteInstancesSuccessful = new AtomicInteger(0);
+    private final AtomicInteger suiteInstancesFailed = new AtomicInteger(0);
+    private final ConcurrentHashMap<String, TransactionContextMock> transactionsActive = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, TransactionContextMock> transactionsSuccessful = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, TransactionContextMock> transactionsFailed = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, RemoteWebDriverContextMock> remoteWebDriverContexts = new ConcurrentHashMap<>();
+
+    @Override
+    public void onLoadGeneratorStarted() {
+        started.set(true);
+    }
+
+    @Override
+    public SuiteContextMock onSuiteInstanceStarted(int workerID, SuiteConfig suiteConfig) {
+        long iterationNumber = counters.computeIfAbsent(
+                suiteConfig.getId(), 
+                i -> new AtomicLong(0)
+        ).getAndIncrement();
+        suiteInstancesActive.incrementAndGet();
+        return new SuiteContextMock(workerID, iterationNumber, suiteConfig);
+    }
+
+    @Override
+    public long onSuiteInstanceFinished(SuiteContextMock suiteContext, Throwable suiteError) {
+        suiteInstancesActive.decrementAndGet();
+        if (suiteError != null) {
+            suiteInstancesFailed.incrementAndGet();
+            
+            LOGGER.error(
+                    "Suite {}, {} failed with error",
+                    suiteContext.getSuiteConfig().getName(),
+                    suiteContext.getSuiteInstanceID(),
+                    suiteError
+            );
+        } else {
+            suiteInstancesSuccessful.incrementAndGet();
+        }
+        return 0;
+    }
+
+    @Override
+    public void onLoadGeneratorFinished(Throwable loadGeneratorError) {
+        finished.set(true);
+    }
+
+    @Override
+    public TransactionContextMock startTransaction(SuiteContextMock suiteContext, String transactionName) {
+        TransactionContextMock result = new TransactionContextMock(
+                transactionName
+        );
+        transactionsActive.put(
+                result.getTransactionID(),
+                result
+        );
+        return result;
+    }
+
+    @Override
+    public void finishTransaction(TransactionContextMock transactionContext, Throwable transactionError) {
+        transactionsActive.remove(
+                transactionContext.getTransactionID()
+        );
+
+        if (transactionError != null) {
+            transactionsFailed.put(
+                    transactionContext.getTransactionID(),
+                    transactionContext
+            );
+            
+            LOGGER.error(
+                    "Transaction {}, {} failed with error",
+                    transactionContext.getTransactionName(),
+                    transactionContext.getTransactionID(),
+                    transactionError
+            );
+        } else {
+            transactionsSuccessful.put(
+                    transactionContext.getTransactionID(),
+                    transactionContext
+            );
+        }
+    }
+
+    @Override
+    public RemoteWebDriverContextMock startRemoteWebDriver(SuiteContextMock suiteContext, Capabilities capabilities) {
+        RemoteWebDriver driver = RemoteWebDriverHelper.createLocalChromeDriver(
+                capabilities,
+                suiteContext.getSuiteConfig()
+        );
+        RemoteWebDriverContextMock context = new RemoteWebDriverContextMock(
+                driver
+        );
+        remoteWebDriverContexts.put(
+                driver.getSessionId().toString(),
+                context
+        );
+        return context;
+    }
+
+    public boolean isStarted() {
+        return started.get();
+    }
+
+    public boolean isFinished() {
+        return finished.get();
+    }
+
+    @Override
+    public long getActiveSuiteInstancesCount() {
+        return suiteInstancesActive.get();
+    }
+
+    @Override
+    public long getSuccessfulSuiteInstancesCount() {
+        return suiteInstancesSuccessful.get();
+    }
+
+    @Override
+    public long getFailedSuiteInstancesCount() {
+        return suiteInstancesFailed.get();
+    }
+
+    @Override
+    public long getActiveTransactionsCount() {
+        return transactionsActive.size();
+    }
+
+    @Override
+    public long getSuccessfulTransactionsCount() {
+        return transactionsSuccessful.size();
+    }
+
+    @Override
+    public long getFailedTransactionsCount() {
+        return transactionsFailed.size();
+    }
+
+    public Collection<TransactionContextMock> getActiveTransactions() {
+        return transactionsActive.values();
+    }
+
+    public Collection<TransactionContextMock> getSuccessfulTransactions() {
+        return transactionsSuccessful.values();
+    }
+
+    public Collection<TransactionContextMock> getFailedTransactions() {
+        return transactionsFailed.values();
+    }
+
+    public Collection<RemoteWebDriverContextMock> getAllRemoteWebDriverContexts() {
+        return remoteWebDriverContexts.values();
+    }
+
+}

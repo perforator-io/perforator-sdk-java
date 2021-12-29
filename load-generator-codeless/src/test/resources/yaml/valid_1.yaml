@@ -1,0 +1,78 @@
+#  Copyright Perforator, Inc. and contributors. All rights reserved.
+#
+#  Use of this software is governed by the Business Source License
+#  included in the LICENSE file.
+#
+#  As of the Change Date specified in that file, in accordance with
+#  the Business Source License, use of this software will be governed
+#  by the Apache License, Version 2.0.
+
+---
+loadGenerator:
+  apiBaseUrl: https://api.perforator.io
+  apiClientId: "!!! Specify your organization key !!!"
+  apiClientSecret: "!!! Specify your secret key !!!"
+  projectKey: "!!! Specify your project key !!!"
+  executionKey: "!!! Specify your execution key !!!"
+  browserCloudTerminateAutomatically: true
+  browserCloudAwaitQueued: 1h
+  httpConnectTimeout: 59S
+  httpReadTimeout: 59S
+  httpCacheDns: true
+  slowdownTransactionsThreshold: 11
+  logSteps: false
+  logActions: false
+suites:
+  Suite One:
+    webDriverMode: cloud
+    concurrency: 1
+    delay: 0S
+    duration: 20M
+    rampUp: 1M
+    rampDown: 1M
+    webDriverUseLocalFileDetector: true
+    webDriverWindowWidth: 1440
+    webDriverWindowHeight: 900
+    webDriverCreateSessionRetryMinAttempts: 3
+    webDriverCreateSessionRetryTimeout: 1S
+    webDriverDeleteSessionRetryMinAttempts: 3
+    webDriverDeleteSessionRetryTimeout: 1S
+    webDriverSessionImplicitlyWait: 10s
+    props:
+      - landing-page: 'https://verifications.perforator.io/?delay=2000ms'
+    steps:
+      Open ${landing-page} and upload file successfully:
+        - open: '${landing-page}'
+        - sleep: 1s-5s
+        - scroll: '#file-input'
+        - focus: '#file-input'
+        - input:
+            cssSelector: '#file-input'
+            value: >-
+              /local_path/file.json
+        - awaitElementToBeClickable:
+            cssSelector: '#upload-success-span'
+            timeout: '30s'
+        - awaitAlertToBePresent:
+            timeout: '30s'
+        - awaitPageLoad:
+            timeout: '30s'
+      Open ${landing-page} and upload file with error:
+        - open: 'https://verifications.perforator.io/?delay=1000ms'
+        - scroll: '#file-input'
+        - focus: '#file-input'
+        - input:
+            cssSelector: '#file-input'
+            value: /local_path/file.json
+        - click: '#upload-btn'
+        - awaitElementToBeClickable: '#upload-btn'
+        - awaitElementToBeVisible: '#upload-btn'
+        - awaitElementToBeInvisible: '#uploading-span'
+        - awaitElementToBeEnabled: '#uploading-span'
+        - awaitElementToBeDisabled: '#uploading-span'
+        - awaitAlertToBePresent: '30s'
+        - awaitPageLoad: '30s'
+        - closeAlert:
+            action: ok
+            text: some text
+            timeout: 60s

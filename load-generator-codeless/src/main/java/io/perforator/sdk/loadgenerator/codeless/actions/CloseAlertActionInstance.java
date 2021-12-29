@@ -1,0 +1,50 @@
+/*
+ * Copyright Perforator, Inc. and contributors. All rights reserved.
+ *
+ * Use of this software is governed by the Business Source License
+ * included in the LICENSE file.
+ *
+ * As of the Change Date specified in that file, in accordance with
+ * the Business Source License, use of this software will be governed
+ * by the Apache License, Version 2.0.
+ */
+package io.perforator.sdk.loadgenerator.codeless.actions;
+
+import lombok.Builder;
+import lombok.Value;
+import lombok.experimental.FieldNameConstants;
+
+import java.time.Duration;
+
+@Value
+@FieldNameConstants
+@Builder(toBuilder = true)
+public class CloseAlertActionInstance implements ActionInstance<CloseAlertActionConfig> {
+
+    @FieldNameConstants.Include
+    private final CloseAlertActionConfig config;
+
+    @FieldNameConstants.Include
+    private final Duration timeout;
+
+    @FieldNameConstants.Include
+    private final Action action;
+
+    @FieldNameConstants.Include
+    private final String text;
+
+    @Override
+    public String toLoggingDetails() {
+        return new StringBuilder()
+                .append(CloseAlertActionInstance.Fields.action).append(" = ").append(action)
+                .append(", ")
+                .append(Fields.text).append(" = ").append(text == null ? "" : text)
+                .append(", ")
+                .append(CloseAlertActionInstance.Fields.timeout).append(" = ").append(timeout)
+                .toString();
+    }
+
+    public enum Action {
+        ok, cancel
+    }
+}

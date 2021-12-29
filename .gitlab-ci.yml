@@ -1,0 +1,197 @@
+variables:
+  # load generator properties for tests
+  LOADGENERATOR_APIBASEURL: $LOADGENERATOR_APIBASEURL
+  LOADGENERATOR_APICLIENTID: $LOADGENERATOR_APICLIENTID
+  LOADGENERATOR_APICLIENTSECRET: $LOADGENERATOR_APICLIENTSECRET
+  LOADGENERATOR_PROJECTKEY: $LOADGENERATOR_PROJECTKEY
+  # examples artifacts location
+  EXAMPLES_ARTIFACTS: "./artifacts"
+  EXAMPLES_PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/examples/${CI_COMMIT_TAG}"
+  # all examples
+  EXAMPLES_ALL_SRC: "./examples"
+  EXAMPLES_ALL_ZIP: "examples-all-$CI_COMMIT_TAG.zip"
+  EXAMPLES_ALL_DST: "$EXAMPLES_ARTIFACTS/$EXAMPLES_ALL_ZIP"
+  EXAMPLES_ALL_URL: "$EXAMPLES_PACKAGE_REGISTRY_URL/$EXAMPLES_ALL_ZIP"
+  # API client
+  EXAMPLES_API_CLIENT_SRC: "./examples/api-okhttp-gson"
+  EXAMPLES_API_CLIENT_ZIP: "examples-api-okhttp-gson-$CI_COMMIT_TAG.zip"
+  EXAMPLES_API_CLIENT_DST: "$EXAMPLES_ARTIFACTS/$EXAMPLES_API_CLIENT_ZIP"
+  EXAMPLES_API_CLIENT_URL: "$EXAMPLES_PACKAGE_REGISTRY_URL/$EXAMPLES_API_CLIENT_ZIP"
+  # TestNG single suite
+  EXAMPLES_TESTNG_SINGLE_SUITE_SRC: "./examples/testng-single-suite"
+  EXAMPLES_TESTNG_SINGLE_SUITE_ZIP: "examples-testng-single-suite-$CI_COMMIT_TAG.zip"
+  EXAMPLES_TESTNG_SINGLE_SUITE_DST: "$EXAMPLES_ARTIFACTS/$EXAMPLES_TESTNG_SINGLE_SUITE_ZIP"
+  EXAMPLES_TESTNG_SINGLE_SUITE_URL: "$EXAMPLES_PACKAGE_REGISTRY_URL/$EXAMPLES_TESTNG_SINGLE_SUITE_ZIP"
+  # TestNG multi suite
+  EXAMPLES_TESTNG_MULTI_SUITE_SRC: "./examples/testng-multi-suite"
+  EXAMPLES_TESTNG_MULTI_SUITE_ZIP: "examples-testng-multi-suite-$CI_COMMIT_TAG.zip"
+  EXAMPLES_TESTNG_MULTI_SUITE_DST: "$EXAMPLES_ARTIFACTS/$EXAMPLES_TESTNG_MULTI_SUITE_ZIP"
+  EXAMPLES_TESTNG_MULTI_SUITE_URL: "$EXAMPLES_PACKAGE_REGISTRY_URL/$EXAMPLES_TESTNG_MULTI_SUITE_ZIP"
+  # Embedded single suite
+  EXAMPLES_EMBEDDED_SINGLE_SUITE_SRC: "./examples/embedded-single-suite"
+  EXAMPLES_EMBEDDED_SINGLE_SUITE_ZIP: "examples-embedded-single-suite-$CI_COMMIT_TAG.zip"
+  EXAMPLES_EMBEDDED_SINGLE_SUITE_DST: "$EXAMPLES_ARTIFACTS/$EXAMPLES_EMBEDDED_SINGLE_SUITE_ZIP"
+  EXAMPLES_EMBEDDED_SINGLE_SUITE_URL: "$EXAMPLES_PACKAGE_REGISTRY_URL/$EXAMPLES_EMBEDDED_SINGLE_SUITE_ZIP"
+  # Embedded multi suite
+  EXAMPLES_EMBEDDED_MULTI_SUITE_SRC: "./examples/embedded-multi-suite"
+  EXAMPLES_EMBEDDED_MULTI_SUITE_ZIP: "examples-embedded-multi-suite-$CI_COMMIT_TAG.zip"
+  EXAMPLES_EMBEDDED_MULTI_SUITE_DST: "$EXAMPLES_ARTIFACTS/$EXAMPLES_EMBEDDED_MULTI_SUITE_ZIP"
+  EXAMPLES_EMBEDDED_MULTI_SUITE_URL: "$EXAMPLES_PACKAGE_REGISTRY_URL/$EXAMPLES_EMBEDDED_MULTI_SUITE_ZIP"
+  # Codeless minimal
+  EXAMPLES_CODELESS_MINIMAL_SRC: "./examples/codeless-minimal"
+  EXAMPLES_CODELESS_MINIMAL_ZIP: "examples-codeless-minimal-$CI_COMMIT_TAG.zip"
+  EXAMPLES_CODELESS_MINIMAL_DST: "$EXAMPLES_ARTIFACTS/$EXAMPLES_CODELESS_MINIMAL_ZIP"
+  EXAMPLES_CODELESS_MINIMAL_URL: "$EXAMPLES_PACKAGE_REGISTRY_URL/$EXAMPLES_CODELESS_MINIMAL_ZIP"
+  # Codeless extended
+  EXAMPLES_CODELESS_EXTENDED_SRC: "./examples/codeless-extended"
+  EXAMPLES_CODELESS_EXTENDED_ZIP: "examples-codeless-extended-$CI_COMMIT_TAG.zip"
+  EXAMPLES_CODELESS_EXTENDED_DST: "$EXAMPLES_ARTIFACTS/$EXAMPLES_CODELESS_EXTENDED_ZIP"
+  EXAMPLES_CODELESS_EXTENDED_URL: "$EXAMPLES_PACKAGE_REGISTRY_URL/$EXAMPLES_CODELESS_EXTENDED_ZIP"
+  # General options for maven
+  MAVEN_OPTS: >-
+    -Dhttps.protocols=TLSv1.2
+    -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
+    -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
+    -Dorg.slf4j.simpleLogger.showDateTime=true
+    -Djava.awt.headless=true
+  # Execution specific maven options to be passed as command line arguments
+  MAVEN_CLI_OPTS: >-
+    --batch-mode
+    --errors
+    --show-version
+    -DinstallAtEnd=true
+    -DdeployAtEnd=true
+    -Dsuite.chromeMode=headless
+
+image: markhobson/maven-chrome:jdk-11
+
+cache:
+  paths:
+    - .m2/repository
+
+stages: 
+  - build
+  - test
+  - deploy
+  - release
+  
+build:
+  stage: build
+  script:
+    - mvn clean package -s .gitlab-mvn-settings.xml -DskipTests $MAVEN_CLI_OPTS
+    - echo "PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> build.env
+  resource_group: one_at_time
+  artifacts:
+    reports:
+      dotenv: build.env
+  
+test:
+  stage: test
+  script:
+    - mvn verify -s .gitlab-mvn-settings.xml -Dmaven.test.redirectTestOutputToFile=true $MAVEN_CLI_OPTS
+  artifacts:
+    when: always
+    paths: 
+      - ./**/target/surefire-reports/*
+      - ./**/target/failsafe-reports/*
+    reports:
+      junit:
+        - ./**/target/surefire-reports/TEST-*.xml
+        - ./**/target/failsafe-reports/TEST-*.xml
+  resource_group: one_at_time
+  rules:
+    - if: '$CI_COMMIT_TAG !~ /^release-*/'
+
+deploy:
+  stage: deploy
+  script:
+    - apt-get update -qqy && apt-get install zip -qqy
+    - mvn deploy -P-examples -s .gitlab-mvn-settings.xml -DskipTests $MAVEN_CLI_OPTS
+    - mkdir $EXAMPLES_ARTIFACTS
+    # API client
+    - rm -rf $EXAMPLES_API_CLIENT_SRC/src/test
+    - rm -rf $EXAMPLES_API_CLIENT_SRC/target
+    - zip -r -9 $EXAMPLES_API_CLIENT_DST $EXAMPLES_API_CLIENT_SRC
+    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file $EXAMPLES_API_CLIENT_DST $EXAMPLES_API_CLIENT_URL'
+    # TestNG single suite
+    - rm -rf $EXAMPLES_TESTNG_SINGLE_SUITE_SRC/target
+    - zip -r -9 $EXAMPLES_TESTNG_SINGLE_SUITE_DST $EXAMPLES_TESTNG_SINGLE_SUITE_SRC
+    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file $EXAMPLES_TESTNG_SINGLE_SUITE_DST $EXAMPLES_TESTNG_SINGLE_SUITE_URL'
+    # TestNG multi suite
+    - rm -rf $EXAMPLES_TESTNG_MULTI_SUITE_SRC/target
+    - zip -r -9 $EXAMPLES_TESTNG_MULTI_SUITE_DST $EXAMPLES_TESTNG_MULTI_SUITE_SRC
+    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file $EXAMPLES_TESTNG_MULTI_SUITE_DST $EXAMPLES_TESTNG_MULTI_SUITE_URL'
+    # Embedded single suite
+    - rm -rf $EXAMPLES_EMBEDDED_SINGLE_SUITE_SRC/target
+    - zip -r -9 $EXAMPLES_EMBEDDED_SINGLE_SUITE_DST $EXAMPLES_EMBEDDED_SINGLE_SUITE_SRC
+    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file $EXAMPLES_EMBEDDED_SINGLE_SUITE_DST $EXAMPLES_EMBEDDED_SINGLE_SUITE_URL'
+    # Embedded multi suite
+    - rm -rf $EXAMPLES_EMBEDDED_MULTI_SUITE_SRC/target
+    - zip -r -9 $EXAMPLES_EMBEDDED_MULTI_SUITE_DST $EXAMPLES_EMBEDDED_MULTI_SUITE_SRC
+    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file $EXAMPLES_EMBEDDED_MULTI_SUITE_DST $EXAMPLES_EMBEDDED_MULTI_SUITE_URL'
+    # Codeless minimal
+    - cp ./load-generator-codeless/target/perforator-sdk-load-generator-codeless-$PROJECT_VERSION-full.jar $EXAMPLES_CODELESS_MINIMAL_SRC
+    - sed -i "s/\${CODELESS_LOAD_GENERATOR_JAR}/perforator-sdk-load-generator-codeless-$PROJECT_VERSION-full.jar/g" $EXAMPLES_CODELESS_MINIMAL_SRC/*.sh
+    - sed -i "s/%CODELESS_LOAD_GENERATOR_JAR%/perforator-sdk-load-generator-codeless-$PROJECT_VERSION-full.jar/g" $EXAMPLES_CODELESS_MINIMAL_SRC/*.cmd
+    - zip -r -9 $EXAMPLES_CODELESS_MINIMAL_DST $EXAMPLES_CODELESS_MINIMAL_SRC
+    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file $EXAMPLES_CODELESS_MINIMAL_DST $EXAMPLES_CODELESS_MINIMAL_URL'
+    # Codeless extended
+    - cp ./load-generator-codeless/target/perforator-sdk-load-generator-codeless-$PROJECT_VERSION-full.jar $EXAMPLES_CODELESS_EXTENDED_SRC
+    - sed -i "s/\${CODELESS_LOAD_GENERATOR_JAR}/perforator-sdk-load-generator-codeless-$PROJECT_VERSION-full.jar/g" $EXAMPLES_CODELESS_EXTENDED_SRC/*.sh
+    - sed -i "s/%CODELESS_LOAD_GENERATOR_JAR%/perforator-sdk-load-generator-codeless-$PROJECT_VERSION-full.jar/g" $EXAMPLES_CODELESS_EXTENDED_SRC/*.cmd
+    - zip -r -9 $EXAMPLES_CODELESS_EXTENDED_DST $EXAMPLES_CODELESS_EXTENDED_SRC
+    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file $EXAMPLES_CODELESS_EXTENDED_DST $EXAMPLES_CODELESS_EXTENDED_URL'
+    # all examples
+    - rm -rf ./**/target/
+    - zip -r -9 $EXAMPLES_ALL_DST $EXAMPLES_ALL_SRC
+    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file $EXAMPLES_ALL_DST $EXAMPLES_ALL_URL'
+  resource_group: one_at_time
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^release-*/'
+
+release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  script:
+    - echo 'Releasing $CI_COMMIT_TAG'
+  release:
+    name: $CI_COMMIT_TAG
+    tag_name: $CI_COMMIT_TAG
+    description: $CI_COMMIT_TAG
+    assets:
+      links:
+        - name: $EXAMPLES_ALL_ZIP
+          url: $EXAMPLES_ALL_URL
+          filepath: /examples/$EXAMPLES_ALL_ZIP
+          link_type: package
+        - name: $EXAMPLES_API_CLIENT_ZIP
+          url: $EXAMPLES_API_CLIENT_URL
+          filepath: /examples/$EXAMPLES_API_CLIENT_ZIP
+          link_type: package
+        - name: $EXAMPLES_TESTNG_SINGLE_SUITE_ZIP
+          url: $EXAMPLES_TESTNG_SINGLE_SUITE_URL
+          filepath: /examples/$EXAMPLES_TESTNG_SINGLE_SUITE_ZIP
+          link_type: package
+        - name: $EXAMPLES_TESTNG_MULTI_SUITE_ZIP
+          url: $EXAMPLES_TESTNG_MULTI_SUITE_URL
+          filepath: /examples/$EXAMPLES_TESTNG_MULTI_SUITE_ZIP
+          link_type: package
+        - name: $EXAMPLES_EMBEDDED_SINGLE_SUITE_ZIP
+          url: $EXAMPLES_EMBEDDED_SINGLE_SUITE_URL
+          filepath: /examples/$EXAMPLES_EMBEDDED_SINGLE_SUITE_ZIP
+          link_type: package
+        - name: $EXAMPLES_EMBEDDED_MULTI_SUITE_ZIP
+          url: $EXAMPLES_EMBEDDED_MULTI_SUITE_URL
+          filepath: /examples/$EXAMPLES_EMBEDDED_MULTI_SUITE_ZIP
+          link_type: package
+        - name: $EXAMPLES_CODELESS_MINIMAL_ZIP
+          url: $EXAMPLES_CODELESS_MINIMAL_URL
+          filepath: /examples/$EXAMPLES_CODELESS_MINIMAL_ZIP
+          link_type: package
+        - name: $EXAMPLES_CODELESS_EXTENDED_ZIP
+          url: $EXAMPLES_CODELESS_EXTENDED_URL
+          filepath: /examples/$EXAMPLES_CODELESS_EXTENDED_ZIP
+          link_type: package
+  resource_group: one_at_time
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^release-*/'
