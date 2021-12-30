@@ -133,7 +133,10 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
 
     @Override
     public void onHeartbeat(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
-        loadGeneratorContext.getSuiteContexts().stream().filter(s -> s.getSuiteConfig().getWebDriverMode() == WebDriverMode.cloud
+        List<TransactionEvent> localBuffer = new ArrayList<>();
+        
+        loadGeneratorContext.getSuiteContexts().stream().filter(
+                s -> s.getSuiteConfig().getWebDriverMode() == WebDriverMode.cloud
         ).forEach(suiteContext -> {
             suiteContext.getTransactions().forEach(transaction -> {
                 List<TransactionEvent> analyticalEvent = createAnalyticalEvents(
@@ -142,9 +145,13 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
                         EventType.transaction_heartbeat,
                         null
                 );
-                loadGeneratorContext.getEventsBuffer().add(analyticalEvent);
+                localBuffer.addAll(analyticalEvent);
             });
         });
+        
+        if (!localBuffer.isEmpty()) {
+            loadGeneratorContext.getEventsBuffer().add(localBuffer);
+        }
     }
 
     private List<TransactionEvent> createAnalyticalEvents(
