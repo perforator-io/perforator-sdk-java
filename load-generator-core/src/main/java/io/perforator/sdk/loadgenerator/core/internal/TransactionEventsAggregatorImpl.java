@@ -11,13 +11,12 @@
 package io.perforator.sdk.loadgenerator.core.internal;
 
 import io.perforator.sdk.api.okhttpgson.model.TransactionEvent;
-import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
+import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +28,7 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
             return;
         }
 
-        context.getLoadGeneratorContext().getEventsBuffer().addAll(
+        context.getLoadGeneratorContext().getEventsBuffer().add(
                 createAnalyticalEvents(
                         timestamp,
                         context,
@@ -45,7 +44,7 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
             return;
         }
 
-        context.getLoadGeneratorContext().getEventsBuffer().addAll(
+        context.getLoadGeneratorContext().getEventsBuffer().add(
                 createAnalyticalEvents(
                         timestamp,
                         context,
@@ -64,6 +63,7 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
             return;
         }
 
+        List<TransactionEvent> localBuffer = new ArrayList<>();
         suiteContext.getTransactions().forEach(transaction -> {
             TransactionEvent eventDto = new TransactionEvent();
             eventDto.setTimestamp(timestamp);
@@ -84,8 +84,13 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
             }
 
             eventDto.setEventType(EventType.transaction_heartbeat.name());
-            suiteContext.getLoadGeneratorContext().getEventsBuffer().add(eventDto);
+
+            localBuffer.add(eventDto);
         });
+
+        if (!localBuffer.isEmpty()) {
+            suiteContext.getLoadGeneratorContext().getEventsBuffer().add(localBuffer);
+        }
     }
 
     @Override
@@ -97,6 +102,7 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
             return;
         }
 
+        List<TransactionEvent> localBuffer = new ArrayList<>();
         suiteContext.getTransactions().forEach(transaction -> {
             TransactionEvent eventDto = new TransactionEvent();
             eventDto.setTimestamp(timestamp);
@@ -116,10 +122,13 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
                 eventDto.setParentTransactionName(parentTransaction.getTransactionName());
             }
 
-
             eventDto.setEventType(EventType.transaction_heartbeat.name());
-            suiteContext.getLoadGeneratorContext().getEventsBuffer().add(eventDto);
+            localBuffer.add(eventDto);
         });
+
+        if (!localBuffer.isEmpty()) {
+            suiteContext.getLoadGeneratorContext().getEventsBuffer().add(localBuffer);
+        }
     }
 
     @Override
@@ -127,18 +136,18 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
         loadGeneratorContext.getSuiteContexts().stream().filter(s -> s.getSuiteConfig().getWebDriverMode() == WebDriverMode.cloud
         ).forEach(suiteContext -> {
             suiteContext.getTransactions().forEach(transaction -> {
-                Collection<TransactionEvent> analyticalEvent = createAnalyticalEvents(
+                List<TransactionEvent> analyticalEvent = createAnalyticalEvents(
                         timestamp,
                         transaction,
                         EventType.transaction_heartbeat,
                         null
                 );
-                loadGeneratorContext.getEventsBuffer().addAll(analyticalEvent);
+                loadGeneratorContext.getEventsBuffer().add(analyticalEvent);
             });
         });
     }
 
-    private Collection<TransactionEvent> createAnalyticalEvents(
+    private List<TransactionEvent> createAnalyticalEvents(
             long timestamp,
             TransactionContextImpl transaction,
             EventType eventType,

@@ -28,7 +28,7 @@ final class LoadGeneratorContextImpl {
     private final LoadGeneratorConfig loadGeneratorConfig;
     private final List<SuiteConfig> suiteConfigs;
     private final Set<SuiteContextImpl> suiteContexts;
-    private final Queue<TransactionEvent> eventsBuffer;
+    private final Queue<List<TransactionEvent>> eventsBuffer;
     private final StatisticsContextImpl statisticsContext;
 
     private OkHttpClient okHttpClient;
@@ -64,7 +64,7 @@ final class LoadGeneratorContextImpl {
         return suiteContexts;
     }
 
-    public Queue<TransactionEvent> getEventsBuffer() {
+    public Queue<List<TransactionEvent>> getEventsBuffer() {
         return eventsBuffer;
     }
 

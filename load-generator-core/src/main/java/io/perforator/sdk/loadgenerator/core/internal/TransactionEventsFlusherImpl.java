@@ -12,8 +12,8 @@ package io.perforator.sdk.loadgenerator.core.internal;
 
 import com.google.gson.Gson;
 import io.perforator.sdk.api.okhttpgson.invoker.ApiException;
-import io.perforator.sdk.api.okhttpgson.model.TransactionEventsSubmissionResult;
 import io.perforator.sdk.api.okhttpgson.model.TransactionEvent;
+import io.perforator.sdk.api.okhttpgson.model.TransactionEventsSubmissionResult;
 import io.perforator.sdk.loadgenerator.core.Threaded;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ final class TransactionEventsFlusherImpl implements TransactionEventsFlusher {
         while (!context.getEventsBuffer().isEmpty() || inflightEvents.get() > 0) {
             if (lastReporting + 1000 <= System.currentTimeMillis()) {
                 LOGGER.info("Please wait - there are still {} analytical events to be flushed",
-                        context.getEventsBuffer().size() + inflightEvents.get()
+                        context.getEventsBuffer().stream().mapToInt(List::size).sum() + inflightEvents.get()
                 );
                 lastReporting = System.currentTimeMillis();
             }
@@ -69,15 +69,16 @@ final class TransactionEventsFlusherImpl implements TransactionEventsFlusher {
     public void onHeartbeat(long timestamp, LoadGeneratorContextImpl context) {
         int threshold = context.getLoadGeneratorConfig().getEventsFlushThreshold();
         List<TransactionEvent> batch = new ArrayList<>(threshold);
-        TransactionEvent event = null;
+        List<TransactionEvent> events = null;
 
-        while ((event = context.getEventsBuffer().poll()) != null) {
-            inflightEvents.addAndGet(1);
-            batch.add(event);
-
-            if (batch.size() >= threshold) {
-                submitEventsToExecutor(context, batch);
-                batch = new ArrayList<>(threshold);
+        while ((events = context.getEventsBuffer().poll()) != null) {
+            for (TransactionEvent event : events) {
+                inflightEvents.addAndGet(1);
+                batch.add(event);
+                if (batch.size() >= threshold) {
+                    submitEventsToExecutor(context, batch);
+                    batch = new ArrayList<>(threshold);
+                }
             }
         }
 
@@ -92,9 +93,9 @@ final class TransactionEventsFlusherImpl implements TransactionEventsFlusher {
                 executor
         ).whenComplete((retryableEvents, error) -> {
             if (error != null) {
-                context.getEventsBuffer().addAll(batch);
+                context.getEventsBuffer().add(batch);
             } else if (retryableEvents != null && !retryableEvents.isEmpty()) {
-                context.getEventsBuffer().addAll(retryableEvents);
+                context.getEventsBuffer().add(retryableEvents);
             }
 
             inflightEvents.addAndGet(-1 * batch.size());
