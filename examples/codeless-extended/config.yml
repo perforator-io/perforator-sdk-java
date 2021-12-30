@@ -10,6 +10,21 @@
 # So, there are two dedicated sections in this config:                         #
 # - *loadGenerator*, general settings applicable for load tests orchestration. #
 # - *suites*, the actual configuration of the business logic for load tests.   #
+#                                                                              #
+# You can override almost all configuration properties via command line args   #
+# or environment variables, so you can prepare a config file once and then     #
+# utilize it under different conditions, for example:                          #
+# - You don't want to store secure information like apiClientId or             #
+#   apiClientSecret directly in the source code, but to supply it via          #
+#   environment variables.                                                     #
+# - You would like to debug your config file using a local browser.            #
+# - You would like to verify your config file using limited concurrency, before#
+#   executing it full speed.                                                   #
+#                                                                              #
+# Configuration values are looked up in the following order:                   #
+# - System properties, i.e. command-line arguments: java -DloadGenerator.smth=.#
+# - Environment variables                                                      #
+# - Config value itself                                                        #
 ################################################################################
 loadGenerator:
 
@@ -17,6 +32,9 @@ loadGenerator:
   # Base URL for API communication.                                            #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.apiBaseUrl                           #
+  # - Environment variable name: LOADGENERATOR_APIBASEURL                      #
   ##############################################################################
   #apiBaseUrl: https://api.perforator.io
 
@@ -25,6 +43,9 @@ loadGenerator:
   # You can get it at https://app.perforator.io/settings/api                   #
   #                                                                            #
   # This is a required property.                                               #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.apiClientId                          #
+  # - Environment variable name: LOADGENERATOR_APICLIENTID                     #
   ##############################################################################
   apiClientId: YOUR_API_CLIENT_ID
 
@@ -33,6 +54,9 @@ loadGenerator:
   # You can get it at https://app.perforator.io/settings/api                   #
   #                                                                            #
   # This is a required property.                                               #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.apiClientSecret                      #
+  # - Environment variable name: LOADGENERATOR_APICLIENTSECRET                 #
   ##############################################################################
   apiClientSecret: YOUR_API_CLIENT_SECRET
 
@@ -43,6 +67,9 @@ loadGenerator:
   # dashboard or from the left menu.                                           #
   #                                                                            #
   # This is a required property.                                               #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.projectKey                           #
+  # - Environment variable name: LOADGENERATOR_PROJECTKEY                      #
   ##############################################################################
   projectKey: YOUR_PROJECT_KEY
 
@@ -57,6 +84,9 @@ loadGenerator:
   # to get 360 view.                                                           #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.executionKey                         #
+  # - Environment variable name: LOADGENERATOR_EXECUTIONKEY                    #
   ##############################################################################
   #executionKey: 
 
@@ -65,6 +95,9 @@ loadGenerator:
   # from QUEUED to PROVISIONING?                                               #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.browserCloudAwaitQueued              #
+  # - Environment variable name: LOADGENERATOR_BROWSERCLOUDAWAITQUEUED         #
   ##############################################################################
   #browserCloudAwaitQueued: 1h
 
@@ -73,6 +106,9 @@ loadGenerator:
   # PROVISIONING to OPERATIONAL?                                               #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.browserCloudAwaitProvisioning        #
+  # - Environment variable name: LOADGENERATOR_BROWSERCLOUDAWAITPROVISIONING   #
   ##############################################################################
   #browserCloudAwaitProvisioning: 10m
 
@@ -80,6 +116,9 @@ loadGenerator:
   # Time interval on how often to check browser cloud status.                  #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.browserCloudStatusPollInterval       #
+  # - Environment variable name: LOADGENERATOR_BROWSERCLOUDSTATUSPOLLINTERVAL  #
   ##############################################################################
   #browserCloudStatusPollInterval: 1s
 
@@ -87,6 +126,9 @@ loadGenerator:
   # Should a browser cloud be turned off at the end of the test?               #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.browserCloudTerminateAutomatically   #
+  # - Environment variable: LOADGENERATOR_BROWSERCLOUDTERMINATEAUTOMATICALLY   #
   ##############################################################################
   #browserCloudTerminateAutomatically: true
 
@@ -94,6 +136,9 @@ loadGenerator:
   # HTTP connect timeout while establishing connection(s) with remote browsers.#
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.httpConnectTimeout                   #
+  # - Environment variable name: LOADGENERATOR_HTTPCONNECTTIMEOUT              #
   ##############################################################################
   #httpConnectTimeout: 30s
 
@@ -101,6 +146,9 @@ loadGenerator:
   # HTTP read timeout while awaiting response from remote browsers.            #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.httpReadTimeout                      #
+  # - Environment variable name: LOADGENERATOR_HTTPREADTIMEOUT                 #
   ##############################################################################
   #httpReadTimeout: 60s
 
@@ -108,6 +156,9 @@ loadGenerator:
   # Should DNS queries be cached while resolving IP addresses of domain names? #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.httpCacheDns                         #
+  # - Environment variable name: LOADGENERATOR_HTTPCACHEDNS                    #
   ##############################################################################
   #httpCacheDns: true
 
@@ -115,6 +166,9 @@ loadGenerator:
   # Interval on how often to send transaction events data to API.              #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.eventsFlushInterval                  #
+  # - Environment variable name: LOADGENERATOR_EVENTSFLUSHINTERVAL             #
   ##############################################################################
   #eventsFlushInterval: 0.25s
 
@@ -124,6 +178,9 @@ loadGenerator:
   # will be rejected on API end.                                               #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.eventsFlushThreshold                 #
+  # - Environment variable name: LOADGENERATOR_EVENTSFLUSHTHRESHOLD            #
   ##############################################################################
   #eventsFlushThreshold: 500
 
@@ -132,6 +189,9 @@ loadGenerator:
   # You can turn off progress reporting by specifying this value as 0s.        #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.reportingInterval                    #
+  # - Environment variable name: LOADGENERATOR_REPORTINGINTERVAL               #
   ##############################################################################
   #reportingInterval: 5s
 
@@ -157,6 +217,9 @@ loadGenerator:
   # for slowdown calculation.                                                  #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.slowdownTransactionsThreshold        #
+  # - Environment variable name: LOADGENERATOR_SLOWDOWNTRANSACTIONSTHRESHOLD   #
   ##############################################################################
   #slowdownTransactionsThreshold: 1000
 
@@ -168,6 +231,9 @@ loadGenerator:
   # item.                                                                      #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.logWorkerID                          #
+  # - Environment variable name: LOADGENERATOR_LOGWORKERID                     #
   ##############################################################################
   #logWorkerID: false
 
@@ -179,6 +245,9 @@ loadGenerator:
   # items related to the processing of the suite instance.                     #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.logSuiteInstanceID                   #
+  # - Environment variable name: LOADGENERATOR_LOGSUITEINSTANCEID              #
   ##############################################################################
   #logSuiteInstanceID: false
 
@@ -186,6 +255,9 @@ loadGenerator:
   # Should a selenium session-id be logged while processing a test suite?      #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.logRemoteWebDriverSessionID          #
+  # - Environment variable name: LOADGENERATOR_LOGREMOTEWEBDRIVERSESSIONID     #
   ##############################################################################
   #logRemoteWebDriverSessionID: true
 
@@ -193,6 +265,9 @@ loadGenerator:
   # Should a transaction id be logged for every transaction in an active state?#
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.logTransactionID                     #
+  # - Environment variable name: LOADGENERATOR_LOGTRANSACTIONID                #
   ##############################################################################
   #logTransactionID: false
 
@@ -201,6 +276,9 @@ loadGenerator:
   # suite errors?                                                              #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.failOnSuiteErrors                    #
+  # - Environment variable name: LOADGENERATOR_FAILONSUITEERRORS               #
   ##############################################################################
   #failOnSuiteErrors: true
 
@@ -209,6 +287,9 @@ loadGenerator:
   # transaction errors?                                                        #
   #                                                                            #
   # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.failOnTransactionErrors              #
+  # - Environment variable name: LOADGENERATOR_FAILONTRANSACTIONERRORS         #
   ##############################################################################
   #failOnTransactionErrors: true
 
@@ -263,6 +344,9 @@ suites:
     #                                                                          #
     # Also, this parameter controls how many browsers are allowed              #
     # to be launched concurrently in the cloud for cloud-based executions.     #
+    # Overrides:                                                               #
+    # - System property name: suite.concurrency                                #
+    # - Environment variable name: SUITE_CONCURRENCY                           #
     ############################################################################
     concurrency: 100
 
@@ -275,6 +359,9 @@ suites:
     # Duration of the browser cloud is rounded up to the closest               #
     # hour value.                                                              #
     # For example, if duration = 45m, then browser cloud is created for 1 hour.#
+    # Overrides:                                                               #
+    # - System property name: suite.duration                                   #
+    # - Environment variable name: SUITE_DURATION                              #
     ############################################################################
     duration: 30m
 
@@ -284,6 +371,9 @@ suites:
     # during *rampUp* period. For example, if you have *concurrency* = 10 and  #
     # *rampUp* = 10s, then every second additional worker thread will be       #
     # launched, starting from 1 thread up to 10 threads.                       #
+    # Overrides:                                                               #
+    # - System property name: suite.rampUp                                     #
+    # - Environment variable name: SUITE_RAMPUP                                #
     ############################################################################
     rampUp: 5m
 
@@ -295,6 +385,9 @@ suites:
     #                                                                          #
     # At the same time, if a suite instance started execution before the 8th   #
     # minute - such instance will proceed execution till its natural completion#
+    # Overrides:                                                               #
+    # - System property name: suite.rampDown                                   #
+    # - Environment variable name: SUITE_RAMPDOWN                              #
     ############################################################################
     rampDown: 5m
     

@@ -10,6 +10,21 @@
 # So, there are two dedicated sections in this config:                         #
 # - *loadGenerator*, general settings applicable for load tests orchestration. #
 # - *suites*, the actual configuration of the business logic for load tests.   #
+#                                                                              #
+# You can override almost all configuration properties via command line args   #
+# or environment variables, so you can prepare a config file once and then     #
+# utilize it under different conditions, for example:                          #
+# - You don't want to store secure information like apiClientId or             #
+#   apiClientSecret directly in the source code, but to supply it via          #
+#   environment variables.                                                     #
+# - You would like to debug your config file using a local browser.            #
+# - You would like to verify your config file using limited concurrency, before#
+#   executing it full speed.                                                   #
+#                                                                              #
+# Configuration values are looked up in the following order:                   #
+# - System properties, i.e. command-line arguments: java -DloadGenerator.smth=.#
+# - Environment variables                                                      #
+# - Config value itself                                                        #
 ################################################################################
 loadGenerator:
 
@@ -18,6 +33,9 @@ loadGenerator:
   # You can get it at https://app.perforator.io/settings/api                   #
   #                                                                            #
   # This is a required property.                                               #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.apiClientId                          #
+  # - Environment variable name: LOADGENERATOR_APICLIENTID                     #
   ##############################################################################
   apiClientId: YOUR_API_CLIENT_ID
 
@@ -26,6 +44,9 @@ loadGenerator:
   # You can get it at https://app.perforator.io/settings/api                   #
   #                                                                            #
   # This is a required property.                                               #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.apiClientSecret                      #
+  # - Environment variable name: LOADGENERATOR_APICLIENTSECRET                 #
   ##############################################################################
   apiClientSecret: YOUR_API_CLIENT_SECRET
 
@@ -36,6 +57,9 @@ loadGenerator:
   # dashboard or from the left menu.                                           #
   #                                                                            #
   # This is a required property.                                               #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.projectKey                           #
+  # - Environment variable name: LOADGENERATOR_PROJECTKEY                      #
   ##############################################################################
   projectKey: YOUR_PROJECT_KEY
 
@@ -90,6 +114,9 @@ suites:
     #                                                                          #
     # Also, this parameter controls how many browsers are allowed              #
     # to be launched concurrently in the cloud for cloud-based executions.     #
+    # Overrides:                                                               #
+    # - System property name: suite.concurrency                                #
+    # - Environment variable name: SUITE_CONCURRENCY                           #
     ############################################################################
     concurrency: 100
 
@@ -102,6 +129,9 @@ suites:
     # Duration of the browser cloud is rounded up to the closest               #
     # hour value.                                                              #
     # For example, if duration = 45m, then browser cloud is created for 1 hour.#
+    # Overrides:                                                               #
+    # - System property name: suite.duration                                   #
+    # - Environment variable name: SUITE_DURATION                              #
     ############################################################################
     duration: 30m
 
@@ -111,6 +141,9 @@ suites:
     # during *rampUp* period. For example, if you have *concurrency* = 10 and  #
     # *rampUp* = 10s, then every second additional worker thread will be       #
     # launched, starting from 1 thread up to 10 threads.                       #
+    # Overrides:                                                               #
+    # - System property name: suite.rampUp                                     #
+    # - Environment variable name: SUITE_RAMPUP                                #
     ############################################################################
     rampUp: 5m
 
@@ -122,6 +155,9 @@ suites:
     #                                                                          #
     # At the same time, if a suite instance started execution before the 8th   #
     # minute - such instance will proceed execution till its natural completion#
+    # Overrides:                                                               #
+    # - System property name: suite.rampDown                                   #
+    # - Environment variable name: SUITE_RAMPDOWN                              #
     ############################################################################
     rampDown: 5m
 
