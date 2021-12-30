@@ -22,9 +22,9 @@
     </organization>
     
     <scm>
-        <connection>scm:git:git@gitlab.com:perforator-public/java-tools.git</connection>
-        <url>scm:git:git@gitlab.com:perforator-public/java-tools.git</url>
-        <developerConnection>scm:git:git@gitlab.com:perforator-public/java-tools.git</developerConnection>
+        <connection>scm:git:git@gitlab.com:perforator-labs/perforator-sdk-java.git</connection>
+        <url>scm:git:git@gitlab.com:perforator-labs/perforator-sdk-java.git</url>
+        <developerConnection>scm:git:git@gitlab.com:perforator-labs/perforator-sdk-java.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
     
