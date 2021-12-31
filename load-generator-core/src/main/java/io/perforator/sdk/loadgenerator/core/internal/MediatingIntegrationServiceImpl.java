@@ -71,6 +71,7 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
                 suiteManager,
                 httpClientsManager,
                 browserCloudManager,
+                transactionEventsAggregator,
                 heartbeatManager,
                 transactionEventsFlusher,
                 reportingManager,
@@ -84,6 +85,7 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
                 reportingManager,
                 transactionEventsFlusher,
                 heartbeatManager,
+                transactionEventsAggregator,
                 infoMessagesManager
         ));
 

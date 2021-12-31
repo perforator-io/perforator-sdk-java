@@ -10,6 +10,7 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
+import com.google.common.collect.Lists;
 import io.perforator.sdk.api.okhttpgson.model.TransactionEvent;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
@@ -17,10 +18,30 @@ import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.List;
 import java.util.Map;
 
 final class TransactionEventsAggregatorImpl implements TransactionEventsAggregator {
+    
+    private static final int TRANSACTIONS_AGGREGATION_PER_THREAD = 1024;
+    
+    private ExecutorService aggregationExecutor;
+
+    @Override
+    public void onLoadGeneratorStarted(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
+        int concurrency = loadGeneratorContext.getSuiteConfigs().stream().mapToInt(SuiteConfig::getConcurrency).sum();
+        int aggregationThreads = concurrency * 2 / TRANSACTIONS_AGGREGATION_PER_THREAD + 1;
+        aggregationExecutor = Executors.newFixedThreadPool(aggregationThreads);
+    }
+
+    @Override
+    public void onLoadGeneratorFinished(long timestamp, LoadGeneratorContextImpl loadGeneratorContext, Throwable error) {
+        if(aggregationExecutor != null) {
+            aggregationExecutor.shutdown();
+        }
+    }
 
     @Override
     public void onTransactionStarted(long timestamp, TransactionContextImpl context) {
@@ -133,24 +154,35 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
 
     @Override
     public void onHeartbeat(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
-        List<TransactionEvent> localBuffer = new ArrayList<>();
-        
+        List<TransactionContextImpl> transactions = new ArrayList<>();
         loadGeneratorContext.getSuiteContexts().stream().filter(
                 s -> s.getSuiteConfig().getWebDriverMode() == WebDriverMode.cloud
         ).forEach(suiteContext -> {
-            suiteContext.getTransactions().forEach(transaction -> {
-                List<TransactionEvent> analyticalEvent = createAnalyticalEvents(
-                        timestamp,
-                        transaction,
-                        EventType.transaction_heartbeat,
-                        null
-                );
-                localBuffer.addAll(analyticalEvent);
-            });
+            transactions.addAll(suiteContext.getTransactions());
         });
         
-        if (!localBuffer.isEmpty()) {
-            loadGeneratorContext.getEventsBuffer().add(localBuffer);
+        List<List<TransactionContextImpl>> partitions = Lists.partition(
+                transactions, 
+                TRANSACTIONS_AGGREGATION_PER_THREAD
+        );
+        
+        for (List<TransactionContextImpl> partition : partitions) {
+            aggregationExecutor.submit(() -> {
+                List<TransactionEvent> localBuffer = new ArrayList<>();
+
+                for (TransactionContextImpl transaction : partition) {
+                    localBuffer.addAll(createAnalyticalEvents(
+                            timestamp,
+                            transaction,
+                            EventType.transaction_heartbeat,
+                            null
+                    ));
+                }
+
+                if (!localBuffer.isEmpty()) {
+                    loadGeneratorContext.getEventsBuffer().add(localBuffer);
+                }
+            });
         }
     }
 
