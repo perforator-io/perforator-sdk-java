@@ -37,6 +37,7 @@ final class HttpClientsManagerImpl implements HttpClientsManager {
     private OkHttpClient buildHttpClient(Duration connectTimeout, Duration readTimeout, boolean cacheDNS, int poolSize) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
+        builder.protocols(List.of(Protocol.HTTP_1_1));
         builder.connectTimeout(connectTimeout);
         builder.readTimeout(readTimeout);
 
@@ -47,12 +48,12 @@ final class HttpClientsManagerImpl implements HttpClientsManager {
         builder.connectionPool(
                 new ConnectionPool(
                         poolSize,
-                        60,
+                        5,
                         TimeUnit.SECONDS
                 )
         );
 
-        builder.pingInterval(Duration.ofSeconds(15));
+        builder.pingInterval(Duration.ofSeconds(5));
         builder.retryOnConnectionFailure(true);
         builder.followRedirects(true);
         builder.followSslRedirects(true);
@@ -77,13 +78,15 @@ final class HttpClientsManagerImpl implements HttpClientsManager {
         @Override
         public List<InetAddress> lookup(String hostname) throws UnknownHostException {
             try {
-                return cache.computeIfAbsent(hostname, h -> {
+                List<InetAddress> items = cache.computeIfAbsent(hostname, h -> {
                     try {
                         return Dns.SYSTEM.lookup(h);
                     } catch (UnknownHostException unknownHostException) {
                         throw new RuntimeException(unknownHostException);
                     }
                 });
+                
+                return List.of(items.get((int)(Math.random() * items.size())));
             } catch (RuntimeException e) {
                 if (e.getCause() != null && e.getCause() instanceof UnknownHostException) {
                     throw (UnknownHostException) e.getCause();
