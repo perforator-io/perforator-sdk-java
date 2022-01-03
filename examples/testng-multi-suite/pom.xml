@@ -58,7 +58,7 @@
         
         <!-- dependency versions -->
         <perforator.version>1.0.0-SNAPSHOT</perforator.version>
-        <log4j.version>2.17.0</log4j.version>
+        <log4j.version>2.17.1</log4j.version>
         
         <!-- 
              API Client ID property is required and youn can specify it using the following methods:
