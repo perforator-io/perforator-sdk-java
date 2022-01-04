@@ -11,9 +11,11 @@
 package io.perforator.sdk.loadgenerator.core.internal;
 
 import io.perforator.sdk.loadgenerator.core.RemoteWebDriverHelper;
-import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
-import okhttp3.OkHttpClient;
+import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
+import lombok.SneakyThrows;
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.RequestBuilder;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.remote.http.HttpClient;
@@ -23,7 +25,9 @@ import org.openqa.selenium.remote.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 
@@ -69,7 +73,7 @@ final class RemoteWebDriverManagerImpl implements RemoteWebDriverManager {
             CustomHttpCommandExecutor executor = new CustomHttpCommandExecutor(
                     suiteContext,
                     suiteContext.getLoadGeneratorContext().getBrowserCloudContext().getSeleniumHubURL(),
-                    suiteContext.getLoadGeneratorContext().getOkHttpClient()
+                    suiteContext.getLoadGeneratorContext().getAsyncHttpClient()
             );
 
             remoteWebDriver = new RemoteWebDriver(
@@ -112,7 +116,7 @@ final class RemoteWebDriverManagerImpl implements RemoteWebDriverManager {
 
         final CustomSeleniumHttpClient client;
 
-        public CustomHttpClientFactory(SuiteContextImpl suiteContext, OkHttpClient httpClient, URL seleniumHUB) {
+        public CustomHttpClientFactory(SuiteContextImpl suiteContext, AsyncHttpClient httpClient, URL seleniumHUB) {
             this.client = new CustomSeleniumHttpClient(
                     suiteContext,
                     httpClient,
@@ -136,11 +140,11 @@ final class RemoteWebDriverManagerImpl implements RemoteWebDriverManager {
 
     }
 
-    private static class CustomSeleniumHttpClient extends org.openqa.selenium.remote.internal.OkHttpClient {
+    private static class CustomSeleniumHttpClient extends SeleniumAsyncHttpClient {
 
         private final SuiteContextImpl suiteContext;
 
-        public CustomSeleniumHttpClient(SuiteContextImpl suiteContext, OkHttpClient client, URL url) {
+        public CustomSeleniumHttpClient(SuiteContextImpl suiteContext, AsyncHttpClient client, URL url) {
             super(client, url);
             this.suiteContext = suiteContext;
         }
@@ -245,11 +249,86 @@ final class RemoteWebDriverManagerImpl implements RemoteWebDriverManager {
 
     }
 
+    private static class SeleniumAsyncHttpClient implements HttpClient {
+
+        private final AsyncHttpClient client;
+        private final URL baseUrl;
+
+        public SeleniumAsyncHttpClient(AsyncHttpClient client, URL url) {
+            this.client = client;
+            this.baseUrl = url;
+        }
+
+        private static HttpResponse toSeleniumResponse(org.asynchttpclient.Response response) {
+            HttpResponse toReturn = new HttpResponse();
+
+            toReturn.setStatus(response.getStatusCode());
+            toReturn.setContent(!response.hasResponseBody()
+                    ? new ByteArrayInputStream(new byte[0])
+                    : response.getResponseBodyAsStream());
+
+            for (String name : response.getHeaders().names()) {
+                for (String value : response.getHeaders(name)) {
+                    toReturn.addHeader(name, value);
+                }
+            }
+
+            return toReturn;
+        }
+
+        private static String getRawUrl(URI baseUrl, String uri) {
+            String rawUrl;
+            if (uri.startsWith("http://") || uri.startsWith("https://")) {
+                rawUrl = uri;
+            } else {
+                rawUrl = baseUrl.toString().replaceAll("/$", "") + uri;
+            }
+            return rawUrl;
+        }
+
+        @SneakyThrows
+        @Override
+        public HttpResponse execute(HttpRequest request) throws IOException {
+            RequestBuilder builder = new RequestBuilder(request.getMethod().name());
+
+            String rawUrl = getRawUrl(baseUrl.toURI(), request.getUri());
+            builder.setUrl(rawUrl);
+
+            for (String name : request.getQueryParameterNames()) {
+                for (String value : request.getQueryParameters(name)) {
+                    builder.addQueryParam(name, value);
+                }
+            }
+
+            // Netty tends to timeout when a GET request has a 'Content-Length' header
+            if (request.getMethod().equals(HttpMethod.GET) && request.getHeader("Content-Length") != null) {
+                request.removeHeader("Content-Length");
+            }
+
+            for (String name : request.getHeaderNames()) {
+                for (String value : request.getHeaders(name)) {
+                    builder.addHeader(name, value);
+                }
+            }
+            if (request.getHeader("User-Agent") == null) {
+                builder.addHeader("User-Agent", USER_AGENT);
+            }
+
+            if (request.getMethod().equals(HttpMethod.POST)) {
+                builder.setBody(request.getContentStream());
+            }
+
+            return toSeleniumResponse(
+                    client.executeRequest(builder).toCompletableFuture().join()
+            );
+        }
+    }
+
     private class CustomHttpCommandExecutor extends HttpCommandExecutor {
 
         private final SuiteContextImpl suiteContext;
 
-        public CustomHttpCommandExecutor(SuiteContextImpl suiteContext, URL remoteURL, OkHttpClient httpClient) {
+        public CustomHttpCommandExecutor(SuiteContextImpl suiteContext, URL remoteURL, AsyncHttpClient httpClient) {
             super(Collections.EMPTY_MAP,
                     remoteURL,
                     new CustomHttpClientFactory(

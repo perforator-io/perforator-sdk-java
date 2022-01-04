@@ -14,7 +14,7 @@ import io.perforator.sdk.api.okhttpgson.model.TransactionEvent;
 import io.perforator.sdk.api.okhttpgson.operations.*;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
-import okhttp3.OkHttpClient;
+import org.asynchttpclient.AsyncHttpClient;
 
 import java.util.List;
 import java.util.Queue;
@@ -31,7 +31,7 @@ final class LoadGeneratorContextImpl {
     private final Queue<List<TransactionEvent>> eventsBuffer;
     private final StatisticsContextImpl statisticsContext;
 
-    private OkHttpClient okHttpClient;
+    private AsyncHttpClient httpClient;
     private CreditsApi creditsApi;
     private LimitsApi limitsApi;
     private ProjectsApi projectsApi;
@@ -72,12 +72,12 @@ final class LoadGeneratorContextImpl {
         return statisticsContext;
     }
 
-    public OkHttpClient getOkHttpClient() {
-        return okHttpClient;
+    public AsyncHttpClient getAsyncHttpClient() {
+        return httpClient;
     }
 
-    public void setOkHttpClient(OkHttpClient okHttpClient) {
-        this.okHttpClient = okHttpClient;
+    public void setAsyncHttpClient(AsyncHttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     public CreditsApi getCreditsApi() {
