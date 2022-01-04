@@ -132,21 +132,6 @@ public class LoadGeneratorConfig implements Configurable {
 
     /**
      * String representation of default value for 
-     * <b>{@link LoadGeneratorConfig#httpCacheDns}</b>
-     * property.
-     */
-    public static final String DEFAULT_HTTP_CACHE_DNS_S = "true";
-    
-    /**
-     * Default value(<b>{@value LoadGeneratorConfig#DEFAULT_HTTP_CACHE_DNS_S}</b>) 
-     * for 
-     * <b>{@link LoadGeneratorConfig#httpCacheDns}</b>
-     * property.
-     */
-    public static final boolean DEFAULT_HTTP_CACHE_DNS = Boolean.parseBoolean(DEFAULT_HTTP_CACHE_DNS_S);
-
-    /**
-     * String representation of default value for 
      * <b>{@link LoadGeneratorConfig#eventsFlushInterval}</b>
      * property.
      */
@@ -386,12 +371,6 @@ public class LoadGeneratorConfig implements Configurable {
      */
     @Getter @Setter @FieldNameConstants.Include
     protected Duration httpReadTimeout = DEFAULT_HTTP_READ_TIMEOUT;
-
-    /**
-     * Should DNS queries be cached while resolving IP addresses of domain names?
-     */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean httpCacheDns = DEFAULT_HTTP_CACHE_DNS;
 
     /**
      * Interval on how often to send transaction events data to API.

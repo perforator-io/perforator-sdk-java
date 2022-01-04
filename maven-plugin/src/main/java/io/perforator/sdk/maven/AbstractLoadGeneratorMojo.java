@@ -237,17 +237,6 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
     protected String httpReadTimeout;
 
     /**
-     * Should DNS queries be cached while resolving IP addresses of domain names?
-     */
-    @Parameter(
-            required = false,
-            defaultValue = LoadGeneratorConfig.DEFAULT_HTTP_CACHE_DNS_S,
-            alias = LoadGeneratorConfig.Fields.httpCacheDns,
-            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.httpCacheDns
-    )
-    protected String httpCacheDns;
-
-    /**
      * Interval on how often to send transaction events data to API.<br/>
      * <b>Expected format</b>: 's' symbol after the number represents seconds.<br/>
      * <b>Examples</b>:
