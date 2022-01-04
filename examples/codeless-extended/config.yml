@@ -153,16 +153,6 @@ loadGenerator:
   #httpReadTimeout: 60s
 
   ##############################################################################
-  # Should DNS queries be cached while resolving IP addresses of domain names? #
-  #                                                                            #
-  # This is an optional property.                                              #
-  # Overrides:                                                                 #
-  # - System property name: loadGenerator.httpCacheDns                         #
-  # - Environment variable name: LOADGENERATOR_HTTPCACHEDNS                    #
-  ##############################################################################
-  #httpCacheDns: true
-
-  ##############################################################################
   # Interval on how often to send transaction events data to API.              #
   #                                                                            #
   # This is an optional property.                                              #

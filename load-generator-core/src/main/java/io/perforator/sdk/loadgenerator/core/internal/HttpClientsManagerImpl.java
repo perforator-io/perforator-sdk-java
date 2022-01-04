@@ -33,7 +33,6 @@ final class HttpClientsManagerImpl implements HttpClientsManager {
                 buildAsyncHttpClient(
                         loadGeneratorContext.getLoadGeneratorConfig().getHttpConnectTimeout(),
                         loadGeneratorContext.getLoadGeneratorConfig().getHttpReadTimeout(),
-                        loadGeneratorContext.getLoadGeneratorConfig().isHttpCacheDns(),
                         loadGeneratorContext.getSuiteConfigs().stream().mapToInt(SuiteConfig::getConcurrency).sum()
                 )
         );
@@ -51,7 +50,7 @@ final class HttpClientsManagerImpl implements HttpClientsManager {
         }
     }
 
-    private AsyncHttpClient buildAsyncHttpClient(Duration connectTimeout, Duration readTimeout, boolean cacheDNS, int poolSize) {
+    private AsyncHttpClient buildAsyncHttpClient(Duration connectTimeout, Duration readTimeout, int poolSize) {
         return Dsl.asyncHttpClient(
                 Dsl.config()
                         .setConnectTimeout((int) connectTimeout.toMillis())
