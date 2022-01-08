@@ -212,6 +212,51 @@ public class SuiteConfig implements Configurable {
      * property.
      */
     public static final Duration DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_TIMEOUT = Configurable.parseDuration(DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_TIMEOUT_S);
+    
+    /**
+     * String representation of default value for 
+     * <b>{@link SuiteConfig#webDriverSessionImplicitlyWait}</b>
+     * property.
+     */
+    public static final String DEFAULT_WEB_DRIVER_SESSION_IMPLICITLY_WAIT_S = "0s";
+    
+    /**
+     * Default value(<b>{@value SuiteConfig#DEFAULT_WEB_DRIVER_SESSION_IMPLICITLY_WAIT_S}</b>) 
+     * for 
+     * <b>{@link SuiteConfig#webDriverSessionImplicitlyWait}</b>
+     * property.
+     */
+    public static final Duration DEFAULT_WEB_DRIVER_SESSION_IMPLICITLY_WAIT = Configurable.parseDuration(DEFAULT_WEB_DRIVER_SESSION_IMPLICITLY_WAIT_S);
+    
+    /**
+     * String representation of default value for 
+     * <b>{@link SuiteConfig#webDriverSessionScriptTimeout}</b>
+     * property.
+     */
+    public static final String DEFAULT_WEB_DRIVER_SESSION_SCRIPT_TIMEOUT_S = "30s";
+    
+    /**
+     * Default value(<b>{@value SuiteConfig#DEFAULT_WEB_DRIVER_SESSION_SCRIPT_TIMEOUT_S}</b>) 
+     * for 
+     * <b>{@link SuiteConfig#webDriverSessionScriptTimeout}</b>
+     * property.
+     */
+    public static final Duration DEFAULT_WEB_DRIVER_SESSION_SCRIPT_TIMEOUT = Configurable.parseDuration(DEFAULT_WEB_DRIVER_SESSION_SCRIPT_TIMEOUT_S);
+    
+    /**
+     * String representation of default value for 
+     * <b>{@link SuiteConfig#webDriverSessionPageLoadTimeout}</b>
+     * property.
+     */
+    public static final String DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT_S = "30s";
+    
+    /**
+     * Default value(<b>{@value SuiteConfig#DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT_S}</b>) 
+     * for 
+     * <b>{@link SuiteConfig#webDriverSessionPageLoadTimeout}</b>
+     * property.
+     */
+    public static final Duration DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT = Configurable.parseDuration(DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT_S);
 
     /**
      * String representation of default value for 
@@ -394,7 +439,7 @@ public class SuiteConfig implements Configurable {
      * Please see {@link org.openqa.selenium.WebDriver.Timeouts#implicitlyWait(long, java.util.concurrent.TimeUnit) Timeouts#implicitlyWait} documentation.
      */
     @Getter @Setter @FieldNameConstants.Include
-    protected Duration webDriverSessionImplicitlyWait;
+    protected Duration webDriverSessionImplicitlyWait = DEFAULT_WEB_DRIVER_SESSION_IMPLICITLY_WAIT;
 
     /**
      * Selenium timeout to wait for JS execution before throwing an error.
@@ -402,7 +447,7 @@ public class SuiteConfig implements Configurable {
      * Please see {@link org.openqa.selenium.WebDriver.Timeouts#setScriptTimeout(long, java.util.concurrent.TimeUnit) Timeouts#setScriptTimeout} documentation.
      */
     @Getter @Setter @FieldNameConstants.Include
-    protected Duration webDriverSessionScriptTimeout;
+    protected Duration webDriverSessionScriptTimeout = DEFAULT_WEB_DRIVER_SESSION_SCRIPT_TIMEOUT;
 
     /**
      * Selenium timeout to wait for a page load to complete before throwing an error.
@@ -410,7 +455,7 @@ public class SuiteConfig implements Configurable {
      * Please see {@link org.openqa.selenium.WebDriver.Timeouts#pageLoadTimeout(long, java.util.concurrent.TimeUnit) Timeouts#pageLoadTimeout} documentation.
      */
     @Getter @Setter @FieldNameConstants.Include
-    protected Duration webDriverSessionPageLoadTimeout;
+    protected Duration webDriverSessionPageLoadTimeout = DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT;
 
     /**
      * The flag allowing file uploads functionality while working with browsers 

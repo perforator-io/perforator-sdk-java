@@ -643,7 +643,7 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
      */
     @Parameter(
             required = false,
-            defaultValue = "",
+            defaultValue = SuiteConfig.DEFAULT_WEB_DRIVER_SESSION_IMPLICITLY_WAIT_S,
             alias = SuiteConfig.Fields.webDriverSessionImplicitlyWait,
             property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverSessionImplicitlyWait
     )
@@ -663,7 +663,7 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
      */
     @Parameter(
             required = false,
-            defaultValue = "",
+            defaultValue = SuiteConfig.DEFAULT_WEB_DRIVER_SESSION_SCRIPT_TIMEOUT_S,
             alias = SuiteConfig.Fields.webDriverSessionScriptTimeout,
             property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverSessionScriptTimeout
     )
@@ -683,7 +683,7 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
      */
     @Parameter(
             required = false,
-            defaultValue = "",
+            defaultValue = SuiteConfig.DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT_S,
             alias = SuiteConfig.Fields.webDriverSessionPageLoadTimeout,
             property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverSessionPageLoadTimeout
     )
