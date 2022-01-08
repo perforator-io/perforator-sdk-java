@@ -260,6 +260,26 @@ loadGenerator:
   # - Environment variable name: LOADGENERATOR_LOGTRANSACTIONID                #
   ##############################################################################
   #logTransactionID: false
+  
+  ##############################################################################
+  # Should we log every step when it is executed by the load generator?        #
+  #                                                                            #
+  # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.logSteps                             #
+  # - Environment variable name: LOADGENERATOR_LOGTSTEPS                       #
+  ##############################################################################
+  #logSteps: false
+  
+  ##############################################################################
+  # Should we log every action when it is executed by the load generator?      #
+  #                                                                            #
+  # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.logSteps                             #
+  # - Environment variable name: LOADGENERATOR_LOGTSTEPS                       #
+  ##############################################################################
+  #logActions: false
 
   ##############################################################################
   # Should a performance test fail at the end of the execution in case of any  #
@@ -354,6 +374,17 @@ suites:
     # - Environment variable name: SUITE_DURATION                              #
     ############################################################################
     duration: 30m
+    
+    ############################################################################
+    # How much time to wait before executing suite logic once performance test #
+    # starts?                                                                  #
+    #                                                                          #
+    # This is an optional property.                                            #
+    # Overrides:                                                               #
+    # - System property name: suite.delay                                      #
+    # - Environment variable name: SUITE_DELAY                                 #
+    ############################################################################
+    delay: 0s
 
     ############################################################################
     # The time interval for ramping up concurrent processing of suite instances#
@@ -380,6 +411,203 @@ suites:
     # - Environment variable name: SUITE_RAMPDOWN                              #
     ############################################################################
     rampDown: 5m
+    
+    ############################################################################
+    # The mode of launching browsers for the test suite.                       #
+    # Available modes:                                                         #
+    # - cloud                                                                  #
+    # - local                                                                  #
+    # Note: transactions reporting is disabled when browsers are launched      #
+    # locally.                                                                 #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverMode                              #
+    # - Environment variable name: SUITE_WEBDRIVERMODE                         #
+    ############################################################################
+    #webDriverMode: cloud
+    
+    ############################################################################
+    # The mode of launching local chrome instances.                            #
+    # Available modes:                                                         #
+    # - headful                                                                #
+    # - headless                                                               #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.chromeMode                                 #
+    # - Environment variable name: SUITE_CHROMEMODE                            #
+    ############################################################################
+    #chromeMode: headful
+    
+    ############################################################################
+    # Should a chrome driver be started in silent mode?                        #
+    # Chrome driver service sends all output by default to System::out stream, #
+    # and its output is not necessary in a majority of the cases.              #
+    # Please turn off this flag if you would like to see output from Chrome    #
+    # driver service.                                                          #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.chromeDriverSilent                         #
+    # - Environment variable name: SUITE_CHROMEDRIVERSILENT                    #
+    ############################################################################
+    #chromeDriverSilent: true
+    
+    ############################################################################
+    # The system automatically retries to create a new selenium session,       #
+    # in case of an error(s), starting from the timestamp of the initial       #
+    # attempt up until 'webDriverCreateSessionRetryTimeout' is reached.        #
+    #                                                                          #
+    # This parameter is only applicable when webDriverMode = cloud.            #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverCreateSessionRetryTimeout         #
+    # - Environment variable name: SUITE_WEBDRIVERCREATESESSIONRETRYTIMEOUT    #
+    ############################################################################
+    #webDriverCreateSessionRetryTimeout: 1m
+    
+    ############################################################################
+    # How many attempts should we automatically retry to create a new selenium #
+    # session in case of an error(s)?                                          #
+    #                                                                          #
+    # This parameter is only applicable when webDriverMode = cloud.            #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverCreateSessionRetryMinAttempts     #
+    # - Environment variable name: SUITE_WEBDRIVERCREATESESSIONRETRYMINATTEMPTS#
+    ############################################################################
+    #webDriverCreateSessionRetryMinAttempts: 3
+    
+    ############################################################################
+    # The system automatically retries to delete existing selenium session,    #
+    # in case of an error(s), starting from the timestamp of the initial       #
+    # attempt up until 'webDriverDeleteSessionRetryTimeout' is reached.        #
+    #                                                                          #
+    # This parameter is only applicable when webDriverMode = cloud.            #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverDeleteSessionRetryTimeout         #
+    # - Environment variable name: SUITE_WEBDRIVERDELETESESSIONRETRYTIMEOUT    #
+    ############################################################################
+    #webDriverDeleteSessionRetryTimeout: 1m
+    
+    ############################################################################
+    # How many attempts should we automatically retry to delete existing       #
+    # selenium session in case of an error(s)?                                 #
+    #                                                                          #
+    # This parameter is only applicable when webDriverMode = cloud.            #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverDeleteSessionRetryMinAttempts     #
+    # - Environment variable name: SUITE_WEBDRIVERDELETESESSIONRETRYMINATTEMPTS#
+    ############################################################################
+    #webDriverDeleteSessionRetryMinAttempts: 3
+    
+    ############################################################################
+    # Implicit wait timeout for selenium session.                              #
+    # Specifies the amount of time the driver should wait when searching for   #
+    # an element if it is not immediately present.                             #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverSessionImplicitlyWait             #
+    # - Environment variable name: SUITE_WEBDRIVERSESSIONIMPLICITLYWAIT        #
+    ############################################################################
+    #webDriverSessionImplicitlyWait: 0s
+    
+    ############################################################################
+    # Sets the amount of time to wait for an asynchronous JavaScript to finish #
+    # execution before throwing an error.                                      #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverSessionScriptTimeout              #
+    # - Environment variable name: SUITE_WEBDRIVERSESSIONSCRIPTTIMEOUT         #
+    ############################################################################
+    #webDriverSessionScriptTimeout: 30s
+    
+    ############################################################################
+    # Selenium timeout to wait for a page load to complete before throwing     #
+    # an error.                                                                #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverSessionPageLoadTimeout            #
+    # - Environment variable name: SUITE_WEBDRIVERSESSIONPAGELOADTIMEOUT       #
+    ############################################################################
+    #webDriverSessionPageLoadTimeout: 30s
+    
+    ############################################################################
+    # The flag allowing file uploads functionality while working with browsers #
+    # in the cloud.                                                            #
+    #                                                                          #
+    # This parameter is only applicable when webDriverMode = cloud.            #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverUseLocalFileDetector              #
+    # - Environment variable name: SUITE_WEBDRIVERUSELOCALFILEDETECTOR         #
+    ############################################################################
+    #webDriverUseLocalFileDetector: true
+    
+    ############################################################################
+    # Default window width of the browser.                                     #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverWindowWidth                       #
+    # - Environment variable name: SUITE_WEBDRIVERWINDOWWIDTH                  #
+    ############################################################################
+    #webDriverWindowWidth: 1920
+    
+    ############################################################################
+    # Default window height of the browser.                                    #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverWindowHeight                      #
+    # - Environment variable name: SUITE_WEBDRIVERWINDOWHEIGHT                 #
+    ############################################################################
+    #webDriverWindowHeight: 1080
+    
+    ############################################################################
+    # Props is an array of key-value pairs which can be referenced in the      #
+    # actions. Load generator automatically picks the next item from the array #
+    # when it starts executing a new suite instance and preserves key-value    #
+    # pairs till the end of the suite instance.                                #
+    #                                                                          #
+    # Action can refer to a value from a key-values map using the following    #
+    # syntax: ${key_name}                                                      #
+    #                                                                          #
+    # Example:                                                                 #
+    #   props:                                                                 #
+    #     - user_name: user@example.com                                        #
+    #       password: secure_password                                          #
+    #     - user_name: user@example.com                                        #
+    #       password: secure_password                                          #
+    #  steps:                                                                  #
+    #    login:                                                                #
+    #      - open: https://example.com                                         #
+    #      - input:                                                            #
+    #          cssSelector: '#user_name'                                       #
+    #          value: '${user_name}'                                           #
+    #      - input:                                                            #
+    #          cssSelector: '#password'                                        #
+    #          value: '${password}'                                            #
+    #      - click: '#login_button'                                            #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    ############################################################################
+    #props: 
+    #  - param1_name: param1_value1
+    #    param2_name: param2_value1
+    #  - param1_name: param1_value2
+    #    param2_name: param2_value2
     
     ############################################################################
     # Every suite should have a collection of named steps, and a step          #
