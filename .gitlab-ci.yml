@@ -214,6 +214,10 @@ release:
           url: $EXAMPLES_EMBEDDED_MULTI_SUITE_URL
           filepath: /examples/$EXAMPLES_EMBEDDED_MULTI_SUITE_ZIP
           link_type: package
+        - name: $EXAMPLES_CODELESS_JUMP_START_ZIP
+          url: $EXAMPLES_CODELESS_JUMP_START_URL
+          filepath: /examples/$EXAMPLES_CODELESS_JUMP_START_ZIP
+          link_type: package
         - name: $EXAMPLES_CODELESS_MINIMAL_ZIP
           url: $EXAMPLES_CODELESS_MINIMAL_URL
           filepath: /examples/$EXAMPLES_CODELESS_MINIMAL_ZIP
