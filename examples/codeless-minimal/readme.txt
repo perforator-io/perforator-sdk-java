@@ -26,5 +26,8 @@ config.yml with the different goals:
 There are .cmd equivalents for all .sh scripts, so please use cmd scripts in a 
 Windows environment.
 
+Important: Please populate apiClientId, apiClientSecret, and projectKey in
+config.yml before you start playing with this example.
+
 We have prepared a dedicated guide on how to use Codeless Load Generator, which 
 is available at https://app.perforator.io/guide/load_generator/codeless
