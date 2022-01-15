@@ -7,28 +7,24 @@ Requirements:
 - JDK 11+ is required.
 - java executable should be available via shell path.
 
-It is encouraged to use predefined flow when you prepare a load-test:
-1. Make changes in config.yml
-2. Verify that all the changes are valid and browser executes your actions as intended.
-   Please use local.cmd on Windows systems or local.sh on Linux / MacOS systems.
-   Executing such shell script(s) should process your config file using browsers
-   started locally, so you can visually verify and debug what happens in the browser.
-   If you are working in a headless environment, for example, using a CI/CD 
-   pipeline, you can use local-headless.cmd / local-headless.sh
-3. Please execute cloud-dry-run shell script to make sure that your config works
-   as expected using browsers launched in the cloud. It runs config.yml using a 
-   very limited concurrency of 10 browsers in the cloud for 5 minutes, so you 
-   don't spend too many credits while verifying your changes.
-4. Please execute cloud-full-run shell script, and it will run a performance test 
-   at full speed once you are done with all verifications.
+The prebuilt example comes with a set of handy scripts targeted to execute 
+config.yml with the different goals:
+- local.sh - executes your config.yml using Chrome browsers started locally. 
+  This script is helpful to debug and visually verify that everything works as 
+  intended.
+- local-headless.sh - it has the same purpose as local.sh, but valuable for 
+  CI/CD environments where a graphical environment is unavailable.
+- cloud-dry-run.sh - it processes your configuration file using only 10 browsers 
+  started in the cloud. The main idea of this script is to avoid extra charges 
+  when you need to ensure that actions are executed correctly in cloud-based 
+  browsers. For example, it is not optimal to run your full-powered 
+  configuration using thousands of browsers and then, in a minute, realize that 
+  you have a simple mistake in css selector.
+- cloud-full-run.sh - executes your load test at full speed as defined in 
+  config.yml.
 
-- Windows:
-  - local.cmd - run config.yml using local Chrome browser.
-  - local-headless.cmd - run config.yml using local headless Chrome browser.
-  - cloud-dry-run.cmd - run config.yml using browsers in the cloud, but with a limited concurrency.
-  - cloud-full-run.cmd - run config.yml using browsers in the cloud at full speed.
-- Linux / MacOS:
-  - local.sh - run config.yml using local Chrome browser.
-  - local-headless.sh - run config.yml using local headless Chrome browser.
-  - cloud-dry-run.sh - run config.yml using browsers in the cloud, but with a limited concurrency.
-  - cloud-full-run.sh - run config.yml using browsers in the cloud at full speed.
+There are .cmd equivalents for all .sh scripts, so please use cmd scripts in a 
+Windows environment.
+
+We have prepared a dedicated guide on how to use Codeless Load Generator, which 
+is available at https://app.perforator.io/guide/load_generator/codeless
