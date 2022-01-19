@@ -3,4 +3,5 @@ mvn clean test-compile perforator:testng ^
   -Dsuite.concurrency=10 ^
   -Dsuite.duration=5m ^
   -Dsuite.rampUp=1m ^
-  -Dsuite.rampDown=1m
+  -Dsuite.rampDown=1m ^
+  %*

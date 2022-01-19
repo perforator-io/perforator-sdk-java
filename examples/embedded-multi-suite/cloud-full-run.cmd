@@ -1,1 +1,1 @@
-mvn clean test-compile perforator:embedded -Dsuite.webDriverMode=cloud
+mvn clean test-compile perforator:embedded -Dsuite.webDriverMode=cloud %*

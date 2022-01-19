@@ -4,4 +4,5 @@ mvn clean test-compile perforator:embedded ^
   -Dsuite.concurrency=1 ^
   -Dsuite.duration=5m ^
   -Dsuite.rampUp=1m ^
-  -Dsuite.rampDown=1m
+  -Dsuite.rampDown=1m ^
+  %*
