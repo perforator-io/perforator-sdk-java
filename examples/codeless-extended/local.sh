@@ -1,6 +1,7 @@
 #!/bin/sh
 
 java \
+  -Dlog4j2.configurationFile=log4j2.xml \
   -Dsuite.webDriverMode=local \
   -Dsuite.concurrency=1 \
   -Dsuite.duration=5m \

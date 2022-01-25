@@ -1,4 +1,5 @@
 java ^
+  -Dlog4j2.configurationFile=log4j2.xml ^
   -Dsuite.webDriverMode=local ^
   -Dsuite.chromeMode=headless ^
   -Dsuite.concurrency=1 ^

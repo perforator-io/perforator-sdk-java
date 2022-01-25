@@ -1,4 +1,5 @@
 java ^
+  -Dlog4j2.configurationFile=log4j2.xml ^
   -Dsuite.webDriverMode=cloud ^
   -Dsuite.concurrency=10 ^
   -Dsuite.duration=5m ^
