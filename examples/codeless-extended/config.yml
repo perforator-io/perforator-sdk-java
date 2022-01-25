@@ -658,11 +658,15 @@ suites:
         - awaitPageLoad: 5s
         
         ########################################################################
-        # Actioan to await element to be visible on the page of the current    #
+        # Action to await element to be visible on the page of the current    #
         # browser window.                                                      #
         #                                                                      #
         # Parameter of this action specifies css selector to find element      #
         # in the DOM tree of the page                                          #
+        #                                                                      #
+        # Element is visible when it is present in the DOM tree of the page and#
+        # it is visible. Visibility means that the element is not only         #
+        # displayed but also has a height and width that is greater than 0.    #
         #                                                                      #
         # Default timeout to await element to be visible is 30s.               #
         # An action fails if such a timeout is reached, but specified element  #
@@ -677,7 +681,7 @@ suites:
         - awaitElementToBeVisible: '#async-container'
 
         ########################################################################
-        # Actioan to await element to be clickable on the page of the current  #
+        # Action to await element to be clickable on the page of the current  #
         # browser window.                                                      #
         #                                                                      #
         # Parameter of this action specifies css selector to find element      #
@@ -699,7 +703,7 @@ suites:
         #- awaitElementToBeClickable: '#form-submit-button'
         
         ########################################################################
-        # Actioan to await element to be disabled on the page of the current   #
+        # Action to await element to be disabled on the page of the current   #
         # browser window.                                                      #
         #                                                                      #
         # Parameter of this action specifies css selector to find element      #
@@ -722,7 +726,7 @@ suites:
         #- awaitElementToBeDisabled: '#disabled-element'
 
         ########################################################################
-        # Actioan to await element to be enabled on the page of the current    #
+        # Action to await element to be enabled on the page of the current    #
         # browser window.                                                      #
         #                                                                      #
         # Parameter of this action specifies css selector to find element      #
@@ -744,7 +748,7 @@ suites:
         #- awaitElementToBeEnabled: '#enabled-element'
 
         ########################################################################
-        # Actioan to await element to be invisible on the page of the current  #
+        # Action to await element to be invisible on the page of the current  #
         # browser window.                                                      #
         #                                                                      #
         # Parameter of this action specifies css selector to find element      #
@@ -764,29 +768,6 @@ suites:
         #     timeout: 15.5s                                                   #
         ########################################################################
         #- awaitElementToBeInvisible: '#invisible-element'
-
-        ########################################################################
-        # Actioan to await element to be visible on the page of the current    #
-        # browser window.                                                      #
-        #                                                                      #
-        # Parameter of this action specifies css selector to find element      #
-        # in the DOM tree of the page                                          #
-        #                                                                      #
-        # Element is visible when it is present in the DOM tree of the page and#
-        # it is visible. Visibility means that the element is not only         #
-        # displayed but also has a height and width that is greater than 0.    #
-        #                                                                      #
-        # Default timeout to await element to be visible is 30s.               #
-        # An action fails if such a timeout is reached, but specified element  #
-        # is not visible yet.                                                  #
-        #                                                                      #
-        # You can use the following construct, if you would like to override   #
-        # default timeout:                                                     #
-        # - awaitElementToBeVisible:                                           #
-        #     cssSelector: '#visible-element'                                  #
-        #     timeout: 15.5s                                                   #
-        ########################################################################
-        #- awaitElementToBeVisible: '#visible-element'
 
         ########################################################################
         # Action to await alert to be present in the current browser window.   #
@@ -923,7 +904,7 @@ suites:
         #- scroll: '#element'
 
         ########################################################################
-        # Action to postpone any activies according to specified duration.     #
+        # Action to postpone any activities according to specified duration.   #
         #                                                                      #
         # Parameter of sleep action specifies duration to sleep.               #
         #                                                                      #

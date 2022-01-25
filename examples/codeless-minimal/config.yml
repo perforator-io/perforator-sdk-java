@@ -210,7 +210,7 @@ suites:
         - awaitPageLoad: 5s
 
         ########################################################################
-        # Actioan to await element to be visible on the page of the current    #
+        # Action to await element to be visible on the page of the current    #
         # browser window.                                                      #
         #                                                                      #
         # Parameter of this action specifies css selector to find element      #
