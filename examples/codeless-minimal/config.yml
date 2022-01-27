@@ -103,7 +103,7 @@ suites:
   # top-level transaction with the name of the suite.                          #
   #                                                                            #
   # You can configure multiple suites, and a load generator will process such  #
-  # suites in parallel. The only requirenment is to have a unique name for     #
+  # suites in parallel. The only requirement is to have a unique name for     #
   # every configured suite.                                                    #
   ##############################################################################
   Suite Name A:
