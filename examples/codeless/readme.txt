@@ -1,4 +1,40 @@
----
+This is an example of the load-generator integrated with the Perforator platform
+in a codeless way, i.e., no Java programming skills are required.
+You only need to populate configuration in config.yml file and run it via shell 
+script(s).
+
+Requirements:
+- JDK 11+ is required.
+- java executable should be available via shell path.
+
+The prebuilt example comes with a set of handy scripts targeted to execute 
+config.yml with the different goals:
+- local.sh - executes your config.yml using Chrome browsers started locally. 
+  This script is helpful to debug and visually verify that everything works as 
+  intended.
+- local-headless.sh - it has the same purpose as local.sh, but valuable for 
+  CI/CD environments where a graphical environment is unavailable.
+- cloud-dry-run.sh - it processes your configuration file using only 10 browsers 
+  started in the cloud. The main idea of this script is to avoid extra charges 
+  when you need to ensure that actions are executed correctly in cloud-based 
+  browsers. For example, it is not optimal to run your full-powered 
+  configuration using thousands of browsers and then, in a minute, realize that 
+  you have a simple mistake in css selector.
+- cloud-full-run.sh - executes your load test at full speed as defined in 
+  config.yml.
+
+There are .cmd equivalents for all .sh scripts, so please use cmd scripts in a 
+Windows environment.
+
+Important: Please populate apiClientId, apiClientSecret, and projectKey in
+config.yml before you start playing with this example.
+
+We have prepared a dedicated guide on how to use Codeless Load Generator, which 
+is available at https://app.perforator.io/guide/load_generator/codeless
+
+While web-based documentation is the primary source of truth, feel free to take 
+a look at the below docs describing available options for the config.yml
+
 ################################################################################
 # Load generator is responsible for orchestrating execution of the load test.  #
 # It automatically controls the provisioning of the hardware resources required#
@@ -26,7 +62,7 @@
 # - Environment variables                                                      #
 # - Config value itself                                                        #
 ################################################################################
-loadGenerator:
+#loadGenerator:
 
   ##############################################################################
   # Base URL for API communication.                                            #
@@ -47,7 +83,7 @@ loadGenerator:
   # - System property name: loadGenerator.apiClientId                          #
   # - Environment variable name: LOADGENERATOR_APICLIENTID                     #
   ##############################################################################
-  apiClientId: YOUR_API_CLIENT_ID
+  #apiClientId: YOUR_API_CLIENT_ID
 
   ##############################################################################
   # Api Client Secret.                                                         #
@@ -58,7 +94,7 @@ loadGenerator:
   # - System property name: loadGenerator.apiClientSecret                      #
   # - Environment variable name: LOADGENERATOR_APICLIENTSECRET                 #
   ##############################################################################
-  apiClientSecret: YOUR_API_CLIENT_SECRET
+  #apiClientSecret: YOUR_API_CLIENT_SECRET
 
   ##############################################################################
   # Key of the project where to create a new execution and a browser cloud.    #
@@ -71,7 +107,7 @@ loadGenerator:
   # - System property name: loadGenerator.projectKey                           #
   # - Environment variable name: LOADGENERATOR_PROJECTKEY                      #
   ##############################################################################
-  projectKey: YOUR_PROJECT_KEY
+  #projectKey: YOUR_PROJECT_KEY
 
   ##############################################################################
   # Key of the execution where to create a new browser cloud.                  #
@@ -333,7 +369,7 @@ loadGenerator:
 # Such an approach should minimize the effect of launching brand new browsers  #
 # on the overall statistics of the load test.                                  #
 ################################################################################
-suites:
+#suites:
 
   ##############################################################################
   # The suite's name - please pick a meaningful name describing the actual     #
@@ -346,7 +382,7 @@ suites:
   # suites in parallel. The only requirement is to have a unique name for     #
   # every configured suite.                                                    #
   ##############################################################################
-  Suite Name A:
+  #Suite Name A:
 
     ############################################################################
     # Concurrency level of suite execution, i.e., how many concurrent          #
@@ -358,7 +394,7 @@ suites:
     # - System property name: suite.concurrency                                #
     # - Environment variable name: SUITE_CONCURRENCY                           #
     ############################################################################
-    concurrency: 100
+    #concurrency: 100
 
     ############################################################################
     # Duration of the performance test for the given suite.                    #
@@ -373,7 +409,7 @@ suites:
     # - System property name: suite.duration                                   #
     # - Environment variable name: SUITE_DURATION                              #
     ############################################################################
-    duration: 30m
+    #duration: 30m
     
     ############################################################################
     # How much time to wait before executing suite logic once performance test #
@@ -384,7 +420,7 @@ suites:
     # - System property name: suite.delay                                      #
     # - Environment variable name: SUITE_DELAY                                 #
     ############################################################################
-    delay: 0s
+    #delay: 0s
 
     ############################################################################
     # The time interval for ramping up concurrent processing of suite instances#
@@ -396,7 +432,7 @@ suites:
     # - System property name: suite.rampUp                                     #
     # - Environment variable name: SUITE_RAMPUP                                #
     ############################################################################
-    rampUp: 5m
+    #rampUp: 5m
 
     ############################################################################
     # The time interval before the end of the test to stop launching new suite #
@@ -410,7 +446,7 @@ suites:
     # - System property name: suite.rampDown                                   #
     # - Environment variable name: SUITE_RAMPDOWN                              #
     ############################################################################
-    rampDown: 5m
+    #rampDown: 5m
     
     ############################################################################
     # The mode of launching browsers for the test suite.                       #
@@ -623,7 +659,7 @@ suites:
     # Suite instance stops execution, once a failure occurs, and a new suite   #
     # instance starts execution instead.                                       #
     ############################################################################
-    steps:
+    #steps:
 
       ##########################################################################
       # Name of the step - execution of such step is reported to the analytics #
@@ -632,7 +668,7 @@ suites:
       # You can choose whatever meaningful name for the step, but all such     #
       # names should be unique across the suite.                               #
       ##########################################################################
-      Open landing page and await components to be loaded:
+      #Open landing page and await components to be loaded:
 
         ########################################################################
         # Action to open specified URL in the current browser window.          #
@@ -647,7 +683,7 @@ suites:
         #     url: https://...                                                 #
         #     timeout: 15.5s                                                   #
         ########################################################################
-        - open: https://verifications.perforator.io/?delay=250ms
+        #- open: https://verifications.perforator.io/?delay=250ms
         
         ########################################################################
         # Action to await page load event in the current browser window.       #
@@ -655,7 +691,7 @@ suites:
         # Parameter of this action specifies how much time to wait till load   #
         # event occurs, before giving up and throwing an exception             #
         ########################################################################
-        - awaitPageLoad: 5s
+        #- awaitPageLoad: 5s
         
         ########################################################################
         # Action to await element to be visible on the page of the current    #
@@ -678,7 +714,7 @@ suites:
         #     cssSelector: '#async-container'                                  #
         #     timeout: 15.5s                                                   #
         ########################################################################
-        - awaitElementToBeVisible: '#async-container'
+        #- awaitElementToBeVisible: '#async-container'
 
         ########################################################################
         # Action to await element to be clickable on the page of the current  #
