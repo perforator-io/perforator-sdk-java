@@ -2,6 +2,8 @@
 
 java \
   -Dlog4j2.configurationFile=log4j2.xml \
+  -DloadGenerator.logActions=true \
+  -DloadGenerator.logSteps=true \
   -Dsuite.webDriverMode=local \
   -Dsuite.concurrency=1 \
   -Dsuite.duration=5m \
