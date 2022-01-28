@@ -37,6 +37,11 @@ final class TimeProviderImpl implements TimeProvider {
     }
 
     private static long buildOffset() {
+        String ntpSyncEnabledFlag = System.getProperty("ntpSyncEnabled");
+        if(ntpSyncEnabledFlag != null && ntpSyncEnabledFlag.equalsIgnoreCase("false")) {
+            return 0;
+        }
+        
         NTPUDPClient timeClient = new NTPUDPClient();
         timeClient.setDefaultTimeout(5000);
         Exception lastException = null;
