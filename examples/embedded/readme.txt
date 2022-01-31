@@ -12,6 +12,9 @@ your tests with the different goals:
 - local.sh - executes your tests using Chrome browsers started locally. 
   This script is helpful to debug and visually verify that everything works as 
   intended.
+- local-debug.sh - this script is the same as local.sh, but starts Maven session
+  in debug mode awaiting external debugger attachment, so you can connect using 
+  your java IDE.
 - local-headless.sh - it has the same purpose as local.sh, but valuable for 
   CI/CD environments where a graphical environment is unavailable.
 - cloud-dry-run.sh - it processes your tests using only 10 browsers per suite
