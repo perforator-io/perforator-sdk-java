@@ -52,8 +52,7 @@
             </activation>
             <modules>
                 <module>examples/api-okhttp-gson</module>
-                <module>examples/testng-single-suite</module>
-                <module>examples/testng-multi-suite</module>
+                <module>examples/testng</module>
                 <module>examples/embedded</module>
             </modules>
         </profile>

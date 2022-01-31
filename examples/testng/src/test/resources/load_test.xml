@@ -1,0 +1,14 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Example Load Testing Suite">
+    
+    <listeners>
+        <listener class-name="com.example.PerSuiteRemoteWebDriverManager" />
+    </listeners>
+    
+    <test name="Example Test">
+        <classes>
+            <class name="com.example.ExampleTest"/>
+        </classes>
+    </test>
+    
+</suite>

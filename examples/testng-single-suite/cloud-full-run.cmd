@@ -1,1 +1,0 @@
-mvn clean test-compile perforator:testng -Dsuite.webDriverMode=cloud %*
