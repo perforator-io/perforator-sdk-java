@@ -88,7 +88,6 @@
                     <apiClientId>YOUR_API_CLIENT_ID</apiClientId>
                     <apiClientSecret>YOUR_API_CLIENT_SECRET</apiClientSecret>
                     <projectKey>YOUR_PROJECT_KEY</projectKey>
-                    <name>50 users for 5 mins</name>
                     <processorClass>com.example.ExampleSuiteProcessor</processorClass>
                     <concurrency>50</concurrency>
                     <duration>5m</duration>
