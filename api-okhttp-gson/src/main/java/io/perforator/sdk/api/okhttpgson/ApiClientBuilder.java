@@ -23,6 +23,7 @@ import java.util.Objects;
 public class ApiClientBuilder {
     
     public static String DEFAULT_API_BASE_URL = "https://api.perforator.io";
+    public static String DEFAULT_USER_AGENT = generateUserAgent(ApiClientBuilder.class.getClassLoader());
     public static Duration DEFAULT_HTTP_CONNECT_TIMEOUT = Duration.ofSeconds(10);
     public static Duration DEFAULT_HTTP_READ_TIMEOUT = Duration.ofSeconds(30);
     
@@ -59,14 +60,14 @@ public class ApiClientBuilder {
             this.apiClient.setReadTimeout((int)readTimeout.toMillis());
         }
         
-        this.apiClient.setUserAgent(generateUserAgent());
+        this.apiClient.setUserAgent(DEFAULT_USER_AGENT);
     }
     
-    private String generateUserAgent() {
+    private static String generateUserAgent(ClassLoader classLoader) {
         LinkedHashSet<Artifact> artifactsSet = new LinkedHashSet<>();
         
-        if (getClass().getClassLoader() != null) {
-            for (Package definedPackage : getClass().getClassLoader().getDefinedPackages()) {
+        if (classLoader != null) {
+            for (Package definedPackage : classLoader.getDefinedPackages()) {
                 String vendor = definedPackage.getImplementationVendor();
                 if(vendor == null || vendor.isBlank() || !vendor.contains("Perforator")) {
                     continue;

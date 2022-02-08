@@ -11,20 +11,40 @@
 package io.perforator.sdk.loadgenerator.testng;
 
 import io.perforator.sdk.loadgenerator.core.Perforator;
-import io.perforator.sdk.loadgenerator.core.Threaded;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
+import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
 
 public class SuiteTestNG {
-    
+
     private static final String VERIFICATIONS_APP_URL = new LoadGeneratorConfig().getApiBaseUrl().replace("api", "verifications");
+    private static final String ASYNC_CONTAINER_ID = "async-container";
 
     @Test(timeOut = 30000)
     public void openUrl() {
         RemoteWebDriver remoteWebDriver = Perforator.startRemoteWebDriver();
-        remoteWebDriver.navigate().to(VERIFICATIONS_APP_URL + "/");
-        Threaded.sleep(1000);
+        remoteWebDriver.navigate().to(VERIFICATIONS_APP_URL + "/?delay=1000ms");
+
+        WebElement element = new WebDriverWait(
+                remoteWebDriver,
+                15
+        ).until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.cssSelector("#" + ASYNC_CONTAINER_ID)
+                )
+        );
+
+        Assertions.assertNotNull(element);
+        Assertions.assertEquals(
+                ASYNC_CONTAINER_ID,
+                element.getAttribute("id")
+        );
+
         remoteWebDriver.quit();
     }
 }
