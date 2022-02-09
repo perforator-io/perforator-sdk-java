@@ -176,6 +176,11 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
             ).getRemoteWebDriver();
         } catch (RuntimeException e) {
             webDriverException = e;
+            
+            if(!isCancelled() && (logSteps || logActions)) {
+                logger.error("There was a problem creating RemoteWebDriver", e);
+            }
+            
             throw e;
         } finally {
             finishTransaction(transactionContext, webDriverException);
@@ -197,6 +202,11 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
             driver.quit();
         } catch (RuntimeException e) {
             webDriverException = e;
+            
+            if(!isCancelled() && (logSteps || logActions)) {
+                logger.error("There was a problem terminating RemoteWebDriver", e);
+            }
+            
             throw e;
         } finally {
             finishTransaction(transactionContext, webDriverException);
