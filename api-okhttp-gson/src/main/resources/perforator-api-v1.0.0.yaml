@@ -19,15 +19,10 @@ info:
 servers:
   - url: 'https://api.perforator.io'
 externalDocs:
-  description: Platform documentation
-  url: 'https://docs.perforator.io/v1/'
+  description: Platform Guide
+  url: 'https://app.perforator.io/guide/introduction'
 security:
   - OAuth: []
-x-readme:
-  samples-languages:
-    - curl
-    - java
-  proxy-enabled: false
 tags:
   - name: Projects
     description: |
@@ -39,8 +34,8 @@ tags:
       Example of good project naming: *your-website.com, stress testing in prod*.
       There are no restrictions on the project naming, so feel free to choose any name which can identify the purpose of repeatable performance test executions.
     externalDocs:
-      description: Documentation
-      url: 'https://docs.perforator.io/v1/reference/projects'
+      description: Guide
+      url: 'https://app.perforator.io/guide/projects'
   - name: Executions
     description: |
       Execution is a container of the data and compute resources related to a single performance test run.
@@ -50,8 +45,8 @@ tags:
       By default, when execution is created, its name is equal to its key, but feel free to adjust the name to anything more meaningful for you.
       You can utilize notes of the execution if you have any special conditions or instructions that might help you understand in the future behavior or purpose of the test execution.
     externalDocs:
-      description: Documentation
-      url: 'https://docs.perforator.io/v1/reference/executions'
+      description: Guide
+      url: 'https://app.perforator.io/guide/executions'
   - name: Browser clouds
     description: |
       Browser Cloud is a container of compute resources(browsers) allocated for a performance test run.
@@ -119,8 +114,8 @@ tags:
       - To check the current limits applied on your account, please see [Limits](#/Limits) documentation.
       - To increase such limits - please send us an email at support@perforator.io and describe your use case. We will be pleased to expand the boundaries in reasonable ranges.
     externalDocs:
-      description: Documentation
-      url: 'https://docs.perforator.io/v1/reference/browser_clouds'
+      description: Guide
+      url: 'https://app.perforator.io/guide/browser_clouds'
   - name: Analytics
     description: |
       Executing a load test is just a first step in understanding the overall performance of the target system.
@@ -169,8 +164,8 @@ tags:
       Calculating multiple metrics within a single API call takes almost the same time as calculating a single metric.
       For example, if your request to get a single metric takes 15s and you need four different metrics - it will take 15x4=60s overall, making four individual API calls, while requesting all four metrics within one call still takes 15s overall.
     externalDocs:
-      description: Documentation
-      url: 'https://docs.perforator.io/v1/reference/analytics'
+      description: Guide
+      url: 'https://app.perforator.io/guide/statistics/overview'
   - name: Credits
     description: |
       You should have enough credits to pay for the provisioned duration of the browser cloud whenever you would like to launch it.
@@ -183,8 +178,8 @@ tags:
       To continue creating new browser clouds, you should top-up your balance via buying additional credits using your credit card.
       Please check the following [link](https://www.perforator.io/pricing) to see actual pricing.
     externalDocs:
-      description: Documentation
-      url: 'https://docs.perforator.io/v1/reference/credits'
+      description: Guide
+      url: 'https://app.perforator.io/guide/credits'
   - name: Limits
     description: |
       Launching browser clouds requires a tremendous amount of hardware resources to be provisioned.
@@ -197,8 +192,8 @@ tags:
       Default limits are pretty conservative, but you can increase them once you hit the boundaries - please shoot us an email at support@perforator.io to increase the limits applied on your account.
       Usually, limits increase takes a few days, so please consider it before running load tests with extended capacity.
     externalDocs:
-      description: Documentation
-      url: 'https://docs.perforator.io/v1/reference/limits'
+      description: Guide
+      url: 'https://app.perforator.io/guide/limits'
 paths:
   /v1/projects:
     get:
@@ -1132,7 +1127,7 @@ paths:
                 browsersStartingCount: 0
                 readyAt: 1625928669754
                 expirationAt: 1625932269754
-                seleniumHubURL: 'https://selenium.test.perforator.io/d502c7b2-031c-40db-adcf-ec0661715e0a/1ee796e4-27fe-46e5-9767-56d5352310d0/wd/hub'
+                seleniumHubURL: 'https://selenium.perforator.io/d502c7b2-031c-40db-adcf-ec0661715e0a/1ee796e4-27fe-46e5-9767-56d5352310d0/wd/hub'
         '401':
           $ref: '#/components/responses/401'
         '403':
