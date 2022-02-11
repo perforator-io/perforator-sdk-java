@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.perforator.sdk.examples</groupId>
     <artifactId>perforator-sdk-examples-testng</artifactId>
-    <version>1.0.10</version>
+    <version>1.0.11-SNAPSHOT</version>
     <packaging>jar</packaging>
     
     <properties>
@@ -15,7 +15,7 @@
         <maven.surefire.plugin.version>3.0.0-M5</maven.surefire.plugin.version>
         
         <!-- dependency versions -->
-        <perforator.version>1.0.10</perforator.version>
+        <perforator.version>1.0.11-SNAPSHOT</perforator.version>
         <log4j.version>2.17.1</log4j.version>
         
         <suiteXmlFile>src/test/resources/load_test.xml</suiteXmlFile>
