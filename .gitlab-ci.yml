@@ -7,12 +7,6 @@ variables:
   # examples artifacts location
   EXAMPLES_ARTIFACTS: "./artifacts"
   EXAMPLES_PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/examples/${CI_COMMIT_TAG}"
-  # all examples
-  EXAMPLES_ALL_SRC: "./examples"
-  EXAMPLES_ALL_NAME: "examples-all-$CI_COMMIT_TAG"
-  EXAMPLES_ALL_ZIP: "$EXAMPLES_ALL_NAME.zip"
-  EXAMPLES_ALL_DST: "$EXAMPLES_ARTIFACTS/$EXAMPLES_ALL_ZIP"
-  EXAMPLES_ALL_URL: "$EXAMPLES_PACKAGE_REGISTRY_URL/$EXAMPLES_ALL_ZIP"
   # API client
   EXAMPLES_API_CLIENT_SRC: "./examples/api-okhttp-gson"
   EXAMPLES_API_CLIENT_NAME: "examples-api-okhttp-gson-$CI_COMMIT_TAG"
@@ -123,11 +117,6 @@ deploy:
     - cp -R $EXAMPLES_CODELESS_SRC $EXAMPLES_ARTIFACTS/$EXAMPLES_CODELESS_NAME
     - cd $EXAMPLES_ARTIFACTS && zip -r -9 $EXAMPLES_CODELESS_ZIP $EXAMPLES_CODELESS_NAME && cd $BUILD_DIR
     - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file $EXAMPLES_CODELESS_DST $EXAMPLES_CODELESS_URL'
-    # all examples
-    - rm -rf ./**/target/
-    - cp -R $EXAMPLES_ALL_SRC $EXAMPLES_ARTIFACTS/$EXAMPLES_ALL_NAME
-    - cd $EXAMPLES_ARTIFACTS && zip -r -9 $EXAMPLES_ALL_ZIP $EXAMPLES_ALL_NAME && cd $BUILD_DIR
-    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file $EXAMPLES_ALL_DST $EXAMPLES_ALL_URL'
   resource_group: one_at_time
   rules:
     - if: '$CI_COMMIT_TAG =~ /^release-*/'
@@ -143,10 +132,6 @@ release:
     description: $CI_COMMIT_TAG
     assets:
       links:
-        - name: $EXAMPLES_ALL_ZIP
-          url: $EXAMPLES_ALL_URL
-          filepath: /examples/$EXAMPLES_ALL_ZIP
-          link_type: package
         - name: $EXAMPLES_API_CLIENT_ZIP
           url: $EXAMPLES_API_CLIENT_URL
           filepath: /examples/$EXAMPLES_API_CLIENT_ZIP
