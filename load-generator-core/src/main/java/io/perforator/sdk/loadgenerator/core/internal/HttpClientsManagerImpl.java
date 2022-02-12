@@ -59,7 +59,6 @@ final class HttpClientsManagerImpl implements HttpClientsManager {
                         .setPooledConnectionIdleTimeout(15000)
                         .setMaxConnections(poolSize)
                         .setMaxConnectionsPerHost(poolSize)
-                        .setMaxRequestRetry(2)
                         .addResponseFilter(new ResponseFilter() {
                             @Override
                             public <T> FilterContext<T> filter(FilterContext<T> ctx) {
