@@ -11,11 +11,10 @@
 package io.perforator.sdk.loadgenerator.core.internal;
 
 import io.perforator.sdk.api.okhttpgson.ApiClientBuilder;
+import io.perforator.sdk.loadgenerator.core.AbstractLoadGenerator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
-import lombok.SneakyThrows;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.RequestBuilder;
 import org.openqa.selenium.remote.http.HttpClient;
@@ -24,19 +23,32 @@ import org.openqa.selenium.remote.http.HttpRequest;
 import org.openqa.selenium.remote.http.HttpResponse;
 
 import static io.perforator.sdk.loadgenerator.core.Threaded.sleep;
+import java.util.concurrent.ExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 final class RemoteWebDriverHttpClient implements HttpClient {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(RemoteWebDriverHttpClient.class);
+    
+    private static final long DEFAULT_RETRY_DELAY = 1000l;
+    private static final long MIN_RETRY_DELAY = 250l;
+    private static final long MAX_RETRY_DELAY = 5000l;
 
     private final SuiteContextImpl suiteContext;
     private final AsyncHttpClient client;
     private final URL baseUrl;
     private final String userAgent;
+    private final long createSessionRetryTimeout;
+    private final long deleteSessionRetryTimeout;
 
     public RemoteWebDriverHttpClient(SuiteContextImpl suiteContext) {
         this.suiteContext = suiteContext;
         this.client = suiteContext.getLoadGeneratorContext().getAsyncHttpClient();
         this.baseUrl = suiteContext.getLoadGeneratorContext().getBrowserCloudContext().getSeleniumHubURL();
         this.userAgent = ApiClientBuilder.DEFAULT_USER_AGENT;
+        this.createSessionRetryTimeout = suiteContext.getSuiteConfig().getWebDriverCreateSessionRetryTimeout().toMillis();
+        this.deleteSessionRetryTimeout = suiteContext.getSuiteConfig().getWebDriverDeleteSessionRetryTimeout().toMillis();
     }
 
     @Override
@@ -68,52 +80,52 @@ final class RemoteWebDriverHttpClient implements HttpClient {
     }
 
     private HttpResponse processNewSessionRequest(HttpRequest request) throws IOException {
-        HttpResponse response;
-
-        int networkExceptionCount = 0;
-        int toManyRequestsCounter = 0;
-        long maxRetryTime = System.currentTimeMillis() + suiteContext.getSuiteConfig().getWebDriverCreateSessionRetryTimeout().toMillis();
+        long maxRetryTime = System.currentTimeMillis() + createSessionRetryTimeout;
+        
         while (true) {
             try {
-                response = executeInternal(request);
+                HttpResponse response = executeInternal(request);
 
-                if (response.getStatus() == 200) {
+                if (response.getStatus() < 400) {
                     return response;
                 }
-
-                if (response.getStatus() == 429) {
-                    String retryAfter = response.getHeader("Retry-After");
-                    if (retryAfter == null || retryAfter.isEmpty()) {
-                        retryAfter = "1";
-                    }
-
-                    sleep(Integer.parseInt(retryAfter) * 1000L);
-                    toManyRequestsCounter++;
-                }
-
-                if (maxRetryTime < System.currentTimeMillis()
-                        && toManyRequestsCounter >= suiteContext.getSuiteConfig().getWebDriverCreateSessionRetryMinAttempts()) {
+                
+                if(System.currentTimeMillis() > maxRetryTime) {
                     return response;
                 }
+                
+                long retryDelay = computeDelayFromResponse(response);
+                LOGGER.debug(
+                        "Unexpected response code {} received while creating session, retrying in {}ms",
+                        response.getStatus(),
+                        retryDelay
+                );
+                
+                sleep(retryDelay);
             } catch (IOException e) {
-                networkExceptionCount++;
-
-                if (networkExceptionCount > suiteContext.getSuiteConfig().getWebDriverCreateSessionRetryMinAttempts()) {
+                if(System.currentTimeMillis() > maxRetryTime) {
                     throw e;
                 } else {
-                    sleep(1000L * networkExceptionCount);
+                    if(LOGGER.isDebugEnabled()) {
+                        LOGGER.error(
+                                "IOException happened while creating session, retrying in {}ms",
+                                DEFAULT_RETRY_DELAY,
+                                e
+                        );
+                    }
+                    sleep(DEFAULT_RETRY_DELAY);
                 }
             }
         }
     }
 
     private HttpResponse processTerminateSessionRequest(HttpRequest request) throws IOException {
-        long maxRetryTime = System.currentTimeMillis() + suiteContext.getSuiteConfig().getWebDriverDeleteSessionRetryTimeout().toMillis();
-        int networkExceptionCount = 0;
+        long maxRetryTime = System.currentTimeMillis() + deleteSessionRetryTimeout;
+        
         while (true) {
             try {
                 HttpResponse response = executeInternal(request);
-                if (response.getStatus() == 200) {
+                if (response.getStatus() < 400) {
                     return response;
                 }
 
@@ -121,27 +133,67 @@ final class RemoteWebDriverHttpClient implements HttpClient {
                     response.setStatus(200);
                     return response;
                 }
-
-                if (maxRetryTime < System.currentTimeMillis()) {
+                
+                if(System.currentTimeMillis() > maxRetryTime) {
                     return response;
                 }
-                sleep(1000);
+                
+                long retryDelay = computeDelayFromResponse(response);
+                LOGGER.debug(
+                        "Unexpected response code {} received while terminating session, retrying in {}ms",
+                        response.getStatus(),
+                        retryDelay
+                );
+                sleep(retryDelay);
             } catch (IOException e) {
-                networkExceptionCount++;
-                if (networkExceptionCount > suiteContext.getSuiteConfig().getWebDriverDeleteSessionRetryMinAttempts()) {
+                if(System.currentTimeMillis() > maxRetryTime) {
                     throw e;
                 } else {
-                    sleep(1000L * networkExceptionCount);
+                    if(LOGGER.isDebugEnabled()) {
+                        LOGGER.error(
+                                "IOException happened while terminating session, retrying in {}ms",
+                                DEFAULT_RETRY_DELAY,
+                                e
+                        );
+                    }
+                    sleep(DEFAULT_RETRY_DELAY);
                 }
             }
         }
     }
-
-    @SneakyThrows
+    
+    private long computeDelayFromResponse(HttpResponse response) {
+        if(response.getStatus() != 429) {
+            return DEFAULT_RETRY_DELAY;
+        }
+        
+        String retryAfter = response.getHeader("Retry-After");
+        if(retryAfter == null || retryAfter.isBlank()) {
+            return DEFAULT_RETRY_DELAY;
+        }
+        
+        long delayFromHeader;
+        try {
+            delayFromHeader = Long.parseLong(retryAfter) * 1000l;
+        } catch(NumberFormatException e) {
+            return DEFAULT_RETRY_DELAY;
+        }
+        
+        if(delayFromHeader > MAX_RETRY_DELAY) {
+            return MAX_RETRY_DELAY;
+        }
+        
+        if(delayFromHeader < MIN_RETRY_DELAY) {
+            return MIN_RETRY_DELAY;
+        }
+        
+        return delayFromHeader;
+    }
+    
     private HttpResponse executeInternal(HttpRequest request) throws IOException {
         RequestBuilder builder = new RequestBuilder(request.getMethod().name());
 
-        String rawUrl = getRawUrl(baseUrl.toURI(), request.getUri());
+        String rawUrl = getRawUrl(baseUrl, request.getUri());
         builder.setUrl(rawUrl);
 
         for (String name : request.getQueryParameterNames()) {
@@ -167,10 +219,31 @@ final class RemoteWebDriverHttpClient implements HttpClient {
         if (request.getMethod().equals(HttpMethod.POST)) {
             builder.setBody(request.getContentStream());
         }
-
-        return toSeleniumResponse(
-                client.executeRequest(builder).toCompletableFuture().join()
-        );
+        
+        try {
+            return toSeleniumResponse(
+                    client.executeRequest(builder).toCompletableFuture().get()
+            );
+        } catch(InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(
+                    AbstractLoadGenerator.TERMINATION_EXCEPTION_MESSAGE
+            );
+        } catch(ExecutionException e) {
+            if(e.getCause() == null) {
+                throw new RuntimeException(
+                        "Can't execute selenium request " + request.getMethod() + " => " + rawUrl, 
+                        e
+                );
+            } else if(e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
+            } else {
+                throw new RuntimeException(
+                        "Can't execute selenium request " + request.getMethod() + " => " + rawUrl, 
+                        e.getCause()
+                );
+            }
+        }
     }
 
     private static HttpResponse toSeleniumResponse(org.asynchttpclient.Response response) {
@@ -190,7 +263,7 @@ final class RemoteWebDriverHttpClient implements HttpClient {
         return toReturn;
     }
 
-    private static String getRawUrl(URI baseUrl, String uri) {
+    private static String getRawUrl(URL baseUrl, String uri) {
         String rawUrl;
         if (uri.startsWith("http://") || uri.startsWith("https://")) {
             rawUrl = uri;

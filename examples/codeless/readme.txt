@@ -505,19 +505,6 @@ a look at the below docs describing available options for the config.yml
     #webDriverCreateSessionRetryTimeout: 1m
     
     ############################################################################
-    # How many attempts should we automatically retry to create a new selenium #
-    # session in case of an error(s)?                                          #
-    #                                                                          #
-    # This parameter is only applicable when webDriverMode = cloud.            #
-    #                                                                          #
-    # This is an optional property.                                            # 
-    # Overrides:                                                               #
-    # - System property name: suite.webDriverCreateSessionRetryMinAttempts     #
-    # - Environment variable name: SUITE_WEBDRIVERCREATESESSIONRETRYMINATTEMPTS#
-    ############################################################################
-    #webDriverCreateSessionRetryMinAttempts: 3
-    
-    ############################################################################
     # The system automatically retries to delete existing selenium session,    #
     # in case of an error(s), starting from the timestamp of the initial       #
     # attempt up until 'webDriverDeleteSessionRetryTimeout' is reached.        #
@@ -530,19 +517,6 @@ a look at the below docs describing available options for the config.yml
     # - Environment variable name: SUITE_WEBDRIVERDELETESESSIONRETRYTIMEOUT    #
     ############################################################################
     #webDriverDeleteSessionRetryTimeout: 1m
-    
-    ############################################################################
-    # How many attempts should we automatically retry to delete existing       #
-    # selenium session in case of an error(s)?                                 #
-    #                                                                          #
-    # This parameter is only applicable when webDriverMode = cloud.            #
-    #                                                                          #
-    # This is an optional property.                                            # 
-    # Overrides:                                                               #
-    # - System property name: suite.webDriverDeleteSessionRetryMinAttempts     #
-    # - Environment variable name: SUITE_WEBDRIVERDELETESESSIONRETRYMINATTEMPTS#
-    ############################################################################
-    #webDriverDeleteSessionRetryMinAttempts: 3
     
     ############################################################################
     # Implicit wait timeout for selenium session.                              #

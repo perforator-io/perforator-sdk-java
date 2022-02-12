@@ -155,21 +155,6 @@ public class SuiteConfig implements Configurable {
 
     /**
      * String representation of default value for 
-     * <b>{@link SuiteConfig#webDriverCreateSessionRetryMinAttempts}</b>
-     * property.
-     */
-    public static final String DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_MIN_ATTEMPTS_S = "3";
-    
-    /**
-     * Default value(<b>{@value SuiteConfig#DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_MIN_ATTEMPTS_S}</b>) 
-     * for 
-     * <b>{@link SuiteConfig#webDriverCreateSessionRetryMinAttempts}</b>
-     * property.
-     */
-    public static final int DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_MIN_ATTEMPTS = Integer.parseInt(DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_MIN_ATTEMPTS_S);
-
-    /**
-     * String representation of default value for 
      * <b>{@link SuiteConfig#webDriverCreateSessionRetryTimeout}</b>
      * property.
      */
@@ -182,21 +167,6 @@ public class SuiteConfig implements Configurable {
      * property.
      */
     public static final Duration DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_TIMEOUT = Configurable.parseDuration(DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_TIMEOUT_S);
-
-    /**
-     * String representation of default value for 
-     * <b>{@link SuiteConfig#webDriverDeleteSessionRetryMinAttempts}</b>
-     * property.
-     */
-    public static final String DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_MIN_ATTEMPTS_S = "3";
-    
-    /**
-     * Default value(<b>{@value SuiteConfig#DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_MIN_ATTEMPTS_S}</b>) 
-     * for 
-     * <b>{@link SuiteConfig#webDriverDeleteSessionRetryMinAttempts}</b>
-     * property.
-     */
-    public static final int DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_MIN_ATTEMPTS = Integer.parseInt(DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_MIN_ATTEMPTS_S);
 
     /**
      * String representation of default value for 
@@ -406,15 +376,6 @@ public class SuiteConfig implements Configurable {
     protected Duration webDriverCreateSessionRetryTimeout = DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_TIMEOUT;
 
     /**
-     * How many attempts should we automatically retry to create a new selenium 
-     * session in case of an error(s)?
-     * <br>
-     * This parameter is only applicable when webDriverMode = cloud.
-     */
-    @Getter @Setter @FieldNameConstants.Include
-    protected int webDriverCreateSessionRetryMinAttempts = DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_MIN_ATTEMPTS;
-
-    /**
      * The system automatically retries to delete existing selenium session, 
      * in case of an error(s), starting from the timestamp of the initial attempt 
      * up until 'webDriverDeleteSessionRetryTimeout' is reached.
@@ -423,15 +384,6 @@ public class SuiteConfig implements Configurable {
      */
     @Getter @Setter @FieldNameConstants.Include
     protected Duration webDriverDeleteSessionRetryTimeout = DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_TIMEOUT;
-
-    /**
-     * How many attempts should we automatically retry to delete existing selenium 
-     * session in case of an error(s)?
-     * <br>
-     * This parameter is only applicable when webDriverMode = cloud.
-     */
-    @Getter @Setter @FieldNameConstants.Include
-    protected int webDriverDeleteSessionRetryMinAttempts = DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_MIN_ATTEMPTS;
 
     /**
      * Implicit wait timeout for selenium session.

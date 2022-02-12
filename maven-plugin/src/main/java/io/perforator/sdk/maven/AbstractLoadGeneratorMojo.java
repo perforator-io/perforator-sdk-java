@@ -582,19 +582,6 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
     protected String webDriverCreateSessionRetryTimeout;
 
     /**
-     * How many attempts should we automatically retry to create a new selenium 
-     * session in case of an error(s)?<br/>
-     * This parameter is only applicable when webDriverMode = cloud.
-     */
-    @Parameter(
-            required = false,
-            defaultValue = SuiteConfig.DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_MIN_ATTEMPTS_S,
-            alias = SuiteConfig.Fields.webDriverCreateSessionRetryMinAttempts,
-            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverCreateSessionRetryMinAttempts
-    )
-    protected String webDriverCreateSessionRetryMinAttempts;
-
-    /**
      * The system automatically retries to delete existing selenium session, 
      * in case of an error(s), starting from the timestamp of the initial attempt 
      * up until 'webDriverDeleteSessionRetryTimeout' is reached.<br/>
@@ -615,19 +602,6 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
             property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverDeleteSessionRetryTimeout
     )
     protected String webDriverDeleteSessionRetryTimeout;
-
-    /**
-     * How many attempts should we automatically retry to delete existing selenium 
-     * session in case of an error(s)?<br/>
-     * This parameter is only applicable when webDriverMode = cloud.
-     */
-    @Parameter(
-            required = false,
-            defaultValue = SuiteConfig.DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_MIN_ATTEMPTS_S,
-            alias = SuiteConfig.Fields.webDriverDeleteSessionRetryMinAttempts,
-            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverDeleteSessionRetryMinAttempts
-    )
-    protected String webDriverDeleteSessionRetryMinAttempts;
 
     /**
      * Implicit wait timeout for selenium session.<br/>

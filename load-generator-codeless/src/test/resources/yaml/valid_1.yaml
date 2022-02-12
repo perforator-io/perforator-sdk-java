@@ -32,9 +32,7 @@ suites:
     webDriverUseLocalFileDetector: true
     webDriverWindowWidth: 1440
     webDriverWindowHeight: 900
-    webDriverCreateSessionRetryMinAttempts: 3
     webDriverCreateSessionRetryTimeout: 1S
-    webDriverDeleteSessionRetryMinAttempts: 3
     webDriverDeleteSessionRetryTimeout: 1S
     webDriverSessionImplicitlyWait: 10s
     props:
