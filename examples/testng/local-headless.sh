@@ -1,6 +1,8 @@
 #!/bin/sh
 
-mvn clean test-compile perforator:testng \
+mvn -f $(dirname "$0")/pom.xml \
+  clean test-compile \
+  perforator:testng \
   -Dsuite.webDriverMode=local \
   -Dsuite.chromeMode=headless \
   -Dsuite.concurrency=1 \

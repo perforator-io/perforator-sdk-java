@@ -1,4 +1,6 @@
-mvnDebug clean test-compile perforator:embedded ^
+mvnDebug %~dp0\pom.xml ^
+  clean test-compile ^
+  perforator:embedded ^
   -Dsuite.webDriverMode=local ^
   -Dsuite.concurrency=1 ^
   -Dsuite.duration=5m ^

@@ -1,5 +1,5 @@
 java ^
-  -Dlog4j2.configurationFile=log4j2.xml ^
+  -Dlog4j2.configurationFile=%~dp0\log4j2.xml ^
   -DloadGenerator.logActions=true ^
   -DloadGenerator.logSteps=true ^
   -Dsuite.webDriverMode=local ^
@@ -8,5 +8,5 @@ java ^
   -Dsuite.rampUp=1m ^
   -Dsuite.rampDown=1m ^
   %* ^
-  -jar %CODELESS_LOAD_GENERATOR_JAR% ^
-  config.yml
+  -jar %~dp0\%CODELESS_LOAD_GENERATOR_JAR% ^
+  %~dp0\config.yml

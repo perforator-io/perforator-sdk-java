@@ -5,10 +5,10 @@ loadGenerator:
   projectKey: YOUR_PROJECT_KEY
 suites:
   50 users for 5 mins:
-    concurrency: 50
+    concurrency: 512
     delay: 0s
-    duration: 5m
-    rampUp: 1m
+    duration: 30m
+    rampUp: 10m
     rampDown: 30s
     steps:
       Open landing page and await to be loaded:
@@ -21,5 +21,37 @@ suites:
         - awaitElementToBeVisible: '#async-container'
       Verify page 2:
         - click: ul.navbar-nav li:nth-child(2) a
+        - awaitPageLoad: 5s
+        - awaitElementToBeVisible: '#async-container'
+      Verify page 3:
+        - click: ul.navbar-nav li:nth-child(3) a
+        - awaitPageLoad: 5s
+        - awaitElementToBeVisible: '#async-container'
+      Verify page 4:
+        - click: ul.navbar-nav li:nth-child(4) a
+        - awaitPageLoad: 5s
+        - awaitElementToBeVisible: '#async-container'
+      Verify page 5:
+        - click: ul.navbar-nav li:nth-child(5) a
+        - awaitPageLoad: 5s
+        - awaitElementToBeVisible: '#async-container'
+      Verify page 6:
+        - click: ul.navbar-nav li:nth-child(1) a
+        - awaitPageLoad: 5s
+        - awaitElementToBeVisible: '#async-container'
+      Verify page 7:
+        - click: ul.navbar-nav li:nth-child(2) a
+        - awaitPageLoad: 5s
+        - awaitElementToBeVisible: '#async-container'
+      Verify page 8:
+        - click: ul.navbar-nav li:nth-child(3) a
+        - awaitPageLoad: 5s
+        - awaitElementToBeVisible: '#async-container'
+      Verify page 9:
+        - click: ul.navbar-nav li:nth-child(4) a
+        - awaitPageLoad: 5s
+        - awaitElementToBeVisible: '#async-container'
+      Verify page 10:
+        - click: ul.navbar-nav li:nth-child(5) a
         - awaitPageLoad: 5s
         - awaitElementToBeVisible: '#async-container'

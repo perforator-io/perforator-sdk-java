@@ -1,4 +1,6 @@
-mvn clean test-compile perforator:testng ^
+mvn %~dp0\pom.xml ^
+  clean test-compile ^
+  perforator:testng ^
   -Dsuite.webDriverMode=local ^
   -Dsuite.chromeMode=headless ^
   -Dsuite.concurrency=1 ^

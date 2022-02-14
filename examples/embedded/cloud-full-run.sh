@@ -1,3 +1,7 @@
 #!/bin/sh
 
-mvn clean test-compile perforator:embedded -Dsuite.webDriverMode=cloud $@
+mvn -f $(dirname "$0")/pom.xml \
+  clean test-compile \
+  perforator:embedded \
+  -Dsuite.webDriverMode=cloud \
+  $@

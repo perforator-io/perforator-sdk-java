@@ -1,6 +1,8 @@
 #!/bin/sh
 
-mvn clean test-compile perforator:embedded \
+mvn -f $(dirname "$0")/pom.xml \
+  clean test-compile \
+  perforator:embedded \
   -Dsuite.webDriverMode=cloud \
   -Dsuite.concurrency=10 \
   -Dsuite.duration=5m \
