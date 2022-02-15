@@ -1,4 +1,4 @@
-mvnDebug %~dp0\pom.xml ^
+mvnDebug -f %~dp0\pom.xml ^
   clean test-compile ^
   perforator:testng ^
   -Dsuite.webDriverMode=local ^
