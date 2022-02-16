@@ -163,9 +163,6 @@ tags:
       It is preferable to request various metrics within a single API call instead of sending multiple API calls to get individual metrics separately.
       Calculating multiple metrics within a single API call takes almost the same time as calculating a single metric.
       For example, if your request to get a single metric takes 15s and you need four different metrics - it will take 15x4=60s overall, making four individual API calls, while requesting all four metrics within one call still takes 15s overall.
-    externalDocs:
-      description: Guide
-      url: 'https://app.perforator.io/guide/statistics/overview'
   - name: Credits
     description: |
       You should have enough credits to pay for the provisioned duration of the browser cloud whenever you would like to launch it.
@@ -177,9 +174,6 @@ tags:
       Creation of the browser clouds is put on hold whenever your credits balance approaches zero value, and any request to launch a new browser cloud will be returned with an error.
       To continue creating new browser clouds, you should top-up your balance via buying additional credits using your credit card.
       Please check the following [link](https://www.perforator.io/pricing) to see actual pricing.
-    externalDocs:
-      description: Guide
-      url: 'https://app.perforator.io/guide/credits'
   - name: Limits
     description: |
       Launching browser clouds requires a tremendous amount of hardware resources to be provisioned.
@@ -191,9 +185,6 @@ tags:
       A better practice is to start with the smaller browser clouds and increase the load once you verify that your system can handle even smaller-level traffic.
       Default limits are pretty conservative, but you can increase them once you hit the boundaries - please shoot us an email at support@perforator.io to increase the limits applied on your account.
       Usually, limits increase takes a few days, so please consider it before running load tests with extended capacity.
-    externalDocs:
-      description: Guide
-      url: 'https://app.perforator.io/guide/limits'
 paths:
   /v1/projects:
     get:
