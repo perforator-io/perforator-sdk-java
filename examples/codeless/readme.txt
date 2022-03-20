@@ -229,25 +229,14 @@ a look at the below docs describing available options for the config.yml
   # Perforator automatically determines when to introduce a slowdown in case   #
   # of any abnormalities with tests execution.                                 #
   #                                                                            #
-  # Slowdown calculation takes N past transactions and calculates the          #
-  # percentage of the failed ones.                                             #
-  #                                                                            #
-  # The following formula is used to determine how much time to sleep/wait     #
-  # before any new test suite run:                                             #
-  #   - Failed transactions: 0% - 25% => no slowdown                           #
-  #   - Failed transactions: 25% - 50% => 10ms * failed percentage             #
-  #   - Failed transactions: 50% - 75% => 15ms * failed percentage             #
-  #   - Failed transactions: 75% - 100% => 20ms * failed percentage            #
-  #                                                                            #
-  # slowdownTransactionsThreshold determines how many transactions to consider #
-  # for slowdown calculation.                                                  #
+  # This flag controls whether automatic slowdown is enabled or not.           #
   #                                                                            #
   # This is an optional property.                                              #
   # Overrides:                                                                 #
-  # - System property name: loadGenerator.slowdownTransactionsThreshold        #
-  # - Environment variable name: LOADGENERATOR_SLOWDOWNTRANSACTIONSTHRESHOLD   #
+  # - System property name: loadGenerator.slowdown                             #
+  # - Environment variable name: LOADGENERATOR_SLOWDOWN                        #
   ##############################################################################
-  #slowdownTransactionsThreshold: 1000
+  #slowdown: true
 
   ##############################################################################
   # All the suites are processed concurrently via multiple thread workers.     #

@@ -18,7 +18,7 @@ loadGenerator:
   browserCloudAwaitQueued: 1h
   httpConnectTimeout: 59S
   httpReadTimeout: 59S
-  slowdownTransactionsThreshold: 11
+  slowdown: true
   logSteps: false
   logActions: false
 suites:

@@ -174,21 +174,21 @@ public class LoadGeneratorConfig implements Configurable {
      * property.
      */
     public static final Duration DEFAULT_REPORTING_INTERVAL = Configurable.parseDuration(DEFAULT_REPORTING_INTERVAL_S);
-
-    /**
-     * String representation of default value for 
-     * <b>{@link LoadGeneratorConfig#slowdownTransactionsThreshold}</b>
-     * property.
-     */
-    public static final String DEFAULT_SLOWDOWN_TRANSACTIONS_THRESHOLD_S = "1000";
     
     /**
-     * Default value(<b>{@value LoadGeneratorConfig#DEFAULT_SLOWDOWN_TRANSACTIONS_THRESHOLD_S}</b>)
-     * for 
-     * <b>{@link LoadGeneratorConfig#slowdownTransactionsThreshold}</b>
+     * String representation of default value for 
+     * <b>{@link LoadGeneratorConfig#slowdown}</b>
      * property.
      */
-    public static final int DEFAULT_SLOWDOWN_TRANSACTIONS_THRESHOLD = Integer.parseInt(DEFAULT_SLOWDOWN_TRANSACTIONS_THRESHOLD_S);
+    public static final String DEFAULT_SLOWDOWN_S = "true";
+    
+    /**
+     * Default value(<b>{@value LoadGeneratorConfig#DEFAULT_SLOWDOWN_S}</b>)
+     * for 
+     * <b>{@link LoadGeneratorConfig#slowdown}</b>
+     * property.
+     */
+    public static final boolean DEFAULT_SLOWDOWN = Boolean.parseBoolean(DEFAULT_SLOWDOWN_S);
 
     /**
      * String representation of default value for 
@@ -393,7 +393,7 @@ public class LoadGeneratorConfig implements Configurable {
      */
     @Getter @Setter @FieldNameConstants.Include
     protected Duration reportingInterval = DEFAULT_REPORTING_INTERVAL;
-
+    
     /**
      * It might be a case when tests start failing too often, either due to the
      * problem with the test(s) logic or due to overloading of the target
@@ -402,22 +402,10 @@ public class LoadGeneratorConfig implements Configurable {
      * Perforator automatically determines when to introduce a slowdown in case
      * of any abnormalities with tests execution.
      * <br>
-     * Slowdown calculation takes N past transactions and calculates the
-     * percentage of the failed ones.
-     * <br>
-     * The following formula is used to determine how much time to sleep/wait
-     * before any new test suite run:
-     * <ul>
-     * <li>Failed transactions: 0% - 25% =&gt; no slowdown</li>
-     * <li>Failed transactions: 25% - 50% =&gt; 10ms * failed percentage</li>
-     * <li>Failed transactions: 50% - 75% =&gt; 15ms * failed percentage</li>
-     * <li>Failed transactions: 75% - 100% =&gt; 20ms * failed percentage</li>
-     * </ul>
-     * <b>slowdownTransactionsThreshold</b> determines how many transactions to
-     * consider for slowdown calculation.
+     * This flag controls whether automatic slowdown is enabled or not.
      */
     @Getter @Setter @FieldNameConstants.Include
-    protected int slowdownTransactionsThreshold = DEFAULT_SLOWDOWN_TRANSACTIONS_THRESHOLD;
+    protected boolean slowdown = DEFAULT_SLOWDOWN;
 
     /**
      * All the suites are processed concurrently via multiple thread workers.

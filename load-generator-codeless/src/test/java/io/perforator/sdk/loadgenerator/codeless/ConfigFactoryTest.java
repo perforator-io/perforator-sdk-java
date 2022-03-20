@@ -83,7 +83,7 @@ public class ConfigFactoryTest {
             assertNotNull(config.getLoadGeneratorConfig());
             assertNotNull(config.getSuiteConfigs());
             
-            assertNotEquals(777, config.getLoadGeneratorConfig().getSlowdownTransactionsThreshold());
+            assertEquals(true, config.getLoadGeneratorConfig().isSlowdown());
             
             for (CodelessSuiteConfig suiteConfig : config.getSuiteConfigs()) {
                 assertNotEquals(Duration.ofSeconds(17), suiteConfig.getRampUp());
@@ -94,8 +94,8 @@ public class ConfigFactoryTest {
                     "17s"
             );
             System.setProperty(
-                    LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.slowdownTransactionsThreshold, 
-                    "777"
+                    LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.slowdown, 
+                    "false"
             );
             
             config = CodelessConfigFactory.INSTANCE.getCodelessConfig(
@@ -105,7 +105,7 @@ public class ConfigFactoryTest {
             assertNotNull(config.getLoadGeneratorConfig());
             assertNotNull(config.getSuiteConfigs());
             
-            assertEquals(777, config.getLoadGeneratorConfig().getSlowdownTransactionsThreshold());
+            assertEquals(false, config.getLoadGeneratorConfig().isSlowdown());
             
             for (CodelessSuiteConfig suiteConfig : config.getSuiteConfigs()) {
                 assertEquals(Duration.ofSeconds(17), suiteConfig.getRampUp());
@@ -115,7 +115,7 @@ public class ConfigFactoryTest {
                     SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampUp
             );
             System.clearProperty(
-                    LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.slowdownTransactionsThreshold
+                    LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.slowdown
             );
         }
     }

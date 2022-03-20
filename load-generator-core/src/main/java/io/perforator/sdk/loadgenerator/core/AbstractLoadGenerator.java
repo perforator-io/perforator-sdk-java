@@ -366,11 +366,18 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
             }
 
             long slowdown = 0;
-            while (System.currentTimeMillis() < endTime && !shouldBeFinished()) {
-
+            while (!shouldBeFinished()) {
+                long remainingTime = endTime - System.currentTimeMillis();
+                
+                if(remainingTime <= 0) {
+                    return;
+                }
+                
                 if (slowdown > 0) {
+                    slowdown = Math.min(slowdown, remainingTime);
+                    
                     logger.warn(
-                            "Worker {} is slowing down by {} ms, because there are too many transaction errors",
+                            "Worker {} is slowing down by {} ms because of the suite errors",
                             workerNumber,
                             slowdown
                     );

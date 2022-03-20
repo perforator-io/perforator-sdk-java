@@ -53,7 +53,7 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
         this.transactionsManager = new TransactionsManagerImpl(timeProvider, eventsRouter);
         this.transactionEventsAggregator = new TransactionEventsAggregatorImpl();
         this.transactionEventsFlusher = new TransactionEventsFlusherImpl();
-        this.slowdownManager = new SlowdownManagerImpl(loadGeneratorConfig, suiteConfigs);
+        this.slowdownManager = new SlowdownManagerImpl(timeProvider, loadGeneratorConfig);
         this.loggingContextManager = new LoggingContextManagerImpl(loadGeneratorConfig);
         this.seleniumLoggingManager = new SeleniumLoggingManagerImpl();
         this.reportingManager = new ReportingManagerImpl();
@@ -112,7 +112,6 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
         eventsRouter.setTransactionFinishedListeners(Arrays.asList(
                 statisticsManager,
                 transactionEventsAggregator,
-                slowdownManager,
                 loggingContextManager
         ));
 
@@ -157,8 +156,17 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
 
     @Override
     public long onSuiteInstanceFinished(SuiteContextImpl suiteContext, Throwable suiteError) {
-        suiteManager.stopSuiteInstance(suiteContext, suiteError);
-        return slowdownManager.getSlowdownTimeout();
+        long slowdownTimeout = slowdownManager.getSlowdownTimeout(
+                suiteContext, 
+                suiteError
+        );
+        
+        suiteManager.stopSuiteInstance(
+                suiteContext, 
+                suiteError
+        );
+        
+        return slowdownTimeout;
     }
 
     @Override

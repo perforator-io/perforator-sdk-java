@@ -288,29 +288,20 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
     /**
      * It might be a case when tests start failing too often, either due to the
      * problem with the test(s) logic or due to overloading of the target
-     * system.<br/>
+     * system.
+     * <br>
      * Perforator automatically determines when to introduce a slowdown in case
-     * of any abnormalities with tests execution.<br/>
-     * Slowdown calculation takes N past transactions and calculates the
-     * percentage of the failed ones.<br/>
-     * The following formula is used to determine how much time to sleep/wait
-     * before any new test suite run:
-     * <ul>
-     * <li>Failed transactions: 0% - 25% => no slowdown</li>
-     * <li>Failed transactions: 25% - 50% => 10ms * failed percentage</li>
-     * <li>Failed transactions: 50% - 75% => 15ms * failed percentage</li>
-     * <li>Failed transactions: 75% - 100% => 20ms * failed percentage</li>
-     * </ul>
-     * <b>slowdownTransactionsThreshold</b> determines how many transactions to
-     * consider for slowdown calculation.
+     * of any abnormalities with tests execution.
+     * <br>
+     * This flag controls whether automatic slowdown is enabled or not.
      */
     @Parameter(
             required = false,
-            defaultValue = LoadGeneratorConfig.DEFAULT_SLOWDOWN_TRANSACTIONS_THRESHOLD_S,
-            alias = LoadGeneratorConfig.Fields.slowdownTransactionsThreshold,
-            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.slowdownTransactionsThreshold
+            defaultValue = LoadGeneratorConfig.DEFAULT_SLOWDOWN_S,
+            alias = LoadGeneratorConfig.Fields.slowdown,
+            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.slowdown
     )
-    protected String slowdownTransactionsThreshold;
+    protected String slowdown;
 
     /**
      * All the suites are processed concurrently via multiple thread workers.

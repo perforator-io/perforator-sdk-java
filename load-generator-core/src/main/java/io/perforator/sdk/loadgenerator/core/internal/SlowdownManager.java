@@ -12,6 +12,6 @@ package io.perforator.sdk.loadgenerator.core.internal;
 
 interface SlowdownManager extends IntegrationListener {
 
-    long getSlowdownTimeout();
+    long getSlowdownTimeout(SuiteContextImpl suiteContext, Throwable suiteError);
 
 }
