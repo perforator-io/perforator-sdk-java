@@ -13,6 +13,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
+import java.time.Duration;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.concurrent.TimeUnit;
@@ -36,7 +37,7 @@ public class OpenActionProcessor extends AbstractActionProcessor<OpenActionConfi
                         getOptionalNestedField(
                                 OpenActionConfig.Fields.timeout,
                                 actionValue,
-                                OpenActionConfig.DEFAULT_TIMEOUT
+                                null
                         )
                 )
                 .build();
@@ -44,6 +45,20 @@ public class OpenActionProcessor extends AbstractActionProcessor<OpenActionConfi
 
     @Override
     public OpenActionInstance buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, OpenActionConfig actionConfig) {
+        Duration timeout;
+        
+        if (actionConfig.getTimeout() != null) {
+            timeout = buildDurationForActionInstance(
+                    OpenActionConfig.Fields.timeout,
+                    actionConfig.getTimeout(),
+                    formatter
+            );
+        } else if(suiteConfig.getWebDriverSessionPageLoadTimeout() != null) {
+            timeout = suiteConfig.getWebDriverSessionPageLoadTimeout();
+        } else {
+            timeout = OpenActionConfig.DEFAULT_TIMEOUT_AS_DURATION;
+        }
+        
         return OpenActionInstance.builder()
                 .config(
                         actionConfig
@@ -56,11 +71,7 @@ public class OpenActionProcessor extends AbstractActionProcessor<OpenActionConfi
                         )
                 )
                 .timeout(
-                        buildDurationForActionInstance(
-                                OpenActionConfig.Fields.timeout,
-                                actionConfig.getTimeout(),
-                                formatter
-                        )
+                        timeout
                 )
                 .build();
     }
