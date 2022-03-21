@@ -368,20 +368,21 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
             long slowdown = 0;
             while (!shouldBeFinished()) {
                 long remainingTime = endTime - System.currentTimeMillis();
-                
                 if(remainingTime <= 0) {
                     return;
                 }
                 
                 if (slowdown > 0) {
                     slowdown = Math.min(slowdown, remainingTime);
-                    
-                    logger.warn(
-                            "Worker {} is slowing down by {} ms because of the suite errors",
-                            workerNumber,
-                            slowdown
-                    );
                     Threaded.sleep(slowdown);
+                    slowdown = 0;
+                }
+                
+                int currentConcurrency = mediator.getCurrentConcurrency(suiteConfig);
+                int desiredConcurrency = mediator.getDesiredConcurrency(suiteConfig);
+                if(currentConcurrency >= desiredConcurrency) {
+                    Threaded.sleep(1);
+                    continue;
                 }
 
                 SuiteContext suiteContext = mediator.onSuiteInstanceStarted(

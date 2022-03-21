@@ -27,5 +27,9 @@ public interface IntegrationService
     S onSuiteInstanceStarted(int workerID, SuiteConfig suiteConfig);
 
     long onSuiteInstanceFinished(S suiteContext, Throwable suiteError);
+    
+    int getCurrentConcurrency(SuiteConfig suiteConfig);
+    
+    int getDesiredConcurrency(SuiteConfig suiteConfig);
 
 }

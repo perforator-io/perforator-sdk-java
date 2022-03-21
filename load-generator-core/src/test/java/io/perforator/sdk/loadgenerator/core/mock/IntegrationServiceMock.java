@@ -185,4 +185,14 @@ public class IntegrationServiceMock implements IntegrationService<SuiteContextMo
         return remoteWebDriverContexts.values();
     }
 
+    @Override
+    public int getCurrentConcurrency(SuiteConfig suiteConfig) {
+        return suiteInstancesActive.get();
+    }
+
+    @Override
+    public int getDesiredConcurrency(SuiteConfig suiteConfig) {
+        return suiteConfig.getConcurrency();
+    }
+
 }

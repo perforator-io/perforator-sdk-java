@@ -32,6 +32,7 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
     private final TransactionEventsAggregator transactionEventsAggregator;
     private final TransactionEventsFlusher transactionEventsFlusher;
     private final SlowdownManager slowdownManager;
+    private final ConcurrencyManager concurrencyManager;
     private final LoggingContextManager loggingContextManager;
     private final SeleniumLoggingManager seleniumLoggingManager;
     private final ReportingManager reportingManager;
@@ -54,6 +55,7 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
         this.transactionEventsAggregator = new TransactionEventsAggregatorImpl();
         this.transactionEventsFlusher = new TransactionEventsFlusherImpl();
         this.slowdownManager = new SlowdownManagerImpl(timeProvider, loadGeneratorConfig);
+        this.concurrencyManager = new ConcurrencyManagerImpl();
         this.loggingContextManager = new LoggingContextManagerImpl(loadGeneratorConfig);
         this.seleniumLoggingManager = new SeleniumLoggingManagerImpl();
         this.reportingManager = new ReportingManagerImpl();
@@ -76,10 +78,12 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
                 transactionEventsFlusher,
                 reportingManager,
                 seleniumLoggingManager,
-                infoMessagesManager
+                infoMessagesManager,
+                concurrencyManager
         ));
 
         eventsRouter.setLoadGeneratorFinishedListeners(Arrays.asList(
+                concurrencyManager,
                 suiteManager,
                 httpClientsManager,
                 browserCloudManager,
@@ -91,12 +95,14 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
         ));
 
         eventsRouter.setSuiteInstanceStartedListeners(Arrays.asList(
+                concurrencyManager,
                 statisticsManager,
                 loggingContextManager,
                 transactionsManager
         ));
 
         eventsRouter.setSuiteInstanceFinishedListeners(Arrays.asList(
+                concurrencyManager,
                 statisticsManager,
                 remoteWebDriverManager,
                 transactionsManager,
@@ -126,6 +132,7 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
         ));
 
         eventsRouter.setHeartbeatListeners(Arrays.asList(
+                concurrencyManager,
                 transactionEventsAggregator,
                 transactionEventsFlusher,
                 reportingManager
@@ -212,6 +219,16 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
     @Override
     public long getFailedTransactionsCount() {
         return loadGeneratorContext.getStatisticsContext().getTransactionsFailed();
+    }
+
+    @Override
+    public int getCurrentConcurrency(SuiteConfig suiteConfig) {
+        return concurrencyManager.getCurrentConcurrency(suiteConfig);
+    }
+
+    @Override
+    public int getDesiredConcurrency(SuiteConfig suiteConfig) {
+        return concurrencyManager.getDesiredConcurrency(suiteConfig);
     }
 
     private long getCurrentTime() {

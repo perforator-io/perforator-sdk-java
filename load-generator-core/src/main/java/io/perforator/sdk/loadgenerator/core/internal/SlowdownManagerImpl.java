@@ -28,7 +28,7 @@ final class SlowdownManagerImpl implements SlowdownManager {
             return 0;
         }
         
-        return Math.max(1000l, (timeProvider.getCurrentTime() - suiteContext.getStartedAt()) / 2);
+        return 500l + (long)(Math.random() * 500);
     }
 
 }
