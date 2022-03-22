@@ -13,13 +13,10 @@ suites:
     steps:
       Open landing page and await to be loaded:
         - open: https://verifications.perforator.io/
-        - awaitPageLoad: 5s
         - awaitElementToBeVisible: '#async-container'
       Verify page 1:
         - click: ul.navbar-nav li:nth-child(1) a
-        - awaitPageLoad: 5s
         - awaitElementToBeVisible: '#async-container'
       Verify page 2:
         - click: ul.navbar-nav li:nth-child(2) a
-        - awaitPageLoad: 5s
         - awaitElementToBeVisible: '#async-container'
