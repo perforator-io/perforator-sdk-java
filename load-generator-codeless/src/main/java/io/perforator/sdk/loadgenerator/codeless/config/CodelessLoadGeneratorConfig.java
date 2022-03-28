@@ -30,6 +30,9 @@ public class CodelessLoadGeneratorConfig extends LoadGeneratorConfig {
     public static final String DEFAULT_LOG_ACTIONS_S = "false";
     public static final boolean DEFAULT_LOG_ACTIONS = Boolean.parseBoolean(DEFAULT_LOG_ACTIONS_S);
 
+    public static final String DEFAULT_SELECTOR_TYPE_S = "css";
+    public static SelectorType DEFAULT_SELECTOR_TYPE = SelectorType.valueOf(DEFAULT_SELECTOR_TYPE_S);
+
     @Getter
     @Setter
     @FieldNameConstants.Include
@@ -39,6 +42,11 @@ public class CodelessLoadGeneratorConfig extends LoadGeneratorConfig {
     @Setter
     @FieldNameConstants.Include
     private boolean logActions = DEFAULT_LOG_ACTIONS;
+
+    @Getter
+    @Setter
+    @FieldNameConstants.Include
+    protected SelectorType defaultSelectorType = DEFAULT_SELECTOR_TYPE;
 
     public CodelessLoadGeneratorConfig() {
         applyDefaults();

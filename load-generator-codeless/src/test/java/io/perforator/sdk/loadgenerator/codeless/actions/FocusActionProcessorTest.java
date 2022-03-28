@@ -12,6 +12,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import io.perforator.sdk.loadgenerator.codeless.config.SelectorType;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -27,12 +28,15 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 public class FocusActionProcessorTest extends AbstractActionProcessorTest<FocusActionConfig, FocusActionInstance, FocusActionProcessor> {
 
     public static final String VERIFICATION_CSS_SELECTOR = "#navbarCollapse > ul > li:nth-child(1) > a";
+    public static final String VERIFICATION_XPATH_SELECTOR = "//*[@id=\"navbarCollapse\"]/ul/li[1]/a";
 
     @Override
     protected List<Map<String, String>> buildInvalidSuiteProps() throws Exception {
         return List.of(
+                Map.of(FocusActionConfig.Fields.timeout, "invalid-timeout"),
+                Map.of(FocusActionConfig.Fields.selector, ""),
                 Map.of(FocusActionConfig.Fields.cssSelector, ""),
-                Map.of(FocusActionConfig.Fields.timeout, "invalid-timeout")
+                Map.of(FocusActionConfig.Fields.xpathSelector, "")
         );
     }
 
@@ -40,7 +44,9 @@ public class FocusActionProcessorTest extends AbstractActionProcessorTest<FocusA
     protected List<Map<String, String>> buildValidSuiteProps() throws Exception {
         return List.of(
                 Map.of(
+                        FocusActionConfig.Fields.selector, VERIFICATION_CSS_SELECTOR,
                         FocusActionConfig.Fields.cssSelector, VERIFICATION_CSS_SELECTOR,
+                        FocusActionConfig.Fields.xpathSelector, VERIFICATION_XPATH_SELECTOR,
                         FocusActionConfig.Fields.timeout, "10.5s"
                 )
         );
@@ -53,6 +59,12 @@ public class FocusActionProcessorTest extends AbstractActionProcessorTest<FocusA
                 new TextNode("${invalid-placeholder}"),
                 newObjectNode(),
                 newObjectNode(Map.of(
+                        FocusActionConfig.Fields.selector, new TextNode("${invalid-placeholder}")
+                )),
+                newObjectNode(Map.of(
+                        FocusActionConfig.Fields.xpathSelector, new TextNode("${invalid-placeholder}")
+                )),
+                newObjectNode(Map.of(
                         FocusActionConfig.Fields.cssSelector, new TextNode("")
                 )),
                 newObjectNode(Map.of(
@@ -61,6 +73,14 @@ public class FocusActionProcessorTest extends AbstractActionProcessorTest<FocusA
                 newObjectNode(Map.of(
                         FocusActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_CSS_SELECTOR),
                         FocusActionConfig.Fields.timeout, new TextNode("invalid-timeout")
+                )),
+                newObjectNode(Map.of(
+                        FocusActionConfig.Fields.xpathSelector, new TextNode(VERIFICATION_XPATH_SELECTOR),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
+                )),
+                newObjectNode(Map.of(
+                        FocusActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_XPATH_SELECTOR),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
                 ))
         );
     }
@@ -77,11 +97,17 @@ public class FocusActionProcessorTest extends AbstractActionProcessorTest<FocusA
                         FocusActionConfig.Fields.timeout, new TextNode("${" + FocusActionConfig.Fields.timeout + "}")
                 )),
                 newObjectNode(Map.of(
-                        FocusActionConfig.Fields.cssSelector, new TextNode("${" + FocusActionConfig.Fields.cssSelector + "}")
+                        FocusActionConfig.Fields.cssSelector, new TextNode("${" + FocusActionConfig.Fields.cssSelector + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
                 )),
                 newObjectNode(Map.of(
-                        FocusActionConfig.Fields.cssSelector, new TextNode("${" + FocusActionConfig.Fields.cssSelector + "}"),
-                        FocusActionConfig.Fields.timeout, new TextNode("${" + FocusActionConfig.Fields.timeout + "}")
+                        FocusActionConfig.Fields.xpathSelector, new TextNode("${" + FocusActionConfig.Fields.xpathSelector + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
+                )),
+                newObjectNode(Map.of(
+                        FocusActionConfig.Fields.xpathSelector, new TextNode("${" + FocusActionConfig.Fields.xpathSelector + "}"),
+                        FocusActionConfig.Fields.timeout, new TextNode("${" + FocusActionConfig.Fields.timeout + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
                 ))
         );
     }

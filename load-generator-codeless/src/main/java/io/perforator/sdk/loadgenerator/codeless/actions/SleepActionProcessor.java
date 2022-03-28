@@ -12,6 +12,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
 import io.perforator.sdk.loadgenerator.core.Threaded;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -35,7 +36,7 @@ public class SleepActionProcessor extends AbstractActionProcessor<SleepActionCon
     }
 
     @Override
-    public SleepActionInstance buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, SleepActionConfig actionConfig) {
+    public SleepActionInstance buildActionInstance(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, FormattingMap formatter, SleepActionConfig actionConfig) {
         return SleepActionInstance.builder()
                 .config(
                         actionConfig

@@ -10,6 +10,7 @@
  */
 package io.perforator.sdk.loadgenerator.codeless.actions;
 
+import io.perforator.sdk.loadgenerator.codeless.config.SelectorType;
 import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.FieldNameConstants;
@@ -19,13 +20,16 @@ import java.time.Duration;
 @Value
 @FieldNameConstants
 @Builder(toBuilder = true)
-public class FocusActionInstance implements ActionInstance<FocusActionConfig> {
+public class FocusActionInstance implements SelectorActionInstance<FocusActionConfig> {
 
     @FieldNameConstants.Include
     private final FocusActionConfig config;
 
     @FieldNameConstants.Include
-    private final String cssSelector;
+    private final String selector;
+
+    @FieldNameConstants.Include
+    private final SelectorType selectorType;
 
     @FieldNameConstants.Include
     private final Duration timeout;
@@ -33,9 +37,11 @@ public class FocusActionInstance implements ActionInstance<FocusActionConfig> {
     @Override
     public String toLoggingDetails() {
         return new StringBuilder()
-                .append(FocusActionInstance.Fields.cssSelector).append(" = ").append(cssSelector)
+                .append(selectorType).append(" = ").append(selectorType)
                 .append(", ")
-                .append(FocusActionInstance.Fields.timeout).append(" = ").append(timeout)
+                .append(selector).append(" = ").append(selector)
+                .append(", ")
+                .append(Fields.timeout).append(" = ").append(timeout)
                 .toString();
     }
 

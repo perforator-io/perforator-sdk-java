@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
+import io.perforator.sdk.loadgenerator.codeless.config.SelectorType;
 import io.perforator.sdk.loadgenerator.core.RemoteWebDriverHelper;
 import io.perforator.sdk.loadgenerator.core.configs.ChromeMode;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
@@ -39,6 +40,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
     
     protected static final String VERIFICATIONS_APP_URL = new LoadGeneratorConfig().getApiBaseUrl().replace("api", "verifications");
     protected static final boolean CHROME_BROWSER_AVAILABLE = isChromeBrowserAvailable();
+    protected static final String SELECTOR_TYPE_KEY = "selectorType";
 
     protected final ObjectMapper objectMapper = new ObjectMapper();
     protected final Class<T> actionConfigClass;
@@ -115,6 +117,12 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
         assertFalse(invalidActionConfigs.isEmpty());
 
         for (JsonNode invalidActionConfig : invalidActionConfigs) {
+            if(invalidActionConfig.has(SELECTOR_TYPE_KEY)){
+                String s = invalidActionConfig.get(SELECTOR_TYPE_KEY).textValue();
+                loadGeneratorConfig.setDefaultSelectorType(
+                        SelectorType.valueOf(s)
+                );
+            }
             assertThrows(
                     RuntimeException.class,
                     () -> {
@@ -124,6 +132,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
                         );
 
                         actionProcessor.validateActionConfig(
+                                loadGeneratorConfig,
                                 suiteConfig,
                                 actionConfig
                         );
@@ -161,6 +170,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
             assertThrows(
                     RuntimeException.class,
                     () -> actionProcessor.validateActionConfig(
+                            loadGeneratorConfig,
                             suiteConfig,
                             actionConfig
                     ),
@@ -189,6 +199,13 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
         assertFalse(invalidActionConfigs.isEmpty());
 
         for (JsonNode invalidActionConfig : invalidActionConfigs) {
+            if(invalidActionConfig.has(SELECTOR_TYPE_KEY)){
+                String s = invalidActionConfig.get(SELECTOR_TYPE_KEY).textValue();
+                loadGeneratorConfig.setDefaultSelectorType(
+                        SelectorType.valueOf(s)
+                );
+            }
+
             assertThrows(
                     RuntimeException.class,
                     () -> {
@@ -198,6 +215,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
                         );
 
                         actionProcessor.validateActionConfig(
+                                loadGeneratorConfig,
                                 suiteConfig,
                                 actionConfig
                         );
@@ -227,12 +245,19 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
         assertFalse(validActionConfigs.isEmpty());
 
         for (JsonNode validActionConfig : validActionConfigs) {
+            if(validActionConfig.has(SELECTOR_TYPE_KEY)){
+                String s = validActionConfig.get(SELECTOR_TYPE_KEY).textValue();
+                loadGeneratorConfig.setDefaultSelectorType(
+                        SelectorType.valueOf(s)
+                );
+            }
             T actionConfig = actionProcessor.buildActionConfig(
                     actionProcessor.getActionName(),
                     validActionConfig
             );
 
             actionProcessor.validateActionConfig(
+                    loadGeneratorConfig,
                     suiteConfig,
                     actionConfig
             );
@@ -241,6 +266,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
 
             for (FormattingMap formatter : toFormatters(validSuiteProps)) {
                 V actionInstance = actionProcessor.buildActionInstance(
+                        loadGeneratorConfig,
                         suiteConfig,
                         formatter,
                         actionConfig
@@ -272,12 +298,20 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
 
         try {
             for (JsonNode validActionConfig : validActionConfigs) {
+                if(validActionConfig.has(SELECTOR_TYPE_KEY)){
+                    String s = validActionConfig.get(SELECTOR_TYPE_KEY).textValue();
+                    loadGeneratorConfig.setDefaultSelectorType(
+                            SelectorType.valueOf(s)
+                    );
+                }
+
                 T actionConfig = actionProcessor.buildActionConfig(
                         actionProcessor.getActionName(),
                         validActionConfig
                 );
 
                 actionProcessor.validateActionConfig(
+                        loadGeneratorConfig,
                         suiteConfig,
                         actionConfig
                 );
@@ -286,6 +320,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
 
                 for (FormattingMap formatter : toFormatters(validSuiteProps)) {
                     V actionInstance = actionProcessor.buildActionInstance(
+                            loadGeneratorConfig,
                             suiteConfig,
                             formatter,
                             actionConfig
@@ -297,7 +332,6 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
                             actionProcessor,
                             actionInstance
                     );
-
                     actionProcessor.processActionInstance(
                             driver,
                             actionInstance

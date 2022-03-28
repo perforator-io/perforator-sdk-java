@@ -10,6 +10,7 @@
  */
 package io.perforator.sdk.loadgenerator.codeless.actions;
 
+import io.perforator.sdk.loadgenerator.codeless.config.SelectorType;
 import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.FieldNameConstants;
@@ -19,7 +20,7 @@ import java.time.Duration;
 @Value
 @FieldNameConstants
 @Builder(toBuilder = true)
-public class InputActionInstance implements ActionInstance<InputActionConfig> {
+public class InputActionInstance implements SelectorActionInstance<InputActionConfig> {
 
     @FieldNameConstants.Include
     private final InputActionConfig config;
@@ -28,7 +29,10 @@ public class InputActionInstance implements ActionInstance<InputActionConfig> {
     private final String value;
 
     @FieldNameConstants.Include
-    private final String cssSelector;
+    private final String selector;
+
+    @FieldNameConstants.Include
+    private final SelectorType selectorType;
 
     @FieldNameConstants.Include
     private final Duration timeout;
@@ -36,11 +40,13 @@ public class InputActionInstance implements ActionInstance<InputActionConfig> {
     @Override
     public String toLoggingDetails() {
         return new StringBuilder()
-                .append(InputActionInstance.Fields.cssSelector).append(" = ").append(cssSelector)
+                .append(Fields.selectorType).append(" = ").append(selectorType)
                 .append(", ")
-                .append(InputActionInstance.Fields.timeout).append(" = ").append(timeout)
+                .append(Fields.selector).append(" = ").append(selectorType)
                 .append(", ")
-                .append(InputActionInstance.Fields.value).append(" = ").append(value)
+                .append(Fields.timeout).append(" = ").append(timeout)
+                .append(", ")
+                .append(Fields.value).append(" = ").append(value)
                 .toString();
     }
 

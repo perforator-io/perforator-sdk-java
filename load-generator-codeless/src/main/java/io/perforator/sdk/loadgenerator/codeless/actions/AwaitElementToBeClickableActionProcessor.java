@@ -12,13 +12,13 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
-import org.openqa.selenium.By;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class AwaitElementToBeClickableActionProcessor extends AbstractActionProcessor<AwaitElementToBeClickableActionConfig, AwaitElementToBeClickableActionInstance> {
+public class AwaitElementToBeClickableActionProcessor extends AbstractSelectorActionProcessor<AwaitElementToBeClickableActionConfig, AwaitElementToBeClickableActionInstance> {
     public AwaitElementToBeClickableActionProcessor() {
         super(AwaitElementToBeClickableActionConfig.DEFAULT_ACTION_NAME);
     }
@@ -26,10 +26,22 @@ public class AwaitElementToBeClickableActionProcessor extends AbstractActionProc
     @Override
     public AwaitElementToBeClickableActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return AwaitElementToBeClickableActionConfig.builder()
+                .selector(getOptionalValue(
+                        actionValue,
+                        null)
+                )
                 .cssSelector(
-                        getRequiredValueOrNestedField(
+                        getOptionalNestedField(
                                 AwaitElementToBeClickableActionConfig.Fields.cssSelector,
-                                actionValue
+                                actionValue,
+                                null
+                        )
+                )
+                .xpathSelector(
+                        getOptionalNestedField(
+                                AwaitElementToBeClickableActionConfig.Fields.xpathSelector,
+                                actionValue,
+                                null
                         )
                 )
                 .timeout(
@@ -43,15 +55,24 @@ public class AwaitElementToBeClickableActionProcessor extends AbstractActionProc
     }
 
     @Override
-    public AwaitElementToBeClickableActionInstance buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, AwaitElementToBeClickableActionConfig actionConfig) {
+    public AwaitElementToBeClickableActionInstance buildActionInstance(
+            CodelessLoadGeneratorConfig loadGeneratorConfig,
+            CodelessSuiteConfig suiteConfig,
+            FormattingMap formatter,
+            AwaitElementToBeClickableActionConfig actionConfig
+    ) {
         return AwaitElementToBeClickableActionInstance.builder()
                 .config(
                         actionConfig
                 )
-                .cssSelector(
-                        buildStringForActionInstance(
-                                AwaitElementToBeClickableActionInstance.Fields.cssSelector,
-                                actionConfig.getCssSelector(),
+                .selectorType(
+                        loadGeneratorConfig.getDefaultSelectorType()
+                )
+                .selector(
+                        buildRequiredStringSelectorForActionInstance(
+                                actionConfig,
+                                AwaitElementToBeClickableActionInstance.Fields.selector,
+                                loadGeneratorConfig.getDefaultSelectorType(),
                                 formatter
                         )
                 )
@@ -71,7 +92,9 @@ public class AwaitElementToBeClickableActionProcessor extends AbstractActionProc
                 driver,
                 actionInstance.getTimeout().toSeconds()
         ).until(
-                ExpectedConditions.elementToBeClickable(By.cssSelector(actionInstance.getCssSelector()))
+                ExpectedConditions.elementToBeClickable(
+                        getActionInstanceLocator(actionInstance)
+                )
         );
     }
 }

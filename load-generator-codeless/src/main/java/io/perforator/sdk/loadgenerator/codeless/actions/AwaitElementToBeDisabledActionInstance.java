@@ -10,6 +10,7 @@
  */
 package io.perforator.sdk.loadgenerator.codeless.actions;
 
+import io.perforator.sdk.loadgenerator.codeless.config.SelectorType;
 import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.FieldNameConstants;
@@ -19,13 +20,16 @@ import java.time.Duration;
 @Value
 @FieldNameConstants
 @Builder(toBuilder = true)
-public class AwaitElementToBeDisabledActionInstance implements ActionInstance<AwaitElementToBeDisabledActionConfig> {
+public class AwaitElementToBeDisabledActionInstance implements SelectorActionInstance<AwaitElementToBeDisabledActionConfig> {
 
     @FieldNameConstants.Include
     private final AwaitElementToBeDisabledActionConfig config;
 
     @FieldNameConstants.Include
-    private final String cssSelector;
+    private final String selector;
+
+    @FieldNameConstants.Include
+    private final SelectorType selectorType;
 
     @FieldNameConstants.Include
     private final Duration timeout;
@@ -33,9 +37,11 @@ public class AwaitElementToBeDisabledActionInstance implements ActionInstance<Aw
     @Override
     public String toLoggingDetails() {
         return new StringBuilder()
-                .append(AwaitElementToBeDisabledActionInstance.Fields.cssSelector).append(" = ").append(cssSelector)
+                .append(Fields.selectorType).append(" = ").append(selectorType)
                 .append(", ")
-                .append(AwaitElementToBeDisabledActionInstance.Fields.timeout).append(" = ").append(timeout)
+                .append(Fields.selector).append(" = ").append(selector)
+                .append(", ")
+                .append(Fields.timeout).append(" = ").append(timeout)
                 .toString();
     }
 }

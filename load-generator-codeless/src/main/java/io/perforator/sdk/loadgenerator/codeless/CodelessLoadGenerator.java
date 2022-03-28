@@ -17,6 +17,7 @@ import io.perforator.sdk.loadgenerator.codeless.actions.ActionProcessorsRegistry
 import io.perforator.sdk.loadgenerator.codeless.config.*;
 import io.perforator.sdk.loadgenerator.core.AbstractLoadGenerator;
 import io.perforator.sdk.loadgenerator.core.Perforator;
+import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.context.RemoteWebDriverContext;
 import io.perforator.sdk.loadgenerator.core.context.SuiteContext;
 import io.perforator.sdk.loadgenerator.core.context.TransactionContext;
@@ -46,8 +47,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
     }
 
     private CodelessLoadGenerator(IntegrationService<SuiteContext, TransactionContext, RemoteWebDriverContext> mediator, CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suites) {
-        super(mediator, loadGeneratorConfig, (List) CodelessSuiteConfigValidator.validate(suites));
-
+        super(mediator, loadGeneratorConfig, (List) CodelessSuiteConfigValidator.validate(loadGeneratorConfig, suites));
         this.logSteps = loadGeneratorConfig.isLogSteps();
         this.logActions = loadGeneratorConfig.isLogActions();
     }
@@ -138,7 +138,9 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
         }
 
         CodelessSuiteConfig suite = (CodelessSuiteConfig) suiteContext.getSuiteConfig();
+
         ActionInstance actionInstance = processor.buildActionInstance(
+                (CodelessLoadGeneratorConfig) getLoadGeneratorConfig(),
                 suite,
                 formatter,
                 actionConfig

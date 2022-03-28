@@ -12,14 +12,14 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class FocusActionProcessor extends AbstractActionProcessor<FocusActionConfig, FocusActionInstance> {
+public class FocusActionProcessor extends AbstractSelectorActionProcessor<FocusActionConfig, FocusActionInstance> {
 
     public FocusActionProcessor() {
         super(FocusActionConfig.DEFAULT_ACTION_NAME);
@@ -28,10 +28,22 @@ public class FocusActionProcessor extends AbstractActionProcessor<FocusActionCon
     @Override
     public FocusActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return FocusActionConfig.builder()
+                .selector(getOptionalValue(
+                        actionValue,
+                        null)
+                )
                 .cssSelector(
-                        getRequiredValueOrNestedField(
+                        getOptionalNestedField(
                                 FocusActionConfig.Fields.cssSelector,
-                                actionValue
+                                actionValue,
+                                null
+                        )
+                )
+                .xpathSelector(
+                        getOptionalNestedField(
+                                FocusActionConfig.Fields.xpathSelector,
+                                actionValue,
+                                null
                         )
                 )
                 .timeout(
@@ -45,21 +57,25 @@ public class FocusActionProcessor extends AbstractActionProcessor<FocusActionCon
     }
 
     @Override
-    public FocusActionInstance buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, FocusActionConfig actionConfig) {
+    public FocusActionInstance buildActionInstance(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, FormattingMap formatter, FocusActionConfig actionConfig) {
         return FocusActionInstance.builder()
                 .config(
                         actionConfig
                 )
-                .cssSelector(
-                        buildStringForActionInstance(
-                                FocusActionConfig.Fields.cssSelector,
-                                actionConfig.getCssSelector(),
+                .selectorType(
+                        loadGeneratorConfig.getDefaultSelectorType()
+                )
+                .selector(
+                        buildRequiredStringSelectorForActionInstance(
+                                actionConfig,
+                                FocusActionInstance.Fields.selector,
+                                loadGeneratorConfig.getDefaultSelectorType(),
                                 formatter
                         )
                 )
                 .timeout(
                         buildDurationForActionInstance(
-                                FocusActionConfig.Fields.timeout,
+                                FocusActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 formatter
                         )
@@ -74,7 +90,7 @@ public class FocusActionProcessor extends AbstractActionProcessor<FocusActionCon
                 actionInstance.getTimeout().toSeconds()
         ).until(
                 ExpectedConditions.visibilityOfElementLocated(
-                        By.cssSelector(actionInstance.getCssSelector())
+                        getActionInstanceLocator(actionInstance)
                 )
         );
 

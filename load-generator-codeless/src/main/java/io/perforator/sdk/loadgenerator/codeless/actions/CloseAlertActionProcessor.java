@@ -12,6 +12,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -25,7 +26,7 @@ public class CloseAlertActionProcessor extends AbstractActionProcessor<CloseAler
     }
 
     @Override
-    public void validateActionConfig(CodelessSuiteConfig suiteConfig, CloseAlertActionConfig actionConfig) {
+    public void validateActionConfig(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, CloseAlertActionConfig actionConfig) {
         try {
             if (suiteConfig.getProps().isEmpty()) {
                 CloseAlertActionInstance.Action.valueOf(
@@ -42,7 +43,7 @@ public class CloseAlertActionProcessor extends AbstractActionProcessor<CloseAler
             throw new RuntimeException("CloseAlertAction with type of '" + actionConfig.getAction() + "' is not supported!");
         }
 
-        super.validateActionConfig(suiteConfig, actionConfig);
+        super.validateActionConfig(loadGeneratorConfig, suiteConfig, actionConfig);
     }
 
     @Override
@@ -70,7 +71,7 @@ public class CloseAlertActionProcessor extends AbstractActionProcessor<CloseAler
     }
 
     @Override
-    public CloseAlertActionInstance buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, CloseAlertActionConfig actionConfig) {
+    public CloseAlertActionInstance buildActionInstance(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, FormattingMap formatter, CloseAlertActionConfig actionConfig) {
         return CloseAlertActionInstance.builder()
                 .config(
                         actionConfig

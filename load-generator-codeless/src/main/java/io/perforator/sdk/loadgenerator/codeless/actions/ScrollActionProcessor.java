@@ -12,14 +12,14 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class ScrollActionProcessor extends AbstractActionProcessor<ScrollActionConfig, ScrollActionInstance> {
+public class ScrollActionProcessor extends AbstractSelectorActionProcessor<ScrollActionConfig, ScrollActionInstance> {
 
     public ScrollActionProcessor() {
         super(ScrollActionConfig.DEFAULT_ACTION_NAME);
@@ -28,10 +28,22 @@ public class ScrollActionProcessor extends AbstractActionProcessor<ScrollActionC
     @Override
     public ScrollActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return ScrollActionConfig.builder()
+                .selector(getOptionalValue(
+                        actionValue,
+                        null)
+                )
                 .cssSelector(
-                        getRequiredValueOrNestedField(
+                        getOptionalNestedField(
                                 ScrollActionConfig.Fields.cssSelector,
-                                actionValue
+                                actionValue,
+                                null
+                        )
+                )
+                .xpathSelector(
+                        getOptionalNestedField(
+                                ScrollActionConfig.Fields.xpathSelector,
+                                actionValue,
+                                null
                         )
                 )
                 .timeout(
@@ -45,21 +57,25 @@ public class ScrollActionProcessor extends AbstractActionProcessor<ScrollActionC
     }
 
     @Override
-    public ScrollActionInstance buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, ScrollActionConfig actionConfig) {
+    public ScrollActionInstance buildActionInstance(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, FormattingMap formatter, ScrollActionConfig actionConfig) {
         return ScrollActionInstance.builder()
                 .config(
                         actionConfig
                 )
-                .cssSelector(
-                        buildStringForActionInstance(
-                                ScrollActionConfig.Fields.cssSelector,
-                                actionConfig.getCssSelector(),
+                .selectorType(
+                        loadGeneratorConfig.getDefaultSelectorType()
+                )
+                .selector(
+                        buildRequiredStringSelectorForActionInstance(
+                                actionConfig,
+                                ScrollActionInstance.Fields.selector,
+                                loadGeneratorConfig.getDefaultSelectorType(),
                                 formatter
                         )
                 )
                 .timeout(
                         buildDurationForActionInstance(
-                                ScrollActionConfig.Fields.timeout,
+                                ScrollActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 formatter
                         )
@@ -74,7 +90,7 @@ public class ScrollActionProcessor extends AbstractActionProcessor<ScrollActionC
                 actionInstance.getTimeout().toSeconds()
         ).until(
                 ExpectedConditions.visibilityOfElementLocated(
-                        By.cssSelector(actionInstance.getCssSelector())
+                        getActionInstanceLocator(actionInstance)
                 )
         );
 

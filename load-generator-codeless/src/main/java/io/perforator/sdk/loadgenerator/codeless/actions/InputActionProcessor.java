@@ -12,14 +12,14 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class InputActionProcessor extends AbstractActionProcessor<InputActionConfig, InputActionInstance> {
+public class InputActionProcessor extends AbstractSelectorActionProcessor<InputActionConfig, InputActionInstance> {
 
     public InputActionProcessor() {
         super(InputActionConfig.DEFAULT_ACTION_NAME);
@@ -34,10 +34,22 @@ public class InputActionProcessor extends AbstractActionProcessor<InputActionCon
                                 actionValue
                         )
                 )
+                .selector(getOptionalValue(
+                        actionValue,
+                        null)
+                )
                 .cssSelector(
-                        getRequiredNestedField(
+                        getOptionalNestedField(
                                 InputActionConfig.Fields.cssSelector,
-                                actionValue
+                                actionValue,
+                                null
+                        )
+                )
+                .xpathSelector(
+                        getOptionalNestedField(
+                                InputActionConfig.Fields.xpathSelector,
+                                actionValue,
+                                null
                         )
                 )
                 .timeout(
@@ -51,28 +63,32 @@ public class InputActionProcessor extends AbstractActionProcessor<InputActionCon
     }
 
     @Override
-    public InputActionInstance buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, InputActionConfig actionConfig) {
+    public InputActionInstance buildActionInstance(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, FormattingMap formatter, InputActionConfig actionConfig) {
         return InputActionInstance.builder()
                 .config(
                         actionConfig
                 )
                 .value(
                         buildStringForActionInstance(
-                                InputActionConfig.Fields.value,
+                                InputActionInstance.Fields.value,
                                 actionConfig.getValue(),
                                 formatter
                         )
                 )
-                .cssSelector(
-                        buildStringForActionInstance(
-                                InputActionConfig.Fields.cssSelector,
-                                actionConfig.getCssSelector(),
+                .selectorType(
+                        loadGeneratorConfig.getDefaultSelectorType()
+                )
+                .selector(
+                        buildRequiredStringSelectorForActionInstance(
+                                actionConfig,
+                                InputActionInstance.Fields.selector,
+                                loadGeneratorConfig.getDefaultSelectorType(),
                                 formatter
                         )
                 )
                 .timeout(
                         buildDurationForActionInstance(
-                                InputActionConfig.Fields.timeout,
+                                InputActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 formatter
                         )
@@ -87,7 +103,7 @@ public class InputActionProcessor extends AbstractActionProcessor<InputActionCon
                 actionInstance.getTimeout().toSeconds()
         ).until(
                 ExpectedConditions.elementToBeClickable(
-                        By.cssSelector(actionInstance.getCssSelector())
+                        getActionInstanceLocator(actionInstance)
                 )
         );
 

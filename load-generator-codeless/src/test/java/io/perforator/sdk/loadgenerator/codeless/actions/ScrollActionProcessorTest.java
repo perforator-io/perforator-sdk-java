@@ -12,6 +12,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import io.perforator.sdk.loadgenerator.codeless.config.SelectorType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.List;
@@ -23,11 +24,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ScrollActionProcessorTest extends AbstractActionProcessorTest<ScrollActionConfig, ScrollActionInstance, ScrollActionProcessor> {
 
     public static final String VERIFICATION_CSS_SELECTOR = "#disabled-range";
+    public static final String VERIFICATION_XPATH_SELECTOR = "//*[@id=\"disabled-range\"]";
+
 
     @Override
     protected List<Map<String, String>> buildInvalidSuiteProps() throws Exception {
         return List.of(
+                Map.of(ScrollActionConfig.Fields.selector, ""),
                 Map.of(ScrollActionConfig.Fields.cssSelector, ""),
+                Map.of(ScrollActionConfig.Fields.xpathSelector, ""),
                 Map.of(ScrollActionConfig.Fields.timeout, "invalid-timeout")
         );
     }
@@ -36,7 +41,9 @@ public class ScrollActionProcessorTest extends AbstractActionProcessorTest<Scrol
     protected List<Map<String, String>> buildValidSuiteProps() throws Exception {
         return List.of(
                 Map.of(
+                        ScrollActionConfig.Fields.selector, VERIFICATION_CSS_SELECTOR,
                         ScrollActionConfig.Fields.cssSelector, VERIFICATION_CSS_SELECTOR,
+                        ScrollActionConfig.Fields.xpathSelector, VERIFICATION_XPATH_SELECTOR,
                         ScrollActionConfig.Fields.timeout, "10.5s"
                 )
         );
@@ -49,14 +56,34 @@ public class ScrollActionProcessorTest extends AbstractActionProcessorTest<Scrol
                 new TextNode("${invalid-placeholder}"),
                 newObjectNode(),
                 newObjectNode(Map.of(
-                        ScrollActionConfig.Fields.cssSelector, new TextNode("")
+                        ScrollActionConfig.Fields.selector, new TextNode("${invalid-placeholder}")
+                )),
+                newObjectNode(Map.of(
+                        ScrollActionConfig.Fields.xpathSelector, new TextNode("${invalid-placeholder}")
                 )),
                 newObjectNode(Map.of(
                         ScrollActionConfig.Fields.cssSelector, new TextNode("${invalid-placeholder}")
                 )),
                 newObjectNode(Map.of(
+                        ScrollActionConfig.Fields.selector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        ScrollActionConfig.Fields.cssSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        ScrollActionConfig.Fields.xpathSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
                         ScrollActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_CSS_SELECTOR),
                         ScrollActionConfig.Fields.timeout, new TextNode("invalid-timeout")
+                )),
+                newObjectNode(Map.of(
+                        ScrollActionConfig.Fields.xpathSelector, new TextNode(VERIFICATION_XPATH_SELECTOR),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
+                )),
+                newObjectNode(Map.of(
+                        ScrollActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_CSS_SELECTOR),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
                 ))
         );
     }
@@ -78,6 +105,19 @@ public class ScrollActionProcessorTest extends AbstractActionProcessorTest<Scrol
                 newObjectNode(Map.of(
                         ScrollActionConfig.Fields.cssSelector, new TextNode("${" + ScrollActionConfig.Fields.cssSelector + "}"),
                         ScrollActionConfig.Fields.timeout, new TextNode("${" + ScrollActionConfig.Fields.timeout + "}")
+                )),
+                newObjectNode(Map.of(
+                        ScrollActionConfig.Fields.cssSelector, new TextNode("${" + ScrollActionConfig.Fields.cssSelector + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
+                )),
+                newObjectNode(Map.of(
+                        ScrollActionConfig.Fields.xpathSelector, new TextNode("${" + ScrollActionConfig.Fields.xpathSelector + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
+                )),
+                newObjectNode(Map.of(
+                        ScrollActionConfig.Fields.xpathSelector, new TextNode("${" + ScrollActionConfig.Fields.xpathSelector + "}"),
+                        ScrollActionConfig.Fields.timeout, new TextNode("${" + ScrollActionConfig.Fields.timeout + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
                 ))
         );
     }

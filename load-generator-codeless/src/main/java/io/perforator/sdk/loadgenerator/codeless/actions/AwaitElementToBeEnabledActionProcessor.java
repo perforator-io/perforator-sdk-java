@@ -12,6 +12,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -22,7 +23,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class AwaitElementToBeEnabledActionProcessor extends AbstractActionProcessor<AwaitElementToBeEnabledActionConfig, AwaitElementToBeEnabledActionInstance> {
+public class AwaitElementToBeEnabledActionProcessor extends AbstractSelectorActionProcessor<AwaitElementToBeEnabledActionConfig, AwaitElementToBeEnabledActionInstance> {
 
     public AwaitElementToBeEnabledActionProcessor() {
         super(AwaitElementToBeEnabledActionConfig.DEFAULT_ACTION_NAME);
@@ -53,10 +54,22 @@ public class AwaitElementToBeEnabledActionProcessor extends AbstractActionProces
     @Override
     public AwaitElementToBeEnabledActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return AwaitElementToBeEnabledActionConfig.builder()
+                .selector(getOptionalValue(
+                        actionValue,
+                        null)
+                )
                 .cssSelector(
-                        getRequiredValueOrNestedField(
+                        getOptionalNestedField(
                                 AwaitElementToBeEnabledActionConfig.Fields.cssSelector,
-                                actionValue
+                                actionValue,
+                                null
+                        )
+                )
+                .xpathSelector(
+                        getOptionalNestedField(
+                                AwaitElementToBeEnabledActionConfig.Fields.xpathSelector,
+                                actionValue,
+                                null
                         )
                 )
                 .timeout(
@@ -70,15 +83,19 @@ public class AwaitElementToBeEnabledActionProcessor extends AbstractActionProces
     }
 
     @Override
-    public AwaitElementToBeEnabledActionInstance buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, AwaitElementToBeEnabledActionConfig actionConfig) {
+    public AwaitElementToBeEnabledActionInstance buildActionInstance(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, FormattingMap formatter, AwaitElementToBeEnabledActionConfig actionConfig) {
         return AwaitElementToBeEnabledActionInstance.builder()
                 .config(
                         actionConfig
                 )
-                .cssSelector(
-                        buildStringForActionInstance(
-                                AwaitElementToBeEnabledActionInstance.Fields.cssSelector,
-                                actionConfig.getCssSelector(),
+                .selectorType(
+                        loadGeneratorConfig.getDefaultSelectorType()
+                )
+                .selector(
+                        buildRequiredStringSelectorForActionInstance(
+                                actionConfig,
+                                AwaitElementToBeEnabledActionInstance.Fields.selector,
+                                loadGeneratorConfig.getDefaultSelectorType(),
                                 formatter
                         )
                 )
@@ -98,7 +115,9 @@ public class AwaitElementToBeEnabledActionProcessor extends AbstractActionProces
                 driver,
                 actionInstance.getTimeout().toSeconds()
         ).until(
-                elementToBeEnabled(By.cssSelector(actionInstance.getCssSelector()))
+                elementToBeEnabled(
+                        getActionInstanceLocator(actionInstance)
+                )
         );
     }
 }

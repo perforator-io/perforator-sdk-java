@@ -13,6 +13,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.codeless.RandomDuration;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.Configurable;
 
@@ -53,7 +54,7 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
     }
 
     @Override
-    public void validateActionConfig(CodelessSuiteConfig suiteConfig, T actionConfig) {
+    public void validateActionConfig(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, T actionConfig) {
         List<FormattingMap> formatters;
         if (suiteConfig.getProps() == null || suiteConfig.getProps().isEmpty()) {
             formatters = List.of(FormattingMap.EMPTY);
@@ -62,7 +63,7 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
         }
 
         for (FormattingMap props : formatters) {
-            V instance = buildActionInstance(suiteConfig, props, actionConfig);
+            V instance = buildActionInstance(loadGeneratorConfig, suiteConfig, props, actionConfig);
 
             if (instance == null) {
                 throw new RuntimeException(
@@ -154,6 +155,27 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
         }
 
         return result.trim();
+    }
+
+    protected String getOptionalValue(JsonNode node, String defaultValue) {
+        if (node == null || node.isNull()) {
+            throw new RuntimeException(
+                    actionName
+                            + ".value is required"
+            );
+        }
+
+        if (node.isArray()) {
+            throw new RuntimeException(
+                    actionName
+                            + ".value should not be array"
+            );
+        }
+
+        if (node.isValueNode()) {
+            return node.textValue();
+        }
+        return defaultValue;
     }
 
     protected String getOptionalNestedField(String fieldName, JsonNode node, String defaultValue) {
@@ -325,5 +347,4 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
     public String getActionName() {
         return actionName;
     }
-
 }

@@ -12,6 +12,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -23,9 +24,9 @@ public interface ActionProcessor<T extends ActionConfig, V extends ActionInstanc
 
     T buildActionConfig(String actionName, JsonNode actionValue);
 
-    void validateActionConfig(CodelessSuiteConfig suiteConfig, T actionConfig);
+    void validateActionConfig(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, T actionConfig);
 
-    V buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, T actionConfig);
+    V buildActionInstance(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, FormattingMap formatter, T actionConfig);
 
     void processActionInstance(RemoteWebDriver driver, V actionInstance);
 

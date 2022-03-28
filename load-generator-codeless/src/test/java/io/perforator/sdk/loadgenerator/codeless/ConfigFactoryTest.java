@@ -43,7 +43,7 @@ public class ConfigFactoryTest {
                 Exception.class,
                 () -> {
                     CodelessConfig config = CodelessConfigFactory.INSTANCE.getCodelessConfig(path);
-                    CodelessSuiteConfigValidator.validate(config.getSuiteConfigs());
+                    CodelessSuiteConfigValidator.validate(config.getLoadGeneratorConfig(), config.getSuiteConfigs());
                 },
                 "Config at " + path + " should be invalid"
         );
@@ -55,7 +55,7 @@ public class ConfigFactoryTest {
         CodelessConfig config = assertDoesNotThrow(
                 () -> {
                     CodelessConfig c = CodelessConfigFactory.INSTANCE.getCodelessConfig(path);
-                    CodelessSuiteConfigValidator.validate(c.getSuiteConfigs());
+                    CodelessSuiteConfigValidator.validate(c.getLoadGeneratorConfig(), c.getSuiteConfigs());
                     return c;
                 },
                 "Config at " + path + " should be valid"

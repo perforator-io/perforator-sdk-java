@@ -12,14 +12,14 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class ClickActionProcessor extends AbstractActionProcessor<ClickActionConfig, ClickActionInstance> {
+public class ClickActionProcessor extends AbstractSelectorActionProcessor<ClickActionConfig, ClickActionInstance> {
 
     public ClickActionProcessor() {
         super(ClickActionConfig.DEFAULT_ACTION_NAME);
@@ -28,10 +28,22 @@ public class ClickActionProcessor extends AbstractActionProcessor<ClickActionCon
     @Override
     public ClickActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return ClickActionConfig.builder()
+                .selector(getOptionalValue(
+                        actionValue,
+                        null)
+                )
                 .cssSelector(
-                        getRequiredValueOrNestedField(
+                        getOptionalNestedField(
                                 ClickActionConfig.Fields.cssSelector,
-                                actionValue
+                                actionValue,
+                                null
+                        )
+                )
+                .xpathSelector(
+                        getOptionalNestedField(
+                                ClickActionConfig.Fields.xpathSelector,
+                                actionValue,
+                                null
                         )
                 )
                 .timeout(
@@ -45,21 +57,25 @@ public class ClickActionProcessor extends AbstractActionProcessor<ClickActionCon
     }
 
     @Override
-    public ClickActionInstance buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, ClickActionConfig actionConfig) {
+    public ClickActionInstance buildActionInstance(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, FormattingMap formatter, ClickActionConfig actionConfig) {
         return ClickActionInstance.builder()
                 .config(
                         actionConfig
                 )
-                .cssSelector(
-                        buildStringForActionInstance(
-                                ClickActionConfig.Fields.cssSelector,
-                                actionConfig.getCssSelector(),
+                .selectorType(
+                        loadGeneratorConfig.getDefaultSelectorType()
+                )
+                .selector(
+                        buildRequiredStringSelectorForActionInstance(
+                                actionConfig,
+                                ClickActionInstance.Fields.selector,
+                                loadGeneratorConfig.getDefaultSelectorType(),
                                 formatter
                         )
                 )
                 .timeout(
                         buildDurationForActionInstance(
-                                ClickActionConfig.Fields.timeout,
+                                ClickActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 formatter
                         )
@@ -74,7 +90,7 @@ public class ClickActionProcessor extends AbstractActionProcessor<ClickActionCon
                 actionInstance.getTimeout().toSeconds()
         ).until(
                 ExpectedConditions.elementToBeClickable(
-                        By.cssSelector(actionInstance.getCssSelector())
+                        getActionInstanceLocator(actionInstance)
                 )
         );
 

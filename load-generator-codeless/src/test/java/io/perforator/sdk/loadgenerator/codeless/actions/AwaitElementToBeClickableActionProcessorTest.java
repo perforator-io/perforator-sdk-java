@@ -12,6 +12,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import io.perforator.sdk.loadgenerator.codeless.config.SelectorType;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -26,13 +27,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class AwaitElementToBeClickableActionProcessorTest extends AbstractActionProcessorTest<AwaitElementToBeClickableActionConfig, AwaitElementToBeClickableActionInstance, AwaitElementToBeClickableActionProcessor> {
 
     public static final String CHECKED_BTN_CSS_SELECTOR = "#simple-btn";
+    public static final String CHECKED_BTN_XPATH_SELECTOR = "//*[@id=\"simple-btn\"]";
     public static final String DISABLE_STATUS_SWITCHER_CSS_SELECTOR = "#disable-switcher";
+    public static final String DISABLE_STATUS_SWITCHER_XPATH_SELECTOR = "//*[@id=\"disable-switcher\"]";
 
     @Override
     protected List<Map<String, String>> buildInvalidSuiteProps() throws Exception {
         return List.of(
                 Map.of(AwaitElementToBeClickableActionConfig.Fields.timeout, "invalid-timeout"),
-                Map.of(AwaitElementToBeClickableActionConfig.Fields.cssSelector, "")
+                Map.of(AwaitElementToBeClickableActionConfig.Fields.selector, ""),
+                Map.of(AwaitElementToBeClickableActionConfig.Fields.cssSelector, ""),
+                Map.of(AwaitElementToBeClickableActionConfig.Fields.xpathSelector, "")
         );
     }
 
@@ -40,7 +45,9 @@ public class AwaitElementToBeClickableActionProcessorTest extends AbstractAction
     protected List<Map<String, String>> buildValidSuiteProps() throws Exception {
         return List.of(
                 Map.of(
+                        AwaitElementToBeClickableActionConfig.Fields.selector, CHECKED_BTN_CSS_SELECTOR,
                         AwaitElementToBeClickableActionConfig.Fields.cssSelector, CHECKED_BTN_CSS_SELECTOR,
+                        AwaitElementToBeClickableActionConfig.Fields.xpathSelector, CHECKED_BTN_XPATH_SELECTOR,
                         AwaitElementToBeClickableActionConfig.Fields.timeout, "10.5s"
                 )
         );
@@ -48,10 +55,17 @@ public class AwaitElementToBeClickableActionProcessorTest extends AbstractAction
 
     @Override
     protected List<JsonNode> buildInvalidActionConfigs() throws Exception {
+
         return List.of(
                 new TextNode(""),
                 new TextNode("${invalid-placeholder}"),
                 newObjectNode(),
+                newObjectNode(Map.of(
+                        AwaitElementToBeClickableActionConfig.Fields.selector, new TextNode("${invalid-placeholder}")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeClickableActionConfig.Fields.xpathSelector, new TextNode("${invalid-placeholder}")
+                )),
                 newObjectNode(Map.of(
                         AwaitElementToBeClickableActionConfig.Fields.cssSelector, new TextNode("${invalid-placeholder}")
                 )),
@@ -64,6 +78,14 @@ public class AwaitElementToBeClickableActionProcessorTest extends AbstractAction
                 newObjectNode(Map.of(
                         AwaitElementToBeClickableActionConfig.Fields.cssSelector, new TextNode(CHECKED_BTN_CSS_SELECTOR),
                         AwaitElementToBeClickableActionConfig.Fields.timeout, new TextNode("${invalid-timeout}")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeClickableActionConfig.Fields.xpathSelector, new TextNode(CHECKED_BTN_XPATH_SELECTOR),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeClickableActionConfig.Fields.cssSelector, new TextNode(CHECKED_BTN_CSS_SELECTOR),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
                 ))
         );
     }
@@ -71,13 +93,26 @@ public class AwaitElementToBeClickableActionProcessorTest extends AbstractAction
     @Override
     protected List<JsonNode> buildValidActionConfigs() throws Exception {
         return List.of(
-                new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.cssSelector + "}"),
+                new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.selector + "}"),
                 newObjectNode(Map.of(
                         AwaitElementToBeClickableActionConfig.Fields.cssSelector, new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.cssSelector + "}")
                 )),
                 newObjectNode(Map.of(
                         AwaitElementToBeClickableActionConfig.Fields.cssSelector, new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.cssSelector + "}"),
                         AwaitElementToBeClickableActionConfig.Fields.timeout, new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.timeout + "}")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeClickableActionConfig.Fields.cssSelector, new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.cssSelector + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeClickableActionConfig.Fields.xpathSelector, new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.xpathSelector + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeClickableActionConfig.Fields.xpathSelector, new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.xpathSelector + "}"),
+                        AwaitElementToBeClickableActionConfig.Fields.timeout, new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.timeout + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
                 ))
         );
     }

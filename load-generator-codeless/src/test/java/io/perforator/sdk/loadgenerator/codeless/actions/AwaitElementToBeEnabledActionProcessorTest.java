@@ -12,6 +12,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import io.perforator.sdk.loadgenerator.codeless.config.SelectorType;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -26,13 +27,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class AwaitElementToBeEnabledActionProcessorTest extends AbstractActionProcessorTest<AwaitElementToBeEnabledActionConfig, AwaitElementToBeEnabledActionInstance, AwaitElementToBeEnabledActionProcessor> {
 
     public static final String CHECKED_BTN_CSS_SELECTOR = "#simple-btn";
+    public static final String CHECKED_BTN_XPATH_SELECTOR = "//*[@id=\"simple-btn\"]";
     public static final String DISABLE_STATUS_SWITCHER_CSS_SELECTOR = "#disable-switcher";
+    public static final String DISABLE_STATUS_SWITCHER_XPATH_SELECTOR = "//*[@id=\"disable-switcher\"]";
 
     @Override
     protected List<Map<String, String>> buildInvalidSuiteProps() throws Exception {
         return List.of(
                 Map.of(AwaitElementToBeEnabledActionConfig.Fields.timeout, "invalid-timeout"),
-                Map.of(AwaitElementToBeEnabledActionConfig.Fields.cssSelector, "")
+                Map.of(AwaitElementToBeEnabledActionConfig.Fields.selector, ""),
+                Map.of(AwaitElementToBeEnabledActionConfig.Fields.cssSelector, ""),
+                Map.of(AwaitElementToBeEnabledActionConfig.Fields.xpathSelector, "")
         );
     }
 
@@ -40,7 +45,9 @@ public class AwaitElementToBeEnabledActionProcessorTest extends AbstractActionPr
     protected List<Map<String, String>> buildValidSuiteProps() throws Exception {
         return List.of(
                 Map.of(
+                        AwaitElementToBeEnabledActionConfig.Fields.selector, CHECKED_BTN_CSS_SELECTOR,
                         AwaitElementToBeEnabledActionConfig.Fields.cssSelector, CHECKED_BTN_CSS_SELECTOR,
+                        AwaitElementToBeEnabledActionConfig.Fields.xpathSelector, CHECKED_BTN_XPATH_SELECTOR,
                         AwaitElementToBeEnabledActionConfig.Fields.timeout, "10.5s"
                 )
         );
@@ -53,6 +60,12 @@ public class AwaitElementToBeEnabledActionProcessorTest extends AbstractActionPr
                 new TextNode("${invalid-placeholder}"),
                 newObjectNode(),
                 newObjectNode(Map.of(
+                        AwaitElementToBeEnabledActionConfig.Fields.selector, new TextNode("${invalid-placeholder}")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeEnabledActionConfig.Fields.xpathSelector, new TextNode("${invalid-placeholder}")
+                )),
+                newObjectNode(Map.of(
                         AwaitElementToBeEnabledActionConfig.Fields.cssSelector, new TextNode("${invalid-placeholder}")
                 )),
                 newObjectNode(Map.of(
@@ -64,6 +77,14 @@ public class AwaitElementToBeEnabledActionProcessorTest extends AbstractActionPr
                 newObjectNode(Map.of(
                         AwaitElementToBeEnabledActionConfig.Fields.cssSelector, new TextNode(CHECKED_BTN_CSS_SELECTOR),
                         AwaitElementToBeEnabledActionConfig.Fields.timeout, new TextNode("${invalid-timeout}")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeEnabledActionConfig.Fields.xpathSelector, new TextNode(CHECKED_BTN_XPATH_SELECTOR),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeEnabledActionConfig.Fields.cssSelector, new TextNode(CHECKED_BTN_CSS_SELECTOR),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
                 ))
         );
     }
@@ -78,6 +99,19 @@ public class AwaitElementToBeEnabledActionProcessorTest extends AbstractActionPr
                 newObjectNode(Map.of(
                         AwaitElementToBeEnabledActionConfig.Fields.cssSelector, new TextNode("${" + AwaitElementToBeEnabledActionConfig.Fields.cssSelector + "}"),
                         AwaitElementToBeEnabledActionConfig.Fields.timeout, new TextNode("${" + AwaitElementToBeEnabledActionConfig.Fields.timeout + "}")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeEnabledActionConfig.Fields.cssSelector, new TextNode("${" + AwaitElementToBeEnabledActionConfig.Fields.cssSelector + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeEnabledActionConfig.Fields.xpathSelector, new TextNode("${" + AwaitElementToBeEnabledActionConfig.Fields.xpathSelector + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeEnabledActionConfig.Fields.xpathSelector, new TextNode("${" + AwaitElementToBeEnabledActionConfig.Fields.xpathSelector + "}"),
+                        AwaitElementToBeEnabledActionConfig.Fields.timeout, new TextNode("${" + AwaitElementToBeEnabledActionConfig.Fields.timeout + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
                 ))
         );
     }

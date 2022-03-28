@@ -12,13 +12,13 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
-import org.openqa.selenium.By;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class AwaitElementToBeInvisibleActionProcessor extends AbstractActionProcessor<AwaitElementToBeInvisibleActionConfig, AwaitElementToBeInvisibleActionInstance> {
+public class AwaitElementToBeInvisibleActionProcessor extends AbstractSelectorActionProcessor<AwaitElementToBeInvisibleActionConfig, AwaitElementToBeInvisibleActionInstance> {
 
     public AwaitElementToBeInvisibleActionProcessor() {
         super(AwaitElementToBeInvisibleActionConfig.DEFAULT_ACTION_NAME);
@@ -27,10 +27,22 @@ public class AwaitElementToBeInvisibleActionProcessor extends AbstractActionProc
     @Override
     public AwaitElementToBeInvisibleActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return AwaitElementToBeInvisibleActionConfig.builder()
+                .selector(getOptionalValue(
+                        actionValue,
+                        null)
+                )
                 .cssSelector(
-                        getRequiredValueOrNestedField(
+                        getOptionalNestedField(
                                 AwaitElementToBeInvisibleActionConfig.Fields.cssSelector,
-                                actionValue
+                                actionValue,
+                                null
+                        )
+                )
+                .xpathSelector(
+                        getOptionalNestedField(
+                                AwaitElementToBeInvisibleActionConfig.Fields.xpathSelector,
+                                actionValue,
+                                null
                         )
                 )
                 .timeout(
@@ -44,15 +56,19 @@ public class AwaitElementToBeInvisibleActionProcessor extends AbstractActionProc
     }
 
     @Override
-    public AwaitElementToBeInvisibleActionInstance buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, AwaitElementToBeInvisibleActionConfig actionConfig) {
+    public AwaitElementToBeInvisibleActionInstance buildActionInstance(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, FormattingMap formatter, AwaitElementToBeInvisibleActionConfig actionConfig) {
         return AwaitElementToBeInvisibleActionInstance.builder()
                 .config(
                         actionConfig
                 )
-                .cssSelector(
-                        buildStringForActionInstance(
-                                AwaitElementToBeInvisibleActionInstance.Fields.cssSelector,
-                                actionConfig.getCssSelector(),
+                .selectorType(
+                        loadGeneratorConfig.getDefaultSelectorType()
+                )
+                .selector(
+                        buildRequiredStringSelectorForActionInstance(
+                                actionConfig,
+                                AwaitElementToBeInvisibleActionInstance.Fields.selector,
+                                loadGeneratorConfig.getDefaultSelectorType(),
                                 formatter
                         )
                 )
@@ -72,7 +88,9 @@ public class AwaitElementToBeInvisibleActionProcessor extends AbstractActionProc
                 driver,
                 actionInstance.getTimeout().toSeconds()
         ).until(
-                ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(actionInstance.getCssSelector()))
+                ExpectedConditions.invisibilityOfElementLocated(
+                        getActionInstanceLocator(actionInstance)
+                )
         );
     }
 }
