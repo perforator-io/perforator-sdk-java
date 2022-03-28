@@ -12,6 +12,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import io.perforator.sdk.loadgenerator.codeless.config.SelectorType;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -30,6 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class InputActionProcessorTest extends AbstractActionProcessorTest<InputActionConfig, InputActionInstance, InputActionProcessor> {
 
     public static final String VERIFICATION_CSS_SELECTOR = "#file-input";
+    public static final String VERIFICATION_XPATH_SELECTOR = "//*[@id=\"file-input\"]";
+
     public static final String FILE_NAME = "valid_1.yaml";
     public final String VERIFICATION_INPUT_VALUE = getFileFromResource("yaml/" + FILE_NAME).getAbsolutePath();
 
@@ -37,7 +40,9 @@ public class InputActionProcessorTest extends AbstractActionProcessorTest<InputA
     protected List<Map<String, String>> buildInvalidSuiteProps() throws Exception {
         return List.of(
                 Map.of(InputActionConfig.Fields.value, ""),
+                Map.of(InputActionConfig.Fields.selector, ""),
                 Map.of(InputActionConfig.Fields.cssSelector, ""),
+                Map.of(InputActionConfig.Fields.xpathSelector, ""),
                 Map.of(InputActionConfig.Fields.timeout, "invalid-timeout")
 
         );
@@ -48,7 +53,9 @@ public class InputActionProcessorTest extends AbstractActionProcessorTest<InputA
         return List.of(
                 Map.of(
                         InputActionConfig.Fields.value, VERIFICATION_INPUT_VALUE,
+                        InputActionConfig.Fields.selector, VERIFICATION_CSS_SELECTOR,
                         InputActionConfig.Fields.cssSelector, VERIFICATION_CSS_SELECTOR,
+                        InputActionConfig.Fields.xpathSelector, VERIFICATION_XPATH_SELECTOR,
                         InputActionConfig.Fields.timeout, "10.5s"
                 )
         );
@@ -61,6 +68,10 @@ public class InputActionProcessorTest extends AbstractActionProcessorTest<InputA
                 new TextNode("Text"),
                 new TextNode("${invalid-placeholder}"),
                 newObjectNode(),
+                newObjectNode(Map.of(
+                        InputActionConfig.Fields.value, new TextNode(VERIFICATION_INPUT_VALUE),
+                        InputActionConfig.Fields.selector, new TextNode(VERIFICATION_CSS_SELECTOR)
+                )),
                 newObjectNode(Map.of(
                         InputActionConfig.Fields.value, new TextNode("${invalid-placeholder}"),
                         InputActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_CSS_SELECTOR)
@@ -86,8 +97,43 @@ public class InputActionProcessorTest extends AbstractActionProcessorTest<InputA
                         InputActionConfig.Fields.value, new TextNode(VERIFICATION_INPUT_VALUE),
                         InputActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_CSS_SELECTOR),
                         InputActionConfig.Fields.timeout, new TextNode("invalid-timeout")
+                )),
+                newObjectNode(Map.of(
+                        InputActionConfig.Fields.value, new TextNode("${invalid-placeholder}"),
+                        InputActionConfig.Fields.xpathSelector, new TextNode(VERIFICATION_XPATH_SELECTOR)
+                )),
+                newObjectNode(Map.of(
+                        InputActionConfig.Fields.value, new TextNode(VERIFICATION_INPUT_VALUE),
+                        InputActionConfig.Fields.xpathSelector, new TextNode("${invalid-placeholder}")
+                )),
+                newObjectNode(Map.of(
+                        InputActionConfig.Fields.value, new TextNode(""),
+                        InputActionConfig.Fields.xpathSelector, new TextNode(VERIFICATION_XPATH_SELECTOR)
+                )),
+                newObjectNode(Map.of(
+                        InputActionConfig.Fields.value, new TextNode(VERIFICATION_INPUT_VALUE),
+                        InputActionConfig.Fields.xpathSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        InputActionConfig.Fields.value, new TextNode("${invalid-placeholder}"),
+                        InputActionConfig.Fields.xpathSelector, new TextNode("${invalid-placeholder}"),
+                        InputActionConfig.Fields.timeout, new TextNode("invalid-timeout")
+                )),
+                newObjectNode(Map.of(
+                        InputActionConfig.Fields.value, new TextNode(VERIFICATION_INPUT_VALUE),
+                        InputActionConfig.Fields.xpathSelector, new TextNode(VERIFICATION_XPATH_SELECTOR),
+                        InputActionConfig.Fields.timeout, new TextNode("invalid-timeout")
+                )),
+                newObjectNode(Map.of(
+                        InputActionConfig.Fields.value, new TextNode(VERIFICATION_INPUT_VALUE),
+                        InputActionConfig.Fields.xpathSelector, new TextNode(VERIFICATION_XPATH_SELECTOR),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
+                )),
+                newObjectNode(Map.of(
+                        InputActionConfig.Fields.value, new TextNode(VERIFICATION_INPUT_VALUE),
+                        InputActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_CSS_SELECTOR),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
                 ))
-
         );
     }
 
@@ -105,16 +151,22 @@ public class InputActionProcessorTest extends AbstractActionProcessorTest<InputA
                 )),
                 newObjectNode(Map.of(
                         InputActionConfig.Fields.value, new TextNode("${" + InputActionConfig.Fields.value + "}"),
-                        InputActionConfig.Fields.cssSelector, new TextNode("${" + InputActionConfig.Fields.cssSelector + "}")
+                        InputActionConfig.Fields.cssSelector, new TextNode("${" + InputActionConfig.Fields.cssSelector + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
                 )),
                 newObjectNode(Map.of(
                         InputActionConfig.Fields.value, new TextNode("${" + InputActionConfig.Fields.value + "}"),
-                        InputActionConfig.Fields.cssSelector, new TextNode("${" + InputActionConfig.Fields.cssSelector + "}"),
-                        InputActionConfig.Fields.timeout, new TextNode("${" + InputActionConfig.Fields.timeout + "}")
+                        InputActionConfig.Fields.xpathSelector, new TextNode("${" + InputActionConfig.Fields.xpathSelector + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
+                )),
+                newObjectNode(Map.of(
+                        InputActionConfig.Fields.value, new TextNode("${" + InputActionConfig.Fields.value + "}"),
+                        InputActionConfig.Fields.xpathSelector, new TextNode("${" + InputActionConfig.Fields.xpathSelector + "}"),
+                        InputActionConfig.Fields.timeout, new TextNode("${" + InputActionConfig.Fields.timeout + "}"),
+                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
                 ))
         );
     }
-
     @Override
     protected void onBeforeActionInstanceProcessing(RemoteWebDriver driver, InputActionProcessor actionProcessor, InputActionInstance actionInstance) throws Exception {
         driver.navigate().to(VERIFICATIONS_APP_URL);

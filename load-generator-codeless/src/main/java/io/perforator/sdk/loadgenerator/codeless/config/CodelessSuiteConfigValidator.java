@@ -23,19 +23,19 @@ public final class CodelessSuiteConfigValidator {
     private CodelessSuiteConfigValidator() {
     }
 
-    public static List<CodelessSuiteConfig> validate(List<CodelessSuiteConfig> suiteConfigs) {
+    public static List<CodelessSuiteConfig> validate(CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suiteConfigs) {
         if (suiteConfigs == null || suiteConfigs.isEmpty()) {
             throw new RuntimeException("suites are required");
         }
 
         for (CodelessSuiteConfig suiteConfig : suiteConfigs) {
-            validate(suiteConfig);
+            validate(loadGeneratorConfig, suiteConfig);
         }
 
         return suiteConfigs;
     }
 
-    public static CodelessSuiteConfig validate(CodelessSuiteConfig suiteConfig) {
+    public static CodelessSuiteConfig validate(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig) {
         String suiteName = suiteConfig.getName();
 
         if (suiteName == null || suiteName.isBlank()) {
@@ -47,12 +47,12 @@ public final class CodelessSuiteConfigValidator {
             );
         }
 
-        validaSuiteSteps(suiteConfig);
+        validaSuiteSteps(loadGeneratorConfig, suiteConfig);
 
         return suiteConfig;
     }
 
-    private static void validaSuiteSteps(CodelessSuiteConfig suiteConfig) {
+    private static void validaSuiteSteps(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig) {
         if (suiteConfig.getSteps() == null || suiteConfig.getSteps().isEmpty()) {
             throw new RuntimeException(
                     "Suite with the name '"
@@ -92,11 +92,11 @@ public final class CodelessSuiteConfigValidator {
                 }
             }
 
-            validateStepActions(suiteConfig, step);
+            validateStepActions(loadGeneratorConfig, suiteConfig, step);
         }
     }
 
-    private static void validateStepActions(CodelessSuiteConfig suiteConfig, CodelessStepConfig stepConfig) {
+    private static void validateStepActions(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, CodelessStepConfig stepConfig) {
         if (stepConfig.getActions() == null || stepConfig.getActions().isEmpty()) {
             throw new RuntimeException(
                     "Suite '"
@@ -119,6 +119,7 @@ public final class CodelessSuiteConfigValidator {
             }
 
             actionProcessor.validateActionConfig(
+                    loadGeneratorConfig,
                     suiteConfig,
                     action
             );

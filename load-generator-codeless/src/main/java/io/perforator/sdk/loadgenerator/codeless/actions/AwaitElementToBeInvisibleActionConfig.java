@@ -17,7 +17,7 @@ import lombok.experimental.FieldNameConstants;
 @Value
 @FieldNameConstants
 @Builder(toBuilder = true)
-public class AwaitElementToBeInvisibleActionConfig implements ActionConfig {
+public class AwaitElementToBeInvisibleActionConfig implements SelectorActionConfig {
 
     public static final String DEFAULT_ACTION_NAME = "awaitElementToBeInvisible";
     public static final String DEFAULT_TIMEOUT = "30s";
@@ -26,7 +26,13 @@ public class AwaitElementToBeInvisibleActionConfig implements ActionConfig {
     private final String actionName = DEFAULT_ACTION_NAME;
 
     @FieldNameConstants.Include
+    private final String selector;
+
+    @FieldNameConstants.Include
     private final String cssSelector;
+
+    @FieldNameConstants.Include
+    private final String xpathSelector;
 
     @FieldNameConstants.Include
     private final String timeout;

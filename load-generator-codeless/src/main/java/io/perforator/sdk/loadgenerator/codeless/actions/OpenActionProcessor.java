@@ -12,6 +12,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
 import java.time.Duration;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -44,7 +45,7 @@ public class OpenActionProcessor extends AbstractActionProcessor<OpenActionConfi
     }
 
     @Override
-    public OpenActionInstance buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, OpenActionConfig actionConfig) {
+    public OpenActionInstance buildActionInstance(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, FormattingMap formatter, OpenActionConfig actionConfig) {
         Duration timeout;
         
         if (actionConfig.getTimeout() != null) {

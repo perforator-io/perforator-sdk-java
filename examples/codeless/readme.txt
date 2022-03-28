@@ -19,7 +19,7 @@ config.yml with the different goals:
   when you need to ensure that actions are executed correctly in cloud-based 
   browsers. For example, it is not optimal to run your full-powered 
   configuration using thousands of browsers and then, in a minute, realize that 
-  you have a simple mistake in css selector.
+  you have a simple mistake in css/xpath selector.
 - cloud-full-run.sh - executes your load test at full speed as defined in 
   config.yml.
 
@@ -327,6 +327,20 @@ a look at the below docs describing available options for the config.yml
   # - Environment variable name: LOADGENERATOR_FAILONTRANSACTIONERRORS         #
   ##############################################################################
   #failOnTransactionErrors: true
+
+  ##############################################################################
+  # The mode controlling selector type to use while searching elements on the  #
+  # page                                                                       #
+  # Available modes:                                                           #
+  # - css                                                                      #
+  # - xpath                                                                    #
+  #                                                                            #
+  # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.defaultSelectorType                  #
+  # - Environment variable name: LOADGENERATOR_DEFAULT_SELECTOR_TYPE           #
+  ##############################################################################
+  #defaultSelectorType: css
 
 ################################################################################
 # Every load test has a set of one or more named suites.                       #
@@ -657,11 +671,18 @@ a look at the below docs describing available options for the config.yml
         #- awaitPageLoad: 5s
         
         ########################################################################
-        # Action to await element to be visible on the page of the current    #
+        # Action to await element to be visible on the page of the current     #
         # browser window.                                                      #
         #                                                                      #
-        # Parameter of this action specifies css selector to find element      #
-        # in the DOM tree of the page                                          #
+        # Parameter of this action specifies css or xpath selector to find     #
+        # element in the DOM tree of the page. You can use only one of two     #
+        # parameters. It's cssSelector or xpathSelector.                       #
+        # For example:                                                         #
+        # 1)- awaitElementToBeVisible:                                         #
+        #       cssSelector: '#async-container'                                #
+        #                                                                      #
+        # 2)- awaitElementToBeVisible:                                         #
+        #       xpathSelector: '//*[@id="async-container"]'                    #
         #                                                                      #
         # Element is visible when it is present in the DOM tree of the page and#
         # it is visible. Visibility means that the element is not only         #
@@ -680,11 +701,18 @@ a look at the below docs describing available options for the config.yml
         #- awaitElementToBeVisible: '#async-container'
 
         ########################################################################
-        # Action to await element to be clickable on the page of the current  #
+        # Action to await element to be clickable on the page of the current   #
         # browser window.                                                      #
         #                                                                      #
-        # Parameter of this action specifies css selector to find element      #
-        # in the DOM tree of the page                                          #
+        # Parameter of this action specifies css or xpath selector to find     #
+        # element in the DOM tree of the page. You can use only one of two     #
+        # parameters. It's cssSelector or xpathSelector.                       #
+        # For example:                                                         #
+        # 1)- awaitElementToBeClickable:                                       #
+        #       cssSelector: '#async-container'                                #
+        #                                                                      #
+        # 2)- awaitElementToBeClickable:                                       #
+        #       xpathSelector: '//*[@id="async-container"]'                    #
         #                                                                      #
         # Element is clickable when it is visible on the page, it is enabled,  #
         # and you can click on it.                                             #
@@ -702,15 +730,22 @@ a look at the below docs describing available options for the config.yml
         #- awaitElementToBeClickable: '#form-submit-button'
         
         ########################################################################
-        # Action to await element to be disabled on the page of the current   #
+        # Action to await element to be disabled on the page of the current    #
         # browser window.                                                      #
         #                                                                      #
-        # Parameter of this action specifies css selector to find element      #
-        # in the DOM tree of the page                                          #
+        # Parameter of this action specifies css or xpath selector to find     #
+        # element in the DOM tree of the page. You can use only one of two     #
+        # parameters. It's cssSelector or xpathSelector.                       #
+        # For example:                                                         #
+        # 1)- awaitElementToBeDisabled:                                        #
+        #       cssSelector: '#async-container'                                #
+        #                                                                      #
+        # 2)- awaitElementToBeDisabled:                                        #
+        #       xpathSelector: '//*[@id="async-container"]'                    #
         #                                                                      #
         # Element is disabled when it is present in the DOM tree,              #
-        # it is visible, and it has a *disabled* attribute turned on. Typically#
-        # this is html input element.                                          #
+        # it is visible, and it has a *disabled* attribute turned on.          #
+        # Typically this is html input element.                                #
         #                                                                      #
         # Default timeout to await element to be disabled is 30s.              #
         # An action fails if such a timeout is reached, but specified element  #
@@ -725,11 +760,18 @@ a look at the below docs describing available options for the config.yml
         #- awaitElementToBeDisabled: '#disabled-element'
 
         ########################################################################
-        # Action to await element to be enabled on the page of the current    #
+        # Action to await element to be enabled on the page of the current     #
         # browser window.                                                      #
         #                                                                      #
-        # Parameter of this action specifies css selector to find element      #
-        # in the DOM tree of the page                                          #
+        # Parameter of this action specifies css or xpath selector to find     #
+        # element in the DOM tree of the page. You can use only one of two     #
+        # parameters. It's cssSelector or xpathSelector.                       #
+        # For example:                                                         #
+        # 1)- awaitElementToBeEnabled:                                         #
+        #       cssSelector: '#async-container'                                #
+        #                                                                      #
+        # 2)- awaitElementToBeEnabled:                                         #
+        #       xpathSelector: '//*[@id="async-container"]'                    #
         #                                                                      #
         # Element is enabled when it is present in the DOM tree,               #
         # it is visible, and it has no *disabled* attribute.                   #
@@ -747,11 +789,18 @@ a look at the below docs describing available options for the config.yml
         #- awaitElementToBeEnabled: '#enabled-element'
 
         ########################################################################
-        # Action to await element to be invisible on the page of the current  #
+        # Action to await element to be invisible on the page of the current   #
         # browser window.                                                      #
         #                                                                      #
-        # Parameter of this action specifies css selector to find element      #
-        # in the DOM tree of the page                                          #
+        # Parameter of this action specifies css or xpath selector to find     #
+        # element in the DOM tree of the page. You can use only one of two     #
+        # parameters. It's cssSelector or xpathSelector.                       #
+        # For example:                                                         #
+        # 1)- awaitElementToBeInvisible:                                       #
+        #       cssSelector: '#async-container'                                #
+        #                                                                      #
+        # 2)- awaitElementToBeInvisible:                                       #
+        #       xpathSelector: '//*[@id="async-container"]'                    #
         #                                                                      #
         # Element is invisible when it is either invisible or not present      #
         # in the DOM tree.                                                     #
@@ -779,12 +828,19 @@ a look at the below docs describing available options for the config.yml
         ########################################################################
         # Action to click on the element in the current browser window.        #
         #                                                                      #
-        # Parameter of this action specifies css selector to find element      #
-        # in the DOM tree of the page                                          #
+        # Parameter of this action specifies css or xpath selector to find     #
+        # element in the DOM tree of the page. You can use only one of two     #
+        # parameters. It's cssSelector or xpathSelector.                       #
+        # For example:                                                         #
+        # 1)- click:                                                           #
+        #       cssSelector: '#async-container'                                #
+        #                                                                      #
+        # 2)- click:                                                           #
+        #       xpathSelector: '//*[@id="async-container"]'                    #
         #                                                                      #
         # Click action can be performed only on clickable elements, so as a    #
-        # prerequsite, an action waits till element is present in the DOM tree,#
-        # it is visible and enabled.                                           #
+        # prerequisite, an action waits till element is present in the DOM     #
+        # tree, it is visible and enabled.                                     #
         #                                                                      #
         # Default timeout to await element to be clickable is 30s.             #
         # An action fails if such a timeout is reached, but specified element  #
@@ -830,12 +886,19 @@ a look at the below docs describing available options for the config.yml
         ########################################################################
         # Action to focus on the element in the current browser window.        #
         #                                                                      #
-        # Parameter of this action specifies css selector to find element      #
-        # in the DOM tree of the page.                                         #
+        # Parameter of this action specifies css or xpath selector to find     #
+        # element in the DOM tree of the page. You can use only one of two     #
+        # parameters. It's cssSelector or xpathSelector.                       #
+        # For example:                                                         #
+        # 1)- focus:                                                           #
+        #       cssSelector: '#async-container'                                #
+        #                                                                      #
+        # 2)- focus:                                                           #
+        #       xpathSelector: '//*[@id="async-container"]'                    #
         #                                                                      #
         # Focus action can be performed only on visible elements, so as a      #
-        # prerequsite, an action waits till element is present in the DOM tree #
-        # and it is visible.                                                   #
+        # prerequisite, an action waits till element is present in the DOM     #
+        # tree and it is visible.                                              #
         #                                                                      #
         # Default timeout to await element to be visible is 30s.               #
         # An action fails if such a timeout is reached, but specified element  #
@@ -853,17 +916,30 @@ a look at the below docs describing available options for the config.yml
         # Action to enter text into input element of the current browser window#
         #                                                                      #
         # This action has two required parameters:                             #
-        # - cssSelector, css selector of the element where to enter text.      #
+        # - cssSelector or xpathSelector, css or xpath selector of the element #
+        # where to enter text.                                                 #
         # - value, actual text to enter into the input element.                #
+        #                                                                      #
+        # This action uses specifies css or xpath selector to find             #
+        # element in the DOM tree of the page. You can use only one of two     #
+        # parameters. It's cssSelector or xpathSelector.                       #
+        # For example:                                                         #
+        # 1)- input:                                                           #
+        #       cssSelector: '#async-container'                                #
+        #       value: 'text to enter or file path to upload'                  #
+        #                                                                      #
+        # 2)- input:                                                           #
+        #       xpathSelector: '//*[@id="async-container"]'                    #
+        #       value: 'text to enter or file path to upload'                  #
         #                                                                      #
         # Such action can also be used to upload files when target element is  #
         # '<input type="file">'. To do so, please specify path to the file you #
         # would like to upload in the 'value' property, for example:           #
-        #   value: './path/to/file/for/upload.json'
+        #   value: './path/to/file/for/upload.json'                            #
         #                                                                      #
         # Input action can be performed only on clickable elements, so as a    #
-        # prerequsite, an action waits till element is present in the DOM tree #
-        # ,it is visible and enabled.                                          #
+        # prerequisite, an action waits till element is present in the DOM     #
+        # tree ,it is visible and enabled.                                     #
         #                                                                      #
         # Default timeout to await element to be clickable is 30s.             #
         # An action fails if such a timeout is reached, but specified element  #
@@ -883,12 +959,19 @@ a look at the below docs describing available options for the config.yml
         ########################################################################
         # Action to scroll till the element in the current browser window.     #
         #                                                                      #
-        # Parameter of this action specifies css selector to find element      #
-        # in the DOM tree of the page.                                         #
+        # Parameter of this action specifies css or xpath selector to find     #
+        # element in the DOM tree of the page. You can use only one of two     #
+        # parameters. It's cssSelector or xpathSelector.                       #
+        # For example:                                                         #
+        # 1)- scroll:                                                          #
+        #       cssSelector: '#async-container'                                #
+        #                                                                      #
+        # 2)- scroll:                                                          #
+        #       xpathSelector: '//*[@id="async-container"]'                    #
         #                                                                      #
         # Scroll action can be performed only on visible elements, so as a     #
-        # prerequsite, an action waits till element is present in the DOM tree #
-        # and it is visible.                                                   #
+        # prerequisite, an action waits till element is present in the DOM     #
+        # tree and it is visible.                                              #
         #                                                                      #
         # Default timeout to await element to be visible is 30s.               #
         # An action fails if such a timeout is reached, but specified element  #

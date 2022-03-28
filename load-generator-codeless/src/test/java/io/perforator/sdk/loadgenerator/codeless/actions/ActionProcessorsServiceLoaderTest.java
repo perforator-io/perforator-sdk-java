@@ -20,10 +20,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ServiceLoader;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -153,6 +150,13 @@ public class ActionProcessorsServiceLoaderTest {
         }
 
         current = actionInstanceClass;
+
+        boolean isActionInstanceClassSelectorType = Arrays.asList(actionInstanceClass.getInterfaces())
+                .contains(SelectorActionInstance.class);
+
+        boolean isActionConfigClassSelectorType = Arrays.asList(actionConfigClass.getInterfaces())
+                .contains(SelectorActionConfig.class);
+
         Set<String> instanceFields = new HashSet<>();
         while (current != null && current != Object.class) {
             Field[] fields = current.getDeclaredFields();
@@ -177,12 +181,31 @@ public class ActionProcessorsServiceLoaderTest {
 
             current = current.getSuperclass();
         }
-
+        if(isActionInstanceClassSelectorType){
+            assertTrue(
+                    instanceFields.contains("selectorType"),
+                    actionInstanceClass+ " should have private final SelectorType selectorType"
+            );
+        }
+        if(isActionConfigClassSelectorType){
+            assertTrue(
+                    configFields.contains("cssSelector"),
+                    actionConfigClass+ " should have private final String cssSelector"
+            );
+        }
+        if(isActionConfigClassSelectorType){
+            assertTrue(
+                    configFields.contains("xpathSelector"),
+                    actionConfigClass+ " should have private final String xpathSelector"
+            );
+        }
         for (String instanceField : instanceFields) {
             if (instanceField.equals("config")) {
                 continue;
             }
-
+            if(isActionInstanceClassSelectorType && instanceField.equals("selectorType")){
+                continue;
+            }
             assertTrue(
                     configFields.contains(instanceField),
                     actionConfigClass + " should have private final String " + instanceField
@@ -193,7 +216,12 @@ public class ActionProcessorsServiceLoaderTest {
             if (configField.equals("details") || configField.equals("actionName")) {
                 continue;
             }
-
+            if(isActionConfigClassSelectorType && configField.equals("cssSelector")){
+                continue;
+            }
+            if(isActionConfigClassSelectorType && configField.equals("xpathSelector")){
+                continue;
+            }
             assertTrue(
                     instanceFields.contains(configField),
                     actionInstanceClass + " should have private final " + configField

@@ -255,6 +255,10 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
         }
     }
 
+    protected LoadGeneratorConfig getLoadGeneratorConfig(){
+        return loadGeneratorConfig;
+    }
+
     private void propagateConsumerContext(SuiteContext suiteContext) {
         Perforator.SUITE_CONTEXT.set(suiteContext);
         Perforator.REMOTE_WEBDRIVER_SERVICE.set(mediator);

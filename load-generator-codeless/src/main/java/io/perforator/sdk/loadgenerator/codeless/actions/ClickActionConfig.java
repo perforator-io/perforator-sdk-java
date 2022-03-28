@@ -17,7 +17,7 @@ import lombok.experimental.FieldNameConstants;
 @Value
 @FieldNameConstants
 @Builder(toBuilder = true)
-public class ClickActionConfig implements ActionConfig {
+public class ClickActionConfig implements SelectorActionConfig {
 
     public static final String DEFAULT_ACTION_NAME = "click";
     public static final String DEFAULT_TIMEOUT = "30s";
@@ -26,7 +26,13 @@ public class ClickActionConfig implements ActionConfig {
     private final String actionName = DEFAULT_ACTION_NAME;
 
     @FieldNameConstants.Include
+    private final String selector;
+
+    @FieldNameConstants.Include
     private final String cssSelector;
+
+    @FieldNameConstants.Include
+    private final String xpathSelector;
 
     @FieldNameConstants.Include
     private final String timeout;

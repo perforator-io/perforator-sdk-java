@@ -12,6 +12,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -22,7 +23,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class AwaitElementToBeDisabledActionProcessor extends AbstractActionProcessor<AwaitElementToBeDisabledActionConfig, AwaitElementToBeDisabledActionInstance> {
+public class AwaitElementToBeDisabledActionProcessor extends AbstractSelectorActionProcessor<AwaitElementToBeDisabledActionConfig, AwaitElementToBeDisabledActionInstance> {
 
     public AwaitElementToBeDisabledActionProcessor() {
         super(AwaitElementToBeDisabledActionConfig.DEFAULT_ACTION_NAME);
@@ -31,10 +32,22 @@ public class AwaitElementToBeDisabledActionProcessor extends AbstractActionProce
     @Override
     public AwaitElementToBeDisabledActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return AwaitElementToBeDisabledActionConfig.builder()
+                .selector(getOptionalValue(
+                        actionValue,
+                        null)
+                )
                 .cssSelector(
-                        getRequiredValueOrNestedField(
+                        getOptionalNestedField(
                                 AwaitElementToBeDisabledActionConfig.Fields.cssSelector,
-                                actionValue
+                                actionValue,
+                                null
+                        )
+                )
+                .xpathSelector(
+                        getOptionalNestedField(
+                                AwaitElementToBeDisabledActionConfig.Fields.xpathSelector,
+                                actionValue,
+                                null
                         )
                 )
                 .timeout(
@@ -48,15 +61,19 @@ public class AwaitElementToBeDisabledActionProcessor extends AbstractActionProce
     }
 
     @Override
-    public AwaitElementToBeDisabledActionInstance buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, AwaitElementToBeDisabledActionConfig actionConfig) {
+    public AwaitElementToBeDisabledActionInstance buildActionInstance(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, FormattingMap formatter, AwaitElementToBeDisabledActionConfig actionConfig) {
         return AwaitElementToBeDisabledActionInstance.builder()
                 .config(
                         actionConfig
                 )
-                .cssSelector(
-                        buildStringForActionInstance(
-                                AwaitElementToBeDisabledActionInstance.Fields.cssSelector,
-                                actionConfig.getCssSelector(),
+                .selectorType(
+                        loadGeneratorConfig.getDefaultSelectorType()
+                )
+                .selector(
+                        buildRequiredStringSelectorForActionInstance(
+                                actionConfig,
+                                AwaitElementToBeDisabledActionInstance.Fields.selector,
+                                loadGeneratorConfig.getDefaultSelectorType(),
                                 formatter
                         )
                 )
@@ -76,7 +93,9 @@ public class AwaitElementToBeDisabledActionProcessor extends AbstractActionProce
                 driver,
                 actionInstance.getTimeout().toSeconds()
         ).until(
-                elementToBeDisabled(By.cssSelector(actionInstance.getCssSelector()))
+                elementToBeDisabled(
+                        getActionInstanceLocator(actionInstance)
+                )
         );
     }
 

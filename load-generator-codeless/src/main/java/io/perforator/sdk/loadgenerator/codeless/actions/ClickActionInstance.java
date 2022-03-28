@@ -10,6 +10,7 @@
  */
 package io.perforator.sdk.loadgenerator.codeless.actions;
 
+import io.perforator.sdk.loadgenerator.codeless.config.SelectorType;
 import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.FieldNameConstants;
@@ -19,13 +20,16 @@ import java.time.Duration;
 @Value
 @FieldNameConstants
 @Builder(toBuilder = true)
-public class ClickActionInstance implements ActionInstance<ClickActionConfig> {
+public class ClickActionInstance implements SelectorActionInstance<ClickActionConfig> {
 
     @FieldNameConstants.Include
     private final ClickActionConfig config;
 
     @FieldNameConstants.Include
-    private final String cssSelector;
+    private final String selector;
+
+    @FieldNameConstants.Include
+    private final SelectorType selectorType;
 
     @FieldNameConstants.Include
     private final Duration timeout;
@@ -33,9 +37,11 @@ public class ClickActionInstance implements ActionInstance<ClickActionConfig> {
     @Override
     public String toLoggingDetails() {
         return new StringBuilder()
-                .append(ClickActionInstance.Fields.cssSelector).append(" = ").append(cssSelector)
+                .append(Fields.selectorType).append(" = ").append(selectorType)
                 .append(", ")
-                .append(ClickActionInstance.Fields.timeout).append(" = ").append(timeout)
+                .append(Fields.selector).append(" = ").append(selectorType)
+                .append(", ")
+                .append(Fields.timeout).append(" = ").append(timeout)
                 .toString();
     }
 

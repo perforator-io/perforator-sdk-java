@@ -12,6 +12,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -35,7 +36,7 @@ public class AwaitPageLoadActionProcessor extends AbstractActionProcessor<AwaitP
     }
 
     @Override
-    public AwaitPageLoadActionInstance buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, AwaitPageLoadActionConfig actionConfig) {
+    public AwaitPageLoadActionInstance buildActionInstance(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, FormattingMap formatter, AwaitPageLoadActionConfig actionConfig) {
         return AwaitPageLoadActionInstance.builder()
                 .config(
                         actionConfig

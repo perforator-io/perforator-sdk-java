@@ -17,7 +17,7 @@ import lombok.experimental.FieldNameConstants;
 @Value
 @FieldNameConstants
 @Builder(toBuilder = true)
-public class AwaitElementToBeDisabledActionConfig implements ActionConfig {
+public class AwaitElementToBeDisabledActionConfig implements SelectorActionConfig {
 
     public static final String DEFAULT_ACTION_NAME = "awaitElementToBeDisabled";
     public static final String DEFAULT_TIMEOUT = "30s";
@@ -26,7 +26,13 @@ public class AwaitElementToBeDisabledActionConfig implements ActionConfig {
     private final String actionName = DEFAULT_ACTION_NAME;
 
     @FieldNameConstants.Include
+    private final String selector;
+
+    @FieldNameConstants.Include
     private final String cssSelector;
+
+    @FieldNameConstants.Include
+    private final String xpathSelector;
 
     @FieldNameConstants.Include
     private final String timeout;

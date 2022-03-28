@@ -12,13 +12,13 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
-import org.openqa.selenium.By;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class AwaitElementToBeVisibleActionProcessor extends AbstractActionProcessor<AwaitElementToBeVisibleActionConfig, AwaitElementToBeVisibleActionInstance> {
+public class AwaitElementToBeVisibleActionProcessor extends AbstractSelectorActionProcessor<AwaitElementToBeVisibleActionConfig, AwaitElementToBeVisibleActionInstance> {
 
     public AwaitElementToBeVisibleActionProcessor() {
         super(AwaitElementToBeVisibleActionConfig.DEFAULT_ACTION_NAME);
@@ -27,10 +27,22 @@ public class AwaitElementToBeVisibleActionProcessor extends AbstractActionProces
     @Override
     public AwaitElementToBeVisibleActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return AwaitElementToBeVisibleActionConfig.builder()
+                .selector(getOptionalValue(
+                        actionValue,
+                        null)
+                )
                 .cssSelector(
-                        getRequiredValueOrNestedField(
+                        getOptionalNestedField(
                                 AwaitElementToBeVisibleActionConfig.Fields.cssSelector,
-                                actionValue
+                                actionValue,
+                                null
+                        )
+                )
+                .xpathSelector(
+                        getOptionalNestedField(
+                                AwaitElementToBeVisibleActionConfig.Fields.xpathSelector,
+                                actionValue,
+                                null
                         )
                 )
                 .timeout(
@@ -44,15 +56,19 @@ public class AwaitElementToBeVisibleActionProcessor extends AbstractActionProces
     }
 
     @Override
-    public AwaitElementToBeVisibleActionInstance buildActionInstance(CodelessSuiteConfig suiteConfig, FormattingMap formatter, AwaitElementToBeVisibleActionConfig actionConfig) {
+    public AwaitElementToBeVisibleActionInstance buildActionInstance(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, FormattingMap formatter, AwaitElementToBeVisibleActionConfig actionConfig) {
         return AwaitElementToBeVisibleActionInstance.builder()
                 .config(
                         actionConfig
                 )
-                .cssSelector(
-                        buildStringForActionInstance(
-                                AwaitElementToBeVisibleActionInstance.Fields.cssSelector,
-                                actionConfig.getCssSelector(),
+                .selectorType(
+                        loadGeneratorConfig.getDefaultSelectorType()
+                )
+                .selector(
+                        buildRequiredStringSelectorForActionInstance(
+                                actionConfig,
+                                AwaitElementToBeVisibleActionInstance.Fields.selector,
+                                loadGeneratorConfig.getDefaultSelectorType(),
                                 formatter
                         )
                 )
@@ -72,7 +88,9 @@ public class AwaitElementToBeVisibleActionProcessor extends AbstractActionProces
                 driver,
                 actionInstance.getTimeout().toSeconds()
         ).until(
-                ExpectedConditions.visibilityOfElementLocated(By.cssSelector(actionInstance.getCssSelector()))
+                ExpectedConditions.visibilityOfElementLocated(
+                        getActionInstanceLocator(actionInstance)
+                )
         );
     }
 }
