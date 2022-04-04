@@ -330,7 +330,8 @@ a look at the below docs describing available options for the config.yml
 
   ##############################################################################
   # The mode controlling selector type to use while searching elements on the  #
-  # page                                                                       #
+  # page.
+  #                                                                            #
   # Available modes:                                                           #
   # - css                                                                      #
   # - xpath                                                                    #
@@ -338,9 +339,23 @@ a look at the below docs describing available options for the config.yml
   # This is an optional property.                                              #
   # Overrides:                                                                 #
   # - System property name: loadGenerator.defaultSelectorType                  #
-  # - Environment variable name: LOADGENERATOR_DEFAULT_SELECTOR_TYPE           #
+  # - Environment variable name: LOADGENERATOR_DEFAULTSELECTORTYPE             #
   ##############################################################################
   #defaultSelectorType: css
+
+  ##############################################################################
+  # The platform automatically assigns random public IP addresses when         #
+  # creating a browser cloud, and such IPs are not known in advance.           #
+  #                                                                            #
+  # This flag determines should all browsers to have preallocated IPs, for     #
+  # example, to establish network trust on your firewall side.                 #
+  #                                                                            #
+  # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.usePreAllocatedIPs                   #
+  # - Environment variable name: LOADGENERATOR_USEPREALLOCATEDIPS              #
+  ##############################################################################
+  #usePreAllocatedIPs: false
 
 ################################################################################
 # Every load test has a set of one or more named suites.                       #
