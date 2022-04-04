@@ -851,6 +851,7 @@ paths:
         - `createdAt` is a system-level field, so it will be ignored even if you try to submit it.
         - `updatedAt` is a system-level field, so it will be ignored even if you try to submit it.
         - `status` is a system-level field, so it will be ignored even if you try to submit it.
+        - The platform automatically assigns random public IP addresses when creating a browser cloud, and such IPs are not known in advance. Please set `usePreAllocatedIPs` parameter to `true` if you would like all browsers to have preallocated IPs, for example, to establish network trust on your firewall side.
       operationId: createBrowserCloud
       parameters:
         - name: project_key
@@ -880,10 +881,20 @@ paths:
                 value:
                   concurrency: 50
                   duration: 2
+              Create browser cloud with 50 browsers for 2 hours with pre allocated IPs:
+                value:
+                  concurrency: 50
+                  duration: 2
+                  usePreAllocatedIPs: true
               Create browser cloud with 100 browsers for 1 hour:
                 value:
                   concurrency: 100
                   duration: 1
+              Create browser cloud with 100 browsers for 1 hour with pre allocated IPs:
+                value:
+                  concurrency: 100
+                  duration: 1
+                  usePreAllocatedIPs: true
         required: true
       responses:
         '200':
@@ -11625,6 +11636,8 @@ components:
           format: int32
         status:
           type: string
+        usePreAllocatedIPs:
+          type: boolean
     BrowserCloudDetails:
       type: object
       properties:

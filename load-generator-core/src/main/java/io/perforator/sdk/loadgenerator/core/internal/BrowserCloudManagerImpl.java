@@ -90,6 +90,8 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
 
         String projectKey = loadGeneratorConfig.getProjectKey();
         String executionKey = loadGeneratorConfig.getExecutionKey();
+        boolean usePreAllocatedIPs = loadGeneratorConfig.isUsePreAllocatedIPs();
+
         String browserCloudKey;
 
         verifyProjectExists(loadGeneratorContext, projectKey);
@@ -121,7 +123,8 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
                     projectKey,
                     executionKey,
                     concurrency,
-                    durationHours
+                    durationHours,
+                    usePreAllocatedIPs
             );
             LOGGER.info("Created browser cloud {}", browserCloud.getUuid());
             browserCloudKey = browserCloud.getUuid();
@@ -396,10 +399,11 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
         );
     }
 
-    private BrowserCloud createBrowserCloud(LoadGeneratorContextImpl loadGeneratorContext, String projectKey, String executionKey, int concurrency, int duration) throws ApiException {
+    private BrowserCloud createBrowserCloud(LoadGeneratorContextImpl loadGeneratorContext, String projectKey, String executionKey, int concurrency, int duration, boolean usePreAllocatedIPs) throws ApiException {
         BrowserCloud payload = new BrowserCloud();
         payload.setConcurrency(concurrency);
         payload.duration(duration);
+        payload.setUsePreAllocatedIPs(usePreAllocatedIPs);
         return loadGeneratorContext.getBrowserCloudsApi().createBrowserCloud(
                 projectKey,
                 executionKey,
