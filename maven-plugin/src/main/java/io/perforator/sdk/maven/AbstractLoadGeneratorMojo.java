@@ -390,6 +390,20 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
     protected String prioritizeSystemProperties;
     
     /**
+     * The platform automatically assigns random public IP addresses when creating
+     * a browser cloud, and such IPs are not known in advance.
+     * Please set usePreAllocatedIPs parameter to true if you would like all browsers
+     * to have preallocated IPs, for example, to establish network trust on your firewall side.
+     */
+    @Parameter(
+            required = false,
+            defaultValue = LoadGeneratorConfig.DEFAULT_USE_PRE_ALLOCATED_IPS_S,
+            alias = LoadGeneratorConfig.Fields.usePreAllocatedIPs,
+            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.usePreAllocatedIPs
+    )
+    protected String usePreAllocatedIPs;
+    
+    /**
      * The name of the test suite.<br/>
      * Typically this name is used as a top-level transaction covering 
      * the whole suite instance execution.<br/>

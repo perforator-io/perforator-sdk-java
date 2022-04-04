@@ -347,8 +347,9 @@ a look at the below docs describing available options for the config.yml
   # The platform automatically assigns random public IP addresses when         #
   # creating a browser cloud, and such IPs are not known in advance.           #
   #                                                                            #
-  # This flag determines should all browsers to have preallocated IPs, for     #
-  # example, to establish network trust on your firewall side.                 #
+  # Please set usePreAllocatedIPs parameter to true if you would like all      #
+  # browsers to have preallocated IPs, for example, to establish network trust #
+  # on your firewall side.                                                     #
   #                                                                            #
   # This is an optional property.                                              #
   # Overrides:                                                                 #
