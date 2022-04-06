@@ -63,13 +63,12 @@ public class ClickActionProcessor extends AbstractSelectorActionProcessor<ClickA
                         actionConfig
                 )
                 .selectorType(
-                        loadGeneratorConfig.getDefaultSelectorType()
+                        getSelectorType(actionConfig, loadGeneratorConfig.getDefaultSelectorType())
                 )
                 .selector(
                         buildRequiredStringSelectorForActionInstance(
                                 actionConfig,
                                 ClickActionInstance.Fields.selector,
-                                loadGeneratorConfig.getDefaultSelectorType(),
                                 formatter
                         )
                 )

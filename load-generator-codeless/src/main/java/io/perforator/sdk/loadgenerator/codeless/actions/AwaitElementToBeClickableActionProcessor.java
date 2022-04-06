@@ -66,13 +66,12 @@ public class AwaitElementToBeClickableActionProcessor extends AbstractSelectorAc
                         actionConfig
                 )
                 .selectorType(
-                        loadGeneratorConfig.getDefaultSelectorType()
+                        getSelectorType(actionConfig, loadGeneratorConfig.getDefaultSelectorType())
                 )
                 .selector(
                         buildRequiredStringSelectorForActionInstance(
                                 actionConfig,
                                 AwaitElementToBeClickableActionInstance.Fields.selector,
-                                loadGeneratorConfig.getDefaultSelectorType(),
                                 formatter
                         )
                 )
