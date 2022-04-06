@@ -127,12 +127,15 @@ public class InputActionProcessorTest extends AbstractActionProcessorTest<InputA
                 newObjectNode(Map.of(
                         InputActionConfig.Fields.value, new TextNode(VERIFICATION_INPUT_VALUE),
                         InputActionConfig.Fields.xpathSelector, new TextNode(VERIFICATION_XPATH_SELECTOR),
-                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
+                        InputActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_CSS_SELECTOR)
                 )),
                 newObjectNode(Map.of(
                         InputActionConfig.Fields.value, new TextNode(VERIFICATION_INPUT_VALUE),
-                        InputActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_CSS_SELECTOR),
-                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
+                        InputActionConfig.Fields.cssSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        InputActionConfig.Fields.value, new TextNode(VERIFICATION_INPUT_VALUE),
+                        InputActionConfig.Fields.xpathSelector, new TextNode("")
                 ))
         );
     }

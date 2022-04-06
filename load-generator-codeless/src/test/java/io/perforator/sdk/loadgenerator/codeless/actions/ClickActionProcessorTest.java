@@ -75,7 +75,13 @@ public class ClickActionProcessorTest extends AbstractActionProcessorTest<ClickA
                 )),
                 newObjectNode(Map.of(
                         ClickActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_CSS_SELECTOR),
-                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
+                        ClickActionConfig.Fields.xpathSelector, new TextNode(VERIFICATION_XPATH_SELECTOR)
+                )),
+                newObjectNode(Map.of(
+                        ClickActionConfig.Fields.cssSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        ClickActionConfig.Fields.xpathSelector, new TextNode("")
                 ))
         );
     }

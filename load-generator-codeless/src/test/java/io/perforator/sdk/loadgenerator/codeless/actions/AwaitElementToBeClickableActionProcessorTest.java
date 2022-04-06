@@ -81,11 +81,13 @@ public class AwaitElementToBeClickableActionProcessorTest extends AbstractAction
                 )),
                 newObjectNode(Map.of(
                         AwaitElementToBeClickableActionConfig.Fields.xpathSelector, new TextNode(CHECKED_BTN_XPATH_SELECTOR),
-                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
+                        AwaitElementToBeClickableActionConfig.Fields.cssSelector, new TextNode(CHECKED_BTN_CSS_SELECTOR)
                 )),
                 newObjectNode(Map.of(
-                        AwaitElementToBeClickableActionConfig.Fields.cssSelector, new TextNode(CHECKED_BTN_CSS_SELECTOR),
-                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
+                        AwaitElementToBeClickableActionConfig.Fields.xpathSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeClickableActionConfig.Fields.cssSelector, new TextNode("")
                 ))
         );
     }

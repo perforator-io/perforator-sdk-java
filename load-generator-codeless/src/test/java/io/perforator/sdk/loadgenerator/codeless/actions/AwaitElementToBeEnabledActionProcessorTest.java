@@ -80,11 +80,13 @@ public class AwaitElementToBeEnabledActionProcessorTest extends AbstractActionPr
                 )),
                 newObjectNode(Map.of(
                         AwaitElementToBeEnabledActionConfig.Fields.xpathSelector, new TextNode(CHECKED_BTN_XPATH_SELECTOR),
-                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
+                        AwaitElementToBeEnabledActionConfig.Fields.cssSelector, new TextNode(CHECKED_BTN_CSS_SELECTOR)
                 )),
                 newObjectNode(Map.of(
-                        AwaitElementToBeEnabledActionConfig.Fields.cssSelector, new TextNode(CHECKED_BTN_CSS_SELECTOR),
-                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
+                        AwaitElementToBeEnabledActionConfig.Fields.cssSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeEnabledActionConfig.Fields.xpathSelector, new TextNode("")
                 ))
         );
     }

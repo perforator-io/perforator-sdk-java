@@ -76,11 +76,13 @@ public class FocusActionProcessorTest extends AbstractActionProcessorTest<FocusA
                 )),
                 newObjectNode(Map.of(
                         FocusActionConfig.Fields.xpathSelector, new TextNode(VERIFICATION_XPATH_SELECTOR),
-                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
+                        FocusActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_CSS_SELECTOR)
                 )),
                 newObjectNode(Map.of(
-                        FocusActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_XPATH_SELECTOR),
-                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
+                        FocusActionConfig.Fields.cssSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        FocusActionConfig.Fields.xpathSelector, new TextNode("")
                 ))
         );
     }

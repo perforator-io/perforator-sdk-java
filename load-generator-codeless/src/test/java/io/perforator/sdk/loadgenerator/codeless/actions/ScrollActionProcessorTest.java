@@ -79,11 +79,13 @@ public class ScrollActionProcessorTest extends AbstractActionProcessorTest<Scrol
                 )),
                 newObjectNode(Map.of(
                         ScrollActionConfig.Fields.xpathSelector, new TextNode(VERIFICATION_XPATH_SELECTOR),
-                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
+                        ScrollActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_CSS_SELECTOR)
                 )),
                 newObjectNode(Map.of(
-                        ScrollActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_CSS_SELECTOR),
-                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
+                        ScrollActionConfig.Fields.xpathSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        ScrollActionConfig.Fields.cssSelector, new TextNode("")
                 ))
         );
     }

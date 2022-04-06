@@ -80,11 +80,13 @@ public class AwaitElementToBeInvisibleActionProcessorTest extends AbstractAction
                 )),
                 newObjectNode(Map.of(
                         AwaitElementToBeInvisibleActionConfig.Fields.xpathSelector, new TextNode(CHECKED_BTN_XPATH_SELECTOR),
-                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.css.name())
+                        AwaitElementToBeInvisibleActionConfig.Fields.cssSelector, new TextNode(CHECKED_BTN_CSS_SELECTOR)
                 )),
                 newObjectNode(Map.of(
-                        AwaitElementToBeInvisibleActionConfig.Fields.cssSelector, new TextNode(CHECKED_BTN_CSS_SELECTOR),
-                        SELECTOR_TYPE_KEY, new TextNode(SelectorType.xpath.name())
+                        AwaitElementToBeInvisibleActionConfig.Fields.cssSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeInvisibleActionConfig.Fields.xpathSelector, new TextNode("")
                 ))
         );
     }
