@@ -76,13 +76,12 @@ public class InputActionProcessor extends AbstractSelectorActionProcessor<InputA
                         )
                 )
                 .selectorType(
-                        loadGeneratorConfig.getDefaultSelectorType()
+                        getSelectorType(actionConfig, loadGeneratorConfig.getDefaultSelectorType())
                 )
                 .selector(
                         buildRequiredStringSelectorForActionInstance(
                                 actionConfig,
                                 InputActionInstance.Fields.selector,
-                                loadGeneratorConfig.getDefaultSelectorType(),
                                 formatter
                         )
                 )

@@ -63,13 +63,12 @@ public class FocusActionProcessor extends AbstractSelectorActionProcessor<FocusA
                         actionConfig
                 )
                 .selectorType(
-                        loadGeneratorConfig.getDefaultSelectorType()
+                        getSelectorType(actionConfig, loadGeneratorConfig.getDefaultSelectorType())
                 )
                 .selector(
                         buildRequiredStringSelectorForActionInstance(
                                 actionConfig,
                                 FocusActionInstance.Fields.selector,
-                                loadGeneratorConfig.getDefaultSelectorType(),
                                 formatter
                         )
                 )

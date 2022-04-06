@@ -16,34 +16,35 @@ import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.SelectorType;
 import org.openqa.selenium.By;
 
-public abstract class AbstractSelectorActionProcessor<T extends SelectorActionConfig, V extends SelectorActionInstance<T>> extends AbstractActionProcessor<T, V>{
+public abstract class AbstractSelectorActionProcessor<T extends SelectorActionConfig, V extends SelectorActionInstance<T>> extends AbstractActionProcessor<T, V> {
     public AbstractSelectorActionProcessor(String actionName) {
         super(actionName);
+    }
+
+    protected SelectorType getSelectorType(
+            T actionConfig,
+            SelectorType selectorType
+    ) {
+        if (isNotBlank(actionConfig.getSelector())) {
+            return selectorType;
+        }
+        if (isNotBlank(actionConfig.getCssSelector())) {
+            return SelectorType.css;
+        }
+        if (isNotBlank(actionConfig.getXpathSelector())) {
+            return SelectorType.xpath;
+        }
+        return null;
     }
 
     protected String buildRequiredStringSelectorForActionInstance(
             T actionConfig,
             String selectorFieldName,
-            SelectorType selectorType,
             FormattingMap formatter
     ) {
-
-        String targetSelector = actionConfig.getSelector();
-
-        if(isBlank(targetSelector)){
-            switch (selectorType){
-                case css:
-                    targetSelector = actionConfig.getCssSelector();
-                    break;
-                case xpath:
-                    targetSelector = actionConfig.getXpathSelector();
-                    break;
-            }
-        }
-
         return buildStringForActionInstance(
                 selectorFieldName,
-                targetSelector,
+                getTargetSelector(actionConfig),
                 formatter,
                 true
         );
@@ -64,19 +65,19 @@ public abstract class AbstractSelectorActionProcessor<T extends SelectorActionCo
         if (isBlank(actionConfig.getCssSelector()) && isBlank(actionConfig.getXpathSelector()) && isBlank(actionConfig.getSelector())) {
             throw new RuntimeException(
                     getActionName()
-                            + ".cssSelector or" +
+                            + ".cssSelector or " +
                             getActionName()
-                            + ".xpathSelector or" +
+                            + ".xpathSelector or " +
                             getActionName()
                             + " text value is required"
             );
         }
     }
 
-    protected By getActionInstanceLocator(V actionInstance){
+    protected By getActionInstanceLocator(V actionInstance) {
         SelectorType selectorType = actionInstance.getSelectorType();
         String selector = actionInstance.getSelector();
-        switch (actionInstance.getSelectorType()){
+        switch (actionInstance.getSelectorType()) {
             case css:
                 return By.cssSelector(selector);
             case xpath:
@@ -86,11 +87,25 @@ public abstract class AbstractSelectorActionProcessor<T extends SelectorActionCo
         }
     }
 
-    private boolean isBlank(String str){
+    private String getTargetSelector(T actionConfig) {
+        if (isNotBlank(actionConfig.getSelector())) {
+            return actionConfig.getSelector();
+        }
+        if (isNotBlank(actionConfig.getCssSelector())) {
+            return actionConfig.getCssSelector();
+        }
+        if (isNotBlank(actionConfig.getXpathSelector())) {
+            return actionConfig.getXpathSelector();
+        }
+
+        return null;
+    }
+
+    private boolean isBlank(String str) {
         return str == null || str.isBlank();
     }
 
-    private boolean isNotBlank(String str){
+    private boolean isNotBlank(String str) {
         return str != null && !str.isBlank();
     }
 }

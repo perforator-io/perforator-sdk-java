@@ -89,13 +89,12 @@ public class AwaitElementToBeEnabledActionProcessor extends AbstractSelectorActi
                         actionConfig
                 )
                 .selectorType(
-                        loadGeneratorConfig.getDefaultSelectorType()
+                        getSelectorType(actionConfig, loadGeneratorConfig.getDefaultSelectorType())
                 )
                 .selector(
                         buildRequiredStringSelectorForActionInstance(
                                 actionConfig,
                                 AwaitElementToBeEnabledActionInstance.Fields.selector,
-                                loadGeneratorConfig.getDefaultSelectorType(),
                                 formatter
                         )
                 )
