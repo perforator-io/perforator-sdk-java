@@ -17,24 +17,30 @@ import io.perforator.sdk.loadgenerator.codeless.config.SelectorType;
 import org.openqa.selenium.By;
 
 public abstract class AbstractSelectorActionProcessor<T extends SelectorActionConfig, V extends SelectorActionInstance<T>> extends AbstractActionProcessor<T, V> {
+    
     public AbstractSelectorActionProcessor(String actionName) {
         super(actionName);
     }
 
     protected SelectorType getSelectorType(
             T actionConfig,
-            SelectorType selectorType
+            SelectorType defaultSelectorType
     ) {
         if (isNotBlank(actionConfig.getSelector())) {
-            return selectorType;
+            return defaultSelectorType;
         }
+
         if (isNotBlank(actionConfig.getCssSelector())) {
             return SelectorType.css;
         }
+
         if (isNotBlank(actionConfig.getXpathSelector())) {
             return SelectorType.xpath;
         }
-        return null;
+
+        throw new RuntimeException(
+                "Can't determine selector type from " + actionConfig.getActionName()
+        );
     }
 
     protected String buildRequiredStringSelectorForActionInstance(
@@ -53,23 +59,21 @@ public abstract class AbstractSelectorActionProcessor<T extends SelectorActionCo
     @Override
     public void validateActionConfig(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, T actionConfig) {
         super.validateActionConfig(loadGeneratorConfig, suiteConfig, actionConfig);
+        
         if (isNotBlank(actionConfig.getCssSelector()) && isNotBlank(actionConfig.getXpathSelector())) {
             throw new RuntimeException(
-                    "Only '" + getActionName()
-                            + ".cssSelector' or '" +
-                            getActionName()
-                            + ".xpathSelector' must be required"
+                    "Action '" + actionConfig.getActionName() + "'"
+                    + " should have either 'cssSelector' or 'xpathSelector' - "
+                    + "it can't have both at the same time."
             );
         }
 
         if (isBlank(actionConfig.getCssSelector()) && isBlank(actionConfig.getXpathSelector()) && isBlank(actionConfig.getSelector())) {
             throw new RuntimeException(
-                    getActionName()
-                            + ".cssSelector or " +
-                            getActionName()
-                            + ".xpathSelector or " +
-                            getActionName()
-                            + " text value is required"
+                    "Action '" + actionConfig.getActionName() + "'"
+                    + " should have selector specified either as inplace value, "
+                    + "or as a child node 'cssSelector', "
+                    + "or as a child node 'xpathSelector'."
             );
         }
     }
@@ -77,6 +81,7 @@ public abstract class AbstractSelectorActionProcessor<T extends SelectorActionCo
     protected By getActionInstanceLocator(V actionInstance) {
         SelectorType selectorType = actionInstance.getSelectorType();
         String selector = actionInstance.getSelector();
+        
         switch (actionInstance.getSelectorType()) {
             case css:
                 return By.cssSelector(selector);

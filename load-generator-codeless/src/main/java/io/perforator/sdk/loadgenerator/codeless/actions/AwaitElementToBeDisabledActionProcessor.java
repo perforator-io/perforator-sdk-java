@@ -32,9 +32,11 @@ public class AwaitElementToBeDisabledActionProcessor extends AbstractSelectorAct
     @Override
     public AwaitElementToBeDisabledActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return AwaitElementToBeDisabledActionConfig.builder()
-                .selector(getOptionalValue(
-                        actionValue,
-                        null)
+                .selector(
+                        getOptionalValue(
+                                actionValue,
+                                null
+                        )
                 )
                 .cssSelector(
                         getOptionalNestedField(

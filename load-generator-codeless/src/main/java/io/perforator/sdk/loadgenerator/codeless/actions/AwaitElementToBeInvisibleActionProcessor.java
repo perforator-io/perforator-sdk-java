@@ -27,9 +27,11 @@ public class AwaitElementToBeInvisibleActionProcessor extends AbstractSelectorAc
     @Override
     public AwaitElementToBeInvisibleActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return AwaitElementToBeInvisibleActionConfig.builder()
-                .selector(getOptionalValue(
-                        actionValue,
-                        null)
+                .selector(
+                        getOptionalValue(
+                                actionValue,
+                                null
+                        )
                 )
                 .cssSelector(
                         getOptionalNestedField(

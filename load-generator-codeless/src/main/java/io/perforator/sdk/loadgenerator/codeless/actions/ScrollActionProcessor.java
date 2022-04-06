@@ -28,9 +28,11 @@ public class ScrollActionProcessor extends AbstractSelectorActionProcessor<Scrol
     @Override
     public ScrollActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return ScrollActionConfig.builder()
-                .selector(getOptionalValue(
-                        actionValue,
-                        null)
+                .selector(
+                        getOptionalValue(
+                                actionValue,
+                                null
+                        )
                 )
                 .cssSelector(
                         getOptionalNestedField(

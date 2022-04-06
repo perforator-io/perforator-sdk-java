@@ -28,9 +28,11 @@ public class FocusActionProcessor extends AbstractSelectorActionProcessor<FocusA
     @Override
     public FocusActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return FocusActionConfig.builder()
-                .selector(getOptionalValue(
-                        actionValue,
-                        null)
+                .selector(
+                        getOptionalValue(
+                                actionValue,
+                                null
+                        )
                 )
                 .cssSelector(
                         getOptionalNestedField(

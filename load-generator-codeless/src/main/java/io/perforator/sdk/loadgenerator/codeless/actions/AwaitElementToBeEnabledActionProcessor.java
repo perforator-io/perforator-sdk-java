@@ -54,9 +54,11 @@ public class AwaitElementToBeEnabledActionProcessor extends AbstractSelectorActi
     @Override
     public AwaitElementToBeEnabledActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return AwaitElementToBeEnabledActionConfig.builder()
-                .selector(getOptionalValue(
-                        actionValue,
-                        null)
+                .selector(
+                        getOptionalValue(
+                                actionValue,
+                                null
+                        )
                 )
                 .cssSelector(
                         getOptionalNestedField(

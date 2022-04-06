@@ -28,9 +28,11 @@ public class ClickActionProcessor extends AbstractSelectorActionProcessor<ClickA
     @Override
     public ClickActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return ClickActionConfig.builder()
-                .selector(getOptionalValue(
-                        actionValue,
-                        null)
+                .selector(
+                        getOptionalValue(
+                                actionValue,
+                                null
+                        )
                 )
                 .cssSelector(
                         getOptionalNestedField(

@@ -34,9 +34,11 @@ public class InputActionProcessor extends AbstractSelectorActionProcessor<InputA
                                 actionValue
                         )
                 )
-                .selector(getOptionalValue(
-                        actionValue,
-                        null)
+                .selector(
+                        getOptionalValue(
+                                actionValue,
+                                null
+                        )
                 )
                 .cssSelector(
                         getOptionalNestedField(

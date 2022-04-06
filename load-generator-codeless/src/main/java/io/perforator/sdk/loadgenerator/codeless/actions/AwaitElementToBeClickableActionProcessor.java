@@ -26,9 +26,11 @@ public class AwaitElementToBeClickableActionProcessor extends AbstractSelectorAc
     @Override
     public AwaitElementToBeClickableActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return AwaitElementToBeClickableActionConfig.builder()
-                .selector(getOptionalValue(
-                        actionValue,
-                        null)
+                .selector(
+                        getOptionalValue(
+                                actionValue,
+                                null
+                        )
                 )
                 .cssSelector(
                         getOptionalNestedField(
