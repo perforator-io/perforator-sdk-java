@@ -39,7 +39,7 @@ public class AwaitElementToBeInvisibleActionInstance implements SelectorActionIn
         return new StringBuilder()
                 .append(Fields.selectorType).append(" = ").append(selectorType)
                 .append(", ")
-                .append(Fields.selector).append(" = ").append(selectorType)
+                .append(Fields.selector).append(" = ").append(selector)
                 .append(", ")
                 .append(Fields.timeout).append(" = ").append(timeout)
                 .toString();
