@@ -330,7 +330,7 @@ a look at the below docs describing available options for the config.yml
 
   ##############################################################################
   # The mode controlling selector type to use while searching elements on the  #
-  # page.
+  # page.                                                                      #
   #                                                                            #
   # Available modes:                                                           #
   # - css                                                                      #
@@ -690,15 +690,19 @@ a look at the below docs describing available options for the config.yml
         # Action to await element to be visible on the page of the current     #
         # browser window.                                                      #
         #                                                                      #
-        # Parameter of this action specifies css or xpath selector to find     #
-        # element in the DOM tree of the page. You can use only one of two     #
-        # parameters. It's cssSelector or xpathSelector.                       #
-        # For example:                                                         #
-        # 1)- awaitElementToBeVisible:                                         #
-        #       cssSelector: '#async-container'                                #
+        # Parameter of this action specifies selector for the element to find  #
+        # in the DOM tree of the page. By default, load-generator uses 'css'   #
+        # selectors, but you can switch default and global behavior to use     #
+        # 'xpath' based selectors via changing 'defaultSelectorType' property  #
+        # of the load-generator.                                               #
         #                                                                      #
-        # 2)- awaitElementToBeVisible:                                         #
-        #       xpathSelector: '//*[@id="async-container"]'                    #
+        # Additionally, if you want to have more granular control over selector#
+        # type, you can specify selector as a child property, for example:     #
+        # - awaitElementToBeVisible:                                           #
+        #     cssSelector: '#async-container'                                  #
+        #                                                                      #
+        # - awaitElementToBeVisible:                                           #
+        #     xpathSelector: '//*[@id="async-container"]'                      #
         #                                                                      #
         # Element is visible when it is present in the DOM tree of the page and#
         # it is visible. Visibility means that the element is not only         #
@@ -720,15 +724,19 @@ a look at the below docs describing available options for the config.yml
         # Action to await element to be clickable on the page of the current   #
         # browser window.                                                      #
         #                                                                      #
-        # Parameter of this action specifies css or xpath selector to find     #
-        # element in the DOM tree of the page. You can use only one of two     #
-        # parameters. It's cssSelector or xpathSelector.                       #
-        # For example:                                                         #
-        # 1)- awaitElementToBeClickable:                                       #
-        #       cssSelector: '#async-container'                                #
+        # Parameter of this action specifies selector for the element to find  #
+        # in the DOM tree of the page. By default, load-generator uses 'css'   #
+        # selectors, but you can switch default and global behavior to use     #
+        # 'xpath' based selectors via changing 'defaultSelectorType' property  #
+        # of the load-generator.                                               #
         #                                                                      #
-        # 2)- awaitElementToBeClickable:                                       #
-        #       xpathSelector: '//*[@id="async-container"]'                    #
+        # Additionally, if you want to have more granular control over selector#
+        # type, you can specify selector as a child property, for example:     #
+        # - awaitElementToBeClickable:                                         #
+        #     cssSelector: '#form-submit-button'                               #
+        #                                                                      #
+        # - awaitElementToBeClickable:                                         #
+        #     xpathSelector: '//*[@id="form-submit-button"]'                   #
         #                                                                      #
         # Element is clickable when it is visible on the page, it is enabled,  #
         # and you can click on it.                                             #
@@ -749,15 +757,19 @@ a look at the below docs describing available options for the config.yml
         # Action to await element to be disabled on the page of the current    #
         # browser window.                                                      #
         #                                                                      #
-        # Parameter of this action specifies css or xpath selector to find     #
-        # element in the DOM tree of the page. You can use only one of two     #
-        # parameters. It's cssSelector or xpathSelector.                       #
-        # For example:                                                         #
-        # 1)- awaitElementToBeDisabled:                                        #
-        #       cssSelector: '#async-container'                                #
+        # Parameter of this action specifies selector for the element to find  #
+        # in the DOM tree of the page. By default, load-generator uses 'css'   #
+        # selectors, but you can switch default and global behavior to use     #
+        # 'xpath' based selectors via changing 'defaultSelectorType' property  #
+        # of the load-generator.                                               #
         #                                                                      #
-        # 2)- awaitElementToBeDisabled:                                        #
-        #       xpathSelector: '//*[@id="async-container"]'                    #
+        # Additionally, if you want to have more granular control over selector#
+        # type, you can specify selector as a child property, for example:     #
+        # - awaitElementToBeDisabled:                                          #
+        #     cssSelector: '#disabled-element'                                 #
+        #                                                                      #
+        # - awaitElementToBeDisabled:                                          #
+        #     xpathSelector: '//*[@id="disabled-element"]'                     #
         #                                                                      #
         # Element is disabled when it is present in the DOM tree,              #
         # it is visible, and it has a *disabled* attribute turned on.          #
@@ -779,15 +791,19 @@ a look at the below docs describing available options for the config.yml
         # Action to await element to be enabled on the page of the current     #
         # browser window.                                                      #
         #                                                                      #
-        # Parameter of this action specifies css or xpath selector to find     #
-        # element in the DOM tree of the page. You can use only one of two     #
-        # parameters. It's cssSelector or xpathSelector.                       #
-        # For example:                                                         #
-        # 1)- awaitElementToBeEnabled:                                         #
-        #       cssSelector: '#async-container'                                #
+        # Parameter of this action specifies selector for the element to find  #
+        # in the DOM tree of the page. By default, load-generator uses 'css'   #
+        # selectors, but you can switch default and global behavior to use     #
+        # 'xpath' based selectors via changing 'defaultSelectorType' property  #
+        # of the load-generator.                                               #
         #                                                                      #
-        # 2)- awaitElementToBeEnabled:                                         #
-        #       xpathSelector: '//*[@id="async-container"]'                    #
+        # Additionally, if you want to have more granular control over selector#
+        # type, you can specify selector as a child property, for example:     #
+        # - awaitElementToBeEnabled:                                           #
+        #     cssSelector: '#enabled-element'                                  #
+        #                                                                      #
+        # - awaitElementToBeEnabled:                                           #
+        #     xpathSelector: '//*[@id="enabled-element"]'                      #
         #                                                                      #
         # Element is enabled when it is present in the DOM tree,               #
         # it is visible, and it has no *disabled* attribute.                   #
@@ -808,15 +824,19 @@ a look at the below docs describing available options for the config.yml
         # Action to await element to be invisible on the page of the current   #
         # browser window.                                                      #
         #                                                                      #
-        # Parameter of this action specifies css or xpath selector to find     #
-        # element in the DOM tree of the page. You can use only one of two     #
-        # parameters. It's cssSelector or xpathSelector.                       #
-        # For example:                                                         #
-        # 1)- awaitElementToBeInvisible:                                       #
-        #       cssSelector: '#async-container'                                #
+        # Parameter of this action specifies selector for the element to find  #
+        # in the DOM tree of the page. By default, load-generator uses 'css'   #
+        # selectors, but you can switch default and global behavior to use     #
+        # 'xpath' based selectors via changing 'defaultSelectorType' property  #
+        # of the load-generator.                                               #
         #                                                                      #
-        # 2)- awaitElementToBeInvisible:                                       #
-        #       xpathSelector: '//*[@id="async-container"]'                    #
+        # Additionally, if you want to have more granular control over selector#
+        # type, you can specify selector as a child property, for example:     #
+        # - awaitElementToBeInvisible:                                         #
+        #     cssSelector: '#invisible-element'                                #
+        #                                                                      #
+        # - awaitElementToBeInvisible:                                         #
+        #     xpathSelector: '//*[@id="invisible-element"]'                    #
         #                                                                      #
         # Element is invisible when it is either invisible or not present      #
         # in the DOM tree.                                                     #
@@ -844,15 +864,19 @@ a look at the below docs describing available options for the config.yml
         ########################################################################
         # Action to click on the element in the current browser window.        #
         #                                                                      #
-        # Parameter of this action specifies css or xpath selector to find     #
-        # element in the DOM tree of the page. You can use only one of two     #
-        # parameters. It's cssSelector or xpathSelector.                       #
-        # For example:                                                         #
-        # 1)- click:                                                           #
-        #       cssSelector: '#async-container'                                #
+        # Parameter of this action specifies selector for the element to find  #
+        # in the DOM tree of the page. By default, load-generator uses 'css'   #
+        # selectors, but you can switch default and global behavior to use     #
+        # 'xpath' based selectors via changing 'defaultSelectorType' property  #
+        # of the load-generator.                                               #
         #                                                                      #
-        # 2)- click:                                                           #
-        #       xpathSelector: '//*[@id="async-container"]'                    #
+        # Additionally, if you want to have more granular control over selector#
+        # type, you can specify selector as a child property, for example:     #
+        # - click:                                                             #
+        #     cssSelector: '#clickable-element'                                #
+        #                                                                      #
+        # - click:                                                             #
+        #     xpathSelector: '//*[@id="clickable-element"]'                    #
         #                                                                      #
         # Click action can be performed only on clickable elements, so as a    #
         # prerequisite, an action waits till element is present in the DOM     #
@@ -902,15 +926,19 @@ a look at the below docs describing available options for the config.yml
         ########################################################################
         # Action to focus on the element in the current browser window.        #
         #                                                                      #
-        # Parameter of this action specifies css or xpath selector to find     #
-        # element in the DOM tree of the page. You can use only one of two     #
-        # parameters. It's cssSelector or xpathSelector.                       #
-        # For example:                                                         #
-        # 1)- focus:                                                           #
-        #       cssSelector: '#async-container'                                #
+        # Parameter of this action specifies selector for the element to find  #
+        # in the DOM tree of the page. By default, load-generator uses 'css'   #
+        # selectors, but you can switch default and global behavior to use     #
+        # 'xpath' based selectors via changing 'defaultSelectorType' property  #
+        # of the load-generator.                                               #
         #                                                                      #
-        # 2)- focus:                                                           #
-        #       xpathSelector: '//*[@id="async-container"]'                    #
+        # Additionally, if you want to have more granular control over selector#
+        # type, you can specify selector as a child property, for example:     #
+        # - focus:                                                             #
+        #     cssSelector: '#element'                                          #
+        #                                                                      #
+        # - focus:                                                             #
+        #     xpathSelector: '//*[@id="element"]'                              #
         #                                                                      #
         # Focus action can be performed only on visible elements, so as a      #
         # prerequisite, an action waits till element is present in the DOM     #
@@ -932,21 +960,9 @@ a look at the below docs describing available options for the config.yml
         # Action to enter text into input element of the current browser window#
         #                                                                      #
         # This action has two required parameters:                             #
-        # - cssSelector or xpathSelector, css or xpath selector of the element #
-        # where to enter text.                                                 #
+        # - either cssSelector or xpathSelector, specifying target element     #
+        # where to enter a text.                                               #
         # - value, actual text to enter into the input element.                #
-        #                                                                      #
-        # This action uses specifies css or xpath selector to find             #
-        # element in the DOM tree of the page. You can use only one of two     #
-        # parameters. It's cssSelector or xpathSelector.                       #
-        # For example:                                                         #
-        # 1)- input:                                                           #
-        #       cssSelector: '#async-container'                                #
-        #       value: 'text to enter or file path to upload'                  #
-        #                                                                      #
-        # 2)- input:                                                           #
-        #       xpathSelector: '//*[@id="async-container"]'                    #
-        #       value: 'text to enter or file path to upload'                  #
         #                                                                      #
         # Such action can also be used to upload files when target element is  #
         # '<input type="file">'. To do so, please specify path to the file you #
@@ -975,15 +991,19 @@ a look at the below docs describing available options for the config.yml
         ########################################################################
         # Action to scroll till the element in the current browser window.     #
         #                                                                      #
-        # Parameter of this action specifies css or xpath selector to find     #
-        # element in the DOM tree of the page. You can use only one of two     #
-        # parameters. It's cssSelector or xpathSelector.                       #
-        # For example:                                                         #
-        # 1)- scroll:                                                          #
-        #       cssSelector: '#async-container'                                #
+        # Parameter of this action specifies selector for the element to find  #
+        # in the DOM tree of the page. By default, load-generator uses 'css'   #
+        # selectors, but you can switch default and global behavior to use     #
+        # 'xpath' based selectors via changing 'defaultSelectorType' property  #
+        # of the load-generator.                                               #
         #                                                                      #
-        # 2)- scroll:                                                          #
-        #       xpathSelector: '//*[@id="async-container"]'                    #
+        # Additionally, if you want to have more granular control over selector#
+        # type, you can specify selector as a child property, for example:     #
+        # - scroll:                                                            #
+        #     cssSelector: '#element'                                          #
+        #                                                                      #
+        # - scroll:                                                            #
+        #     xpathSelector: '//*[@id="element"]'                              #
         #                                                                      #
         # Scroll action can be performed only on visible elements, so as a     #
         # prerequisite, an action waits till element is present in the DOM     #
