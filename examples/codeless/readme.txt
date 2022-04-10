@@ -292,7 +292,7 @@ a look at the below docs describing available options for the config.yml
   # This is an optional property.                                              #
   # Overrides:                                                                 #
   # - System property name: loadGenerator.logSteps                             #
-  # - Environment variable name: LOADGENERATOR_LOGTSTEPS                       #
+  # - Environment variable name: LOADGENERATOR_LOGSTEPS                        #
   ##############################################################################
   #logSteps: false
   
