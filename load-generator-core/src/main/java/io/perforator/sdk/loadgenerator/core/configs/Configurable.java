@@ -10,8 +10,6 @@
  */
 package io.perforator.sdk.loadgenerator.core.configs;
 
-import com.google.gson.Gson;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.time.Duration;
@@ -92,7 +90,6 @@ public interface Configurable {
 
     private static void applyDefaults(Object instance, Field field, String prefix, Function<String, String>... providers) throws ReflectiveOperationException {
         String defaultValue = getDefaultValue(field.getName(), prefix, providers);
-        defaultValue = buildValidValue(defaultValue, field.getType());
 
         if (defaultValue == null) {
             return;
@@ -123,7 +120,7 @@ public interface Configurable {
         } else if (field.getType() == WebDriverMode.class) {
             field.set(instance, WebDriverMode.valueOf(defaultValue));
         } else if (field.getType() == List.class) {
-            field.set(instance, parseJson(defaultValue, List.class));
+            field.set(instance, parseList(defaultValue));
         } else if (field.getType() == ChromeMode.class) {
             field.set(instance, ChromeMode.valueOf(defaultValue));
         } else if (field.getType() == Class.class) {
@@ -143,9 +140,21 @@ public interface Configurable {
             );
         }
     }
-
-    private static <T> T parseJson(String value, Class<T> cl) {
-        return new Gson().fromJson(value, cl);
+    
+    private static List<String> parseList(String items) {
+        if(items == null || items.isBlank()) {
+            return null;
+        }
+        
+        return Arrays.stream(
+                items.split(",")
+        ).map(
+                String::trim
+        ).filter(
+                i -> i != null && !i.isBlank()
+        ).collect(
+                Collectors.toList()
+        );
     }
 
     private static String getDefaultValue(String fieldName, String prefix, Function<String, String>... providers) {
@@ -160,21 +169,6 @@ public interface Configurable {
         }
 
         return null;
-    }
-
-    private static String buildValidValue(String value, Class<?> valueClass) {
-        if(value == null || value.isBlank()){
-            return null;
-        }
-        value = value.trim();
-
-        if(valueClass == List.class){
-            return formatValueToJsonArray(value);
-        }
-        if(valueClass == String[].class){
-            return formatValueToJsonArray(value);
-        }
-        return value;
     }
 
     private static String formatValueToJsonArray(String value){

@@ -25,7 +25,7 @@ public class LoadGeneratorConfigTest extends AbstractConfigTest<LoadGeneratorCon
         return Map.of(
                 LoadGeneratorConfig.Fields.apiClientId, UUID.randomUUID().toString(),
                 LoadGeneratorConfig.Fields.logWorkerID, !LoadGeneratorConfig.DEFAULT_LOG_WORKER_ID + "",
-                LoadGeneratorConfig.Fields.dataCapturingExcludes, "http://*.example.com, http://perforator.io/robots.txt"
+                LoadGeneratorConfig.Fields.dataCapturingExcludes, "https://example.com/path/to/exclude, https://*.example.com/path/tracking.*"
         );
     }
     
