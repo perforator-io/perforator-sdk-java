@@ -171,29 +171,6 @@ public interface Configurable {
         return null;
     }
 
-    private static String formatValueToJsonArray(String value){
-        String[] splitedValue = value.split(",");
-        value = Arrays.stream(splitedValue).map(v -> {
-            v = v.trim();
-            if(v.charAt(0) != '"'){
-                v = "\"" + v;
-            }
-            if(v.trim().charAt(v.length() - 1) != '"'){
-                v = v + "\"";
-            }
-            return v;
-        }).collect(Collectors.joining(","));
-
-        if(value.charAt(0) != '['){
-            value = "[" + value;
-        }
-
-        if(value.charAt(value.length() - 1) != ']'){
-            value = value + "]";
-        }
-        return value;
-    }
-
     private static List<String> buildNamesPermutations(String fieldName, String prefix) {
         List<String> result = new ArrayList<>();
 
