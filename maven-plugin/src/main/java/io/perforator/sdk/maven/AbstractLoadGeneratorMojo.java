@@ -424,7 +424,7 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
             alias = LoadGeneratorConfig.Fields.dataCapturingExcludes,
             property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.dataCapturingExcludes
     )
-    protected List<String> dataCapturingExcludes;
+    protected String dataCapturingExcludes;
     
     /**
      * The name of the test suite.<br/>
