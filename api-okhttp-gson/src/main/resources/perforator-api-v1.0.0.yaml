@@ -852,7 +852,7 @@ paths:
         - `updatedAt` is a system-level field, so it will be ignored even if you try to submit it.
         - `status` is a system-level field, so it will be ignored even if you try to submit it.
         - The platform automatically assigns random public IP addresses when creating a browser cloud, and such IPs are not known in advance. Please set `usePreAllocatedIPs` parameter to `true` if you would like all browsers to have preallocated IPs, for example, to establish network trust on your firewall side.
-        - Please set the string's array to `dataCapturingExcludes` parameter if you need to exclude some requests from capturing
+        - It might be a case when you need to exclude certain HTTP requests from capturing by cloud-based browsers so such requests don't affect analytics. Feel free to supply an optional parameter `dataCapturingExcludes` with the list of URLs to exclude from capturing.
       operationId: createBrowserCloud
       parameters:
         - name: project_key
@@ -901,8 +901,8 @@ paths:
                   concurrency: 50
                   duration: 2
                   dataCapturingExcludes:
-                    - https://example.com/font.ttf
-                    - https://example.com/page/*
+                    - 'https://example.com/font.ttf'
+                    - 'https://example.com/page/*'
         required: true
       responses:
         '200':
