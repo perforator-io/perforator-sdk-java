@@ -10,12 +10,16 @@
  */
 package io.perforator.sdk.loadgenerator.core.configs;
 
+import com.google.gson.Gson;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Interface for configuration classes which fields can get default values using
@@ -88,6 +92,7 @@ public interface Configurable {
 
     private static void applyDefaults(Object instance, Field field, String prefix, Function<String, String>... providers) throws ReflectiveOperationException {
         String defaultValue = getDefaultValue(field.getName(), prefix, providers);
+        defaultValue = buildValidValue(defaultValue, field.getType());
 
         if (defaultValue == null) {
             return;
@@ -117,6 +122,8 @@ public interface Configurable {
             field.set(instance, parseDuration(defaultValue));
         } else if (field.getType() == WebDriverMode.class) {
             field.set(instance, WebDriverMode.valueOf(defaultValue));
+        } else if (field.getType() == List.class) {
+            field.set(instance, parseJson(defaultValue, List.class));
         } else if (field.getType() == ChromeMode.class) {
             field.set(instance, ChromeMode.valueOf(defaultValue));
         } else if (field.getType() == Class.class) {
@@ -137,9 +144,12 @@ public interface Configurable {
         }
     }
 
+    private static <T> T parseJson(String value, Class<T> cl) {
+        return new Gson().fromJson(value, cl);
+    }
+
     private static String getDefaultValue(String fieldName, String prefix, Function<String, String>... providers) {
         List<String> permutations = buildNamesPermutations(fieldName, prefix);
-
         for (String name : permutations) {
             for (Function<String, String> provider : providers) {
                 String result = provider.apply(name);
@@ -150,6 +160,44 @@ public interface Configurable {
         }
 
         return null;
+    }
+
+    private static String buildValidValue(String value, Class<?> valueClass) {
+        if(value == null || value.isBlank()){
+            return null;
+        }
+        value = value.trim();
+
+        if(valueClass == List.class){
+            return formatValueToJsonArray(value);
+        }
+        if(valueClass == String[].class){
+            return formatValueToJsonArray(value);
+        }
+        return value;
+    }
+
+    private static String formatValueToJsonArray(String value){
+        String[] splitedValue = value.split(",");
+        value = Arrays.stream(splitedValue).map(v -> {
+            v = v.trim();
+            if(v.charAt(0) != '"'){
+                v = "\"" + v;
+            }
+            if(v.trim().charAt(v.length() - 1) != '"'){
+                v = v + "\"";
+            }
+            return v;
+        }).collect(Collectors.joining(","));
+
+        if(value.charAt(0) != '['){
+            value = "[" + value;
+        }
+
+        if(value.charAt(value.length() - 1) != ']'){
+            value = value + "]";
+        }
+        return value;
     }
 
     private static List<String> buildNamesPermutations(String fieldName, String prefix) {

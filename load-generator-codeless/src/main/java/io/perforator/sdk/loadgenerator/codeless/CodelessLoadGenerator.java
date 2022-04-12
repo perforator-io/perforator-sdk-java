@@ -17,7 +17,6 @@ import io.perforator.sdk.loadgenerator.codeless.actions.ActionProcessorsRegistry
 import io.perforator.sdk.loadgenerator.codeless.config.*;
 import io.perforator.sdk.loadgenerator.core.AbstractLoadGenerator;
 import io.perforator.sdk.loadgenerator.core.Perforator;
-import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.context.RemoteWebDriverContext;
 import io.perforator.sdk.loadgenerator.core.context.SuiteContext;
 import io.perforator.sdk.loadgenerator.core.context.TransactionContext;

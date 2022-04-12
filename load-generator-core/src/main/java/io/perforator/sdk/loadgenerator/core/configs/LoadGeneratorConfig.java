@@ -17,6 +17,7 @@ import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -483,6 +484,25 @@ public class LoadGeneratorConfig implements Configurable {
      */
     @Getter @Setter @FieldNameConstants.Include
     protected boolean usePreAllocatedIPs = DEFAULT_USE_PRE_ALLOCATED_IPS;
+
+    /**
+     * It might be a case when you would like to exclude specific HTTP requests
+     * from capturing by browsers running in the cloud and avoid storing such
+     * requests in the analytical system.
+     *
+     * For example, your security team doesn't want to expose test user
+     * credentials to external systems, or you know in advance that specific
+     * requests are failing all the time, and it is desired to exclude such
+     * requests from any analysis.
+     *
+     * 'dataCapturingExcludes' property allows you to specify a list of URLs to
+     * be excluded from capturing by cloud-based browsers.
+     *
+     * You can specify either absolute URLs to exclude or JS-based patterns to
+     * match against the tested HTTP request URL.
+     */
+    @Getter @Setter @FieldNameConstants.Include
+    protected List<String> dataCapturingExcludes;
 
     /**
      * Default constructor looking up property defaults via the following providers:
