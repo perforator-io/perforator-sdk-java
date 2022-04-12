@@ -28,6 +28,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static io.perforator.sdk.loadgenerator.core.Threaded.sleep;
+import java.util.stream.Collectors;
 
 final class BrowserCloudManagerImpl implements BrowserCloudManager {
 
@@ -91,7 +92,7 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
         String projectKey = loadGeneratorConfig.getProjectKey();
         String executionKey = loadGeneratorConfig.getExecutionKey();
         boolean usePreAllocatedIPs = loadGeneratorConfig.isUsePreAllocatedIPs();
-
+        List<String> dataCapturingExcludes = loadGeneratorConfig.getDataCapturingExcludes();
         String browserCloudKey;
 
         verifyProjectExists(loadGeneratorContext, projectKey);
@@ -124,9 +125,19 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
                     executionKey,
                     concurrency,
                     durationHours,
-                    usePreAllocatedIPs
+                    usePreAllocatedIPs,
+                    dataCapturingExcludes
             );
+            
             LOGGER.info("Created browser cloud {}", browserCloud.getUuid());
+            
+            if(dataCapturingExcludes != null && !dataCapturingExcludes.isEmpty()){
+                LOGGER.warn(
+                        "Browser cloud will avoid capturing the following HTTP requests: {}",
+                        dataCapturingExcludes
+                );
+            }
+            
             browserCloudKey = browserCloud.getUuid();
         } catch (ApiException e) {
             throw new RuntimeException("Can't create new browser cloud", e);
@@ -399,11 +410,12 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
         );
     }
 
-    private BrowserCloud createBrowserCloud(LoadGeneratorContextImpl loadGeneratorContext, String projectKey, String executionKey, int concurrency, int duration, boolean usePreAllocatedIPs) throws ApiException {
+    private BrowserCloud createBrowserCloud(LoadGeneratorContextImpl loadGeneratorContext, String projectKey, String executionKey, int concurrency, int duration, boolean usePreAllocatedIPs, List<String> dataCapturingExcludes) throws ApiException {
         BrowserCloud payload = new BrowserCloud();
         payload.setConcurrency(concurrency);
         payload.duration(duration);
         payload.setUsePreAllocatedIPs(usePreAllocatedIPs);
+        payload.setDataCapturingExcludes(dataCapturingExcludes);
         return loadGeneratorContext.getBrowserCloudsApi().createBrowserCloud(
                 projectKey,
                 executionKey,
