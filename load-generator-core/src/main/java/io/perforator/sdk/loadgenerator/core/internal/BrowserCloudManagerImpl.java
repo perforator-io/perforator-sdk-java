@@ -28,7 +28,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static io.perforator.sdk.loadgenerator.core.Threaded.sleep;
-import java.util.stream.Collectors;
 
 final class BrowserCloudManagerImpl implements BrowserCloudManager {
 
@@ -140,7 +139,13 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
             
             browserCloudKey = browserCloud.getUuid();
         } catch (ApiException e) {
-            throw new RuntimeException("Can't create new browser cloud", e);
+            throw new RuntimeException(
+                    "Can't create new browser cloud: "
+                            + "response code = " + e.getCode() + ", "
+                            + "response body = " + e.getResponseBody() + ", "
+                            + "response headers = " + e.getResponseHeaders(),
+                    e
+            );
         }
 
         loadGeneratorContext.setBrowserCloudContext(
