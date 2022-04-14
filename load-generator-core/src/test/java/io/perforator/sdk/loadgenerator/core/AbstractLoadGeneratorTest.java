@@ -12,12 +12,7 @@ package io.perforator.sdk.loadgenerator.core;
 
 import io.perforator.sdk.api.okhttpgson.ApiClientBuilder;
 import io.perforator.sdk.api.okhttpgson.invoker.ApiException;
-import io.perforator.sdk.api.okhttpgson.model.AnalyticsNamespace;
-import io.perforator.sdk.api.okhttpgson.model.BrowserCloud;
-import io.perforator.sdk.api.okhttpgson.model.Execution;
-import io.perforator.sdk.api.okhttpgson.model.AnalyticsOverallStatisticsRequest;
-import io.perforator.sdk.api.okhttpgson.model.AnalyticsOverallStatisticsResult;
-import io.perforator.sdk.api.okhttpgson.model.TransactionsBasicMetrics;
+import io.perforator.sdk.api.okhttpgson.model.*;
 import io.perforator.sdk.api.okhttpgson.operations.AnalyticsApi;
 import io.perforator.sdk.api.okhttpgson.operations.BrowserCloudsApi;
 import io.perforator.sdk.api.okhttpgson.operations.ExecutionsApi;
@@ -315,6 +310,114 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
         );
     }
 
+    @Test
+    public void verifyLoadGeneratorWithBrowsersAndDataCapturingExcludesWithFiltersInTheCloud() throws Exception {
+        int concurrency = 5;
+
+        Map<String, String> suiteParams = Map.of(SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.name, "suite-name-" + UUID.randomUUID(),
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.duration, "30s",
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrency, concurrency + "",
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampUp, "2s",
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampDown, "2s",
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverMode, WebDriverMode.cloud.name()
+        );
+
+        Set<String> uniqueRequestUrls = runBrowserCloudAndGetAllUniqueRequestsAfterTerminating(
+                null,
+                suiteParams
+        );
+
+        assertNotNull(uniqueRequestUrls);
+        assertFalse(uniqueRequestUrls.isEmpty());
+
+        Set<String> ignoredRequestUrls = new HashSet<>();
+        Set<String> notIgnoredRequestUrls = new HashSet<>();
+
+        for (String uniqueUrl: uniqueRequestUrls){
+            if(uniqueUrl.endsWith(".css")){
+                ignoredRequestUrls.add(uniqueUrl);
+                continue;
+            }
+
+            if(uniqueUrl.contains(".js")){
+                ignoredRequestUrls.add(uniqueUrl);
+                continue;
+            }
+
+            if(uniqueUrl.contains("/fonts/")){
+                ignoredRequestUrls.add(uniqueUrl);
+                continue;
+            }
+
+            notIgnoredRequestUrls.add(uniqueUrl);
+        }
+
+        Map<String, String> loadGeneratorParams = Map.of(
+                LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.dataCapturingExcludes, "*.css, *.js*, */fonts/*"
+        );
+
+        Set<String> filteredUniqueRequestUrls = runBrowserCloudAndGetAllUniqueRequestsAfterTerminating(
+                loadGeneratorParams,
+                suiteParams
+        );
+
+        assertNotNull(filteredUniqueRequestUrls);
+        assertFalse(filteredUniqueRequestUrls.isEmpty());
+        assertEquals(uniqueRequestUrls.size(), filteredUniqueRequestUrls.size() + ignoredRequestUrls.size());
+        assertTrue(uniqueRequestUrls.containsAll(filteredUniqueRequestUrls));
+        assertTrue(filteredUniqueRequestUrls.containsAll(notIgnoredRequestUrls));
+        assertTrue(Collections.disjoint(filteredUniqueRequestUrls, ignoredRequestUrls));
+    }
+
+    @Test
+    public void verifyLoadGeneratorWithBrowsersAndDataCapturingExcludesWithoutFiltersInTheCloud() throws Exception {
+        int concurrency = 5;
+
+        Map<String, String> suiteParams = Map.of(SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.name, "suite-name-" + UUID.randomUUID(),
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.duration, "30s",
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrency, concurrency + "",
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampUp, "2s",
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampDown, "2s",
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverMode, WebDriverMode.cloud.name()
+        );
+
+        Set<String> uniqueRequestUrls = runBrowserCloudAndGetAllUniqueRequestsAfterTerminating(
+                null,
+                suiteParams
+        );
+
+        assertNotNull(uniqueRequestUrls);
+        assertFalse(uniqueRequestUrls.isEmpty());
+
+        Set<String> ignoredRequestUrls = new HashSet<>();
+        Set<String> notIgnoredRequestUrls = new HashSet<>();
+
+        int counter = 0;
+        for (String uniqueUrl: uniqueRequestUrls){
+            if(counter++ % 2 == 0){
+                ignoredRequestUrls.add(uniqueUrl);
+            }else{
+                notIgnoredRequestUrls.add(uniqueUrl);
+            }
+        }
+
+        Map<String, String> loadGeneratorParams = Map.of(
+                LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.dataCapturingExcludes, String.join(",", ignoredRequestUrls)
+        );
+
+        Set<String> filteredUniqueRequestUrls = runBrowserCloudAndGetAllUniqueRequestsAfterTerminating(
+                loadGeneratorParams,
+                suiteParams
+        );
+
+        assertNotNull(filteredUniqueRequestUrls);
+        assertFalse(filteredUniqueRequestUrls.isEmpty());
+        assertEquals(uniqueRequestUrls.size(), filteredUniqueRequestUrls.size() + ignoredRequestUrls.size());
+        assertTrue(uniqueRequestUrls.containsAll(filteredUniqueRequestUrls));
+        assertTrue(filteredUniqueRequestUrls.containsAll(notIgnoredRequestUrls));
+        assertTrue(Collections.disjoint(filteredUniqueRequestUrls, ignoredRequestUrls));
+    }
+
     protected Map<String, Long> getCalculatedTransactionMetrics(String executionKey, String... metrics) throws Exception {
         AnalyticsOverallStatisticsRequest request = new AnalyticsOverallStatisticsRequest();
         request.setNamespace(AnalyticsNamespace.TRANSACTIONS.getValue());
@@ -458,6 +561,48 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
                 driver.quit();
             }
         }
+    }
+
+    private Set<String> runBrowserCloudAndGetAllUniqueRequestsAfterTerminating(Map<String, String> loadGeneratorParams, Map<String, String> suiteParams) throws Exception {
+        C loadGeneratorConfig = buildDefaultLoadGeneratorConfig();
+        if(loadGeneratorParams != null){
+            loadGeneratorConfig.applyDefaults(loadGeneratorParams::get);
+        }
+        S suiteConfig = buildDefaultSuiteConfig();
+        if(suiteParams != null) {
+            suiteConfig.applyDefaults(suiteParams::get);
+        }
+
+        L loadGenerator = getDefaultInstance(
+                loadGeneratorConfig,
+                suiteConfig
+        );
+        List<String> executionsBeforeRun = getExecutionList(projectKey);
+        loadGenerator.run();
+        List<String> executionsAfterRun = getExecutionList(projectKey);
+
+        String executionKey = null;
+        for(String e: executionsAfterRun){
+            if(!executionsBeforeRun.contains(e)){
+                executionKey = e;
+                break;
+            }
+        }
+
+        AnalyticsRecordsResult result = analyticsApi.getNamespaceRecords(
+                projectKey,
+                executionKey,
+                new AnalyticsRecordsRequest()
+                        .namespace("requests")
+                        .fields(List.of("request_url"))
+        );
+
+        assertNotNull(result.getRecords());
+
+        return result.getRecords().stream()
+                .map(map -> map.get("request_url"))
+                .map(String::valueOf)
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
 }
