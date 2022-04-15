@@ -277,7 +277,12 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
         if (!finished.get()) {
             cancelled.set(true);
         }
-        this.onShutdown();
+        
+        try {
+            this.onShutdown();
+        } finally {
+            shutDownLogger();
+        }
     }
 
     private synchronized void onShutdown() {
@@ -311,8 +316,6 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
                     null
             );
         }
-
-        shutDownLogger();
     }
 
     private void shutDownLogger() {
