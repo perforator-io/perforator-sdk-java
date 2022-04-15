@@ -128,13 +128,13 @@ public class ScrollActionProcessorTest extends AbstractActionProcessorTest<Scrol
     protected void onBeforeActionInstanceProcessing(RemoteWebDriver driver, ScrollActionProcessor actionProcessor, ScrollActionInstance actionInstance) throws Exception {
         driver.navigate().to(VERIFICATIONS_APP_URL);
         scrollToTop(driver);
-        Long scrollPosition = (Long) driver.executeScript("return window.pageYOffset;");
+        Long scrollPosition = ((Number) driver.executeScript("return window.pageYOffset;")).longValue();
         assertEquals(0, scrollPosition);
     }
 
     @Override
     protected void onAfterActionInstanceProcessing(RemoteWebDriver driver, ScrollActionProcessor actionProcessor, ScrollActionInstance actionInstance) throws Exception {
-        Long scrollPosition = (Long) driver.executeScript("return window.pageYOffset;");
+        Long scrollPosition = ((Number) driver.executeScript("return window.pageYOffset;")).longValue();
         assertTrue(scrollPosition > 0);
     }
 

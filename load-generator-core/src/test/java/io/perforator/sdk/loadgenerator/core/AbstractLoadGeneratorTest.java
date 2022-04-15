@@ -221,19 +221,80 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
 
     @Test
     public void verifyLoadGeneratorWithBrowsersInTheCloud() throws Exception {
-        int concurrency = 10;
+        LoadGeneratorRunContext resultWithoutExcludes = runLoadGeneratorWithRemoteBrowsersAndAwaitMetrics();
+        
+        assertNotNull(resultWithoutExcludes);
+        assertNotNull(resultWithoutExcludes.getLoadGenerator());
+        assertNotNull(resultWithoutExcludes.getLoadGeneratorConfig());
+        assertNotNull(resultWithoutExcludes.getSuiteConfig());
+        assertNotNull(resultWithoutExcludes.getProjectKey());
+        assertNotNull(resultWithoutExcludes.getExecutionKey());
+        assertNotNull(resultWithoutExcludes.getBrowserCloudKey());
+        assertNotNull(resultWithoutExcludes.getRequestsStatistics());
+        assertFalse(resultWithoutExcludes.getRequestsStatistics().isEmpty());
+        assertNotNull(resultWithoutExcludes.getTransactionsStatistics());
+        assertFalse(resultWithoutExcludes.getTransactionsStatistics().isEmpty());
+        
+        LoadGeneratorRunContext resultWithExcludes = runLoadGeneratorWithRemoteBrowsersAndAwaitMetrics("*/assets/*");
+        
+        assertNotNull(resultWithExcludes);
+        assertNotNull(resultWithExcludes.getLoadGenerator());
+        assertNotNull(resultWithExcludes.getLoadGeneratorConfig());
+        assertNotNull(resultWithExcludes.getSuiteConfig());
+        assertNotNull(resultWithExcludes.getProjectKey());
+        assertNotNull(resultWithExcludes.getExecutionKey());
+        assertNotNull(resultWithExcludes.getBrowserCloudKey());
+        assertNotNull(resultWithExcludes.getRequestsStatistics());
+        assertFalse(resultWithExcludes.getRequestsStatistics().isEmpty());
+        assertNotNull(resultWithExcludes.getTransactionsStatistics());
+        assertFalse(resultWithExcludes.getTransactionsStatistics().isEmpty());
+        
+        boolean assetsFounds = false;
+        for (String requestURL : resultWithoutExcludes.getRequestsStatistics().keySet()) {
+            if(requestURL.contains("/assets/")) {
+                assetsFounds = true;
+                assertFalse(
+                        resultWithExcludes.getRequestsStatistics().containsKey(requestURL),
+                        "Requests " + requestURL + " should not be captured"
+                );
+            } else {
+                assertEquals(
+                        resultWithoutExcludes.getRequestsStatistics().get(requestURL), 
+                        resultWithExcludes.getRequestsStatistics().get(requestURL),
+                        "Requests count for " + requestURL + " should be equal"
+                );
+            }
+        }
+        
+        assertTrue(
+                assetsFounds, 
+                "Requests statistics should contain requests with '/assets/' path"
+        );
+    }
+    
+    protected LoadGeneratorRunContext runLoadGeneratorWithRemoteBrowsersAndAwaitMetrics(String... dataCapturingExcludes) throws Exception {
+        int concurrency = 4;
 
         Map<String, String> suiteParams = Map.of(SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.name, "suite-name-" + UUID.randomUUID(),
-                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.duration, "1m",
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.duration, "2s",
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrency, concurrency + "",
-                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampUp, "5s",
-                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampDown, "5s",
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampUp, "0s",
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampDown, "0s",
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverMode, WebDriverMode.cloud.name()
         );
 
         C loadGeneratorConfig = buildDefaultLoadGeneratorConfig();
+        if(dataCapturingExcludes != null && dataCapturingExcludes.length > 0) {
+            Map<String, String> exludeParams = Map.of(
+                    LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.dataCapturingExcludes,
+                    Arrays.stream(dataCapturingExcludes).collect(Collectors.joining(","))
+            );
+            loadGeneratorConfig.applyDefaults(exludeParams::get);
+        }
+        
         S suiteConfig = buildDefaultSuiteConfig();
         suiteConfig.applyDefaults(suiteParams::get);
+        
         L loadGenerator = getDefaultInstance(
                 loadGeneratorConfig,
                 suiteConfig
@@ -260,27 +321,21 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
 
         assertEquals(0, loadGenerator.getActiveSuiteInstancesCount());
         assertEquals(0, loadGenerator.getFailedSuiteInstancesCount());
-        assertTrue(loadGenerator.getSuccessfulSuiteInstancesCount() >= concurrency);
+        assertTrue(loadGenerator.getSuccessfulSuiteInstancesCount() > 0);
         assertEquals(0, loadGenerator.getActiveTransactionsCount());
         assertEquals(0, loadGenerator.getFailedTransactionsCount());
-        assertTrue(loadGenerator.getSuccessfulTransactionsCount() >= concurrency);
+        assertTrue(loadGenerator.getSuccessfulTransactionsCount() > 0);
 
         long allTransactionsCount = loadGenerator.getSuccessfulTransactionsCount() 
                 + loadGenerator.getFailedTransactionsCount() 
                 + loadGenerator.getActiveTransactionsCount();
         long endTime = System.currentTimeMillis() + 90000;
-        Map<String, Long> metrics = null;
+        Map<String, Long> transactionStats = null;
         while (System.currentTimeMillis() < endTime) {
-            metrics = getCalculatedTransactionMetrics(
-                    ((LoadGeneratorConfig) loadGeneratorConfig).getExecutionKey(),
-                    TransactionsBasicMetrics.COUNT.getValue(),
-                    TransactionsBasicMetrics.STATUS_SUCCESSFUL_COUNT.getValue(),
-                    TransactionsBasicMetrics.STATUS_FAILED_COUNT.getValue(),
-                    TransactionsBasicMetrics.STATUS_IN_PROGRESS_COUNT.getValue()
-            );
+            transactionStats = getTransactionsStatistics(executionKey);
 
-            if (metrics.get(TransactionsBasicMetrics.STATUS_IN_PROGRESS_COUNT.getValue()) == 0 
-                    && metrics.get(TransactionsBasicMetrics.COUNT.getValue()) == allTransactionsCount) {
+            if (transactionStats.get(TransactionsBasicMetrics.STATUS_IN_PROGRESS_COUNT.getValue()) == 0 
+                    && transactionStats.get(TransactionsBasicMetrics.COUNT.getValue()) == allTransactionsCount) {
                 break;
             } else {
                 Threaded.sleep(1000);
@@ -289,139 +344,103 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
         
         assertEquals(
                 allTransactionsCount,
-                metrics.get(TransactionsBasicMetrics.COUNT.getValue()),
+                transactionStats.get(TransactionsBasicMetrics.COUNT.getValue()),
                 "Inconsistency in all transactions count"
         );
 
         assertEquals(
                 loadGenerator.getFailedTransactionsCount(),
-                metrics.get(TransactionsBasicMetrics.STATUS_FAILED_COUNT.getValue()),
+                transactionStats.get(TransactionsBasicMetrics.STATUS_FAILED_COUNT.getValue()),
                 "Inconsistency in failed transactions count"
         );
         assertEquals(
                 loadGenerator.getSuccessfulTransactionsCount(),
-                metrics.get(TransactionsBasicMetrics.STATUS_SUCCESSFUL_COUNT.getValue()),
+                transactionStats.get(TransactionsBasicMetrics.STATUS_SUCCESSFUL_COUNT.getValue()),
                 "Inconsistency in successful transactions count"
         );
         assertEquals(
                 loadGenerator.getActiveTransactionsCount(),
-                metrics.get(TransactionsBasicMetrics.STATUS_IN_PROGRESS_COUNT.getValue()),
+                transactionStats.get(TransactionsBasicMetrics.STATUS_IN_PROGRESS_COUNT.getValue()),
                 "Inconsistency in active transactions count"
         );
+        
+        Map<String, Long> requestStats = getRequestsStatistics(executionKey);
+        assertNotNull(requestStats);
+        assertFalse(requestStats.isEmpty());
+        
+        LoadGeneratorRunContext result = new LoadGeneratorRunContext();
+        
+        result.setLoadGenerator(loadGenerator);
+        result.setLoadGeneratorConfig(loadGeneratorConfig);
+        result.setSuiteConfig(suiteConfig);
+        result.setProjectKey(projectKey);
+        result.setExecutionKey(executionKey);
+        result.setBrowserCloudKey(browserCloudKey);
+        result.setTransactionsStatistics(transactionStats);
+        result.setRequestsStatistics(requestStats);
+        
+        return result;
     }
-
-    @Test
-    public void verifyLoadGeneratorWithBrowsersAndDataCapturingExcludesWithFiltersInTheCloud() throws Exception {
-        int concurrency = 5;
-
-        Map<String, String> suiteParams = Map.of(SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.name, "suite-name-" + UUID.randomUUID(),
-                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.duration, "30s",
-                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrency, concurrency + "",
-                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampUp, "2s",
-                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampDown, "2s",
-                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverMode, WebDriverMode.cloud.name()
+    
+    protected Map<String, Long> getRequestsStatistics(String executionKey) throws Exception {
+        AnalyticsGroupedStatisticsRequest statsRequest = new AnalyticsGroupedStatisticsRequest();
+        statsRequest.setNamespace(
+                AnalyticsNamespace.REQUESTS.getValue()
         );
-
-        Set<String> uniqueRequestUrls = runBrowserCloudAndGetAllUniqueRequestsAfterTerminating(
-                null,
-                suiteParams
+        statsRequest.setMetrics(List.of(
+                RequestsBasicMetrics.COUNT.getValue()
+        ));
+        statsRequest.setGroupBy(List.of(
+                RequestsField.REQUEST_URL.getValue()
+        ));
+        statsRequest.setGroupingFlags(Map.of(
+                RequestsField.REQUEST_URL.getValue(), 
+                Map.of(RequestsGroupingFlag.IGNORE_URL_PARAMS.getValue(), true)
+        ));
+        
+        AnalyticsGroupedStatisticsResult statsResponse = analyticsApi.getGroupedStatistics(
+                projectKey, 
+                executionKey, 
+                statsRequest
         );
-
-        assertNotNull(uniqueRequestUrls);
-        assertFalse(uniqueRequestUrls.isEmpty());
-
-        Set<String> ignoredRequestUrls = new HashSet<>();
-        Set<String> notIgnoredRequestUrls = new HashSet<>();
-
-        for (String uniqueUrl: uniqueRequestUrls){
-            if(uniqueUrl.endsWith(".css")){
-                ignoredRequestUrls.add(uniqueUrl);
-                continue;
-            }
-
-            if(uniqueUrl.contains(".js")){
-                ignoredRequestUrls.add(uniqueUrl);
-                continue;
-            }
-
-            if(uniqueUrl.contains("/fonts/")){
-                ignoredRequestUrls.add(uniqueUrl);
-                continue;
-            }
-
-            notIgnoredRequestUrls.add(uniqueUrl);
-        }
-
-        Map<String, String> loadGeneratorParams = Map.of(
-                LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.dataCapturingExcludes, "*.css, *.js*, */fonts/*"
-        );
-
-        Set<String> filteredUniqueRequestUrls = runBrowserCloudAndGetAllUniqueRequestsAfterTerminating(
-                loadGeneratorParams,
-                suiteParams
-        );
-
-        assertNotNull(filteredUniqueRequestUrls);
-        assertFalse(filteredUniqueRequestUrls.isEmpty());
-        assertEquals(uniqueRequestUrls.size(), filteredUniqueRequestUrls.size() + ignoredRequestUrls.size());
-        assertTrue(uniqueRequestUrls.containsAll(filteredUniqueRequestUrls));
-        assertTrue(filteredUniqueRequestUrls.containsAll(notIgnoredRequestUrls));
-        assertTrue(Collections.disjoint(filteredUniqueRequestUrls, ignoredRequestUrls));
-    }
-
-    @Test
-    public void verifyLoadGeneratorWithBrowsersAndDataCapturingExcludesWithoutFiltersInTheCloud() throws Exception {
-        int concurrency = 5;
-
-        Map<String, String> suiteParams = Map.of(SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.name, "suite-name-" + UUID.randomUUID(),
-                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.duration, "30s",
-                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrency, concurrency + "",
-                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampUp, "2s",
-                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampDown, "2s",
-                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverMode, WebDriverMode.cloud.name()
-        );
-
-        Set<String> uniqueRequestUrls = runBrowserCloudAndGetAllUniqueRequestsAfterTerminating(
-                null,
-                suiteParams
-        );
-
-        assertNotNull(uniqueRequestUrls);
-        assertFalse(uniqueRequestUrls.isEmpty());
-
-        Set<String> ignoredRequestUrls = new HashSet<>();
-        Set<String> notIgnoredRequestUrls = new HashSet<>();
-
-        int counter = 0;
-        for (String uniqueUrl: uniqueRequestUrls){
-            if(counter++ % 2 == 0){
-                ignoredRequestUrls.add(uniqueUrl);
-            }else{
-                notIgnoredRequestUrls.add(uniqueUrl);
+        assertNotNull(statsResponse);
+        assertNotNull(statsResponse.getResults());
+        
+        Map<String, Long> result = new HashMap<>();
+        
+        for (Map<String, Object> fields : statsResponse.getResults()) {
+            assertNotNull(fields);
+            assertEquals(2, fields.size());
+            
+            String requestURL = (String)fields.get(RequestsField.REQUEST_URL.getValue());
+            assertNotNull(requestURL);
+            
+            Object requestsCountUncasted = fields.get(RequestsBasicMetrics.COUNT.getValue());
+            assertNotNull(requestsCountUncasted);
+            
+            if(Number.class.isAssignableFrom(requestsCountUncasted.getClass())) {
+                result.put(requestURL, ((Number)requestsCountUncasted).longValue());
+            } else {
+                fail(
+                        RequestsBasicMetrics.COUNT.getValue()
+                        + " metric should be a number, but it is "
+                        + requestsCountUncasted.getClass()
+                );
             }
         }
-
-        Map<String, String> loadGeneratorParams = Map.of(
-                LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.dataCapturingExcludes, String.join(",", ignoredRequestUrls)
-        );
-
-        Set<String> filteredUniqueRequestUrls = runBrowserCloudAndGetAllUniqueRequestsAfterTerminating(
-                loadGeneratorParams,
-                suiteParams
-        );
-
-        assertNotNull(filteredUniqueRequestUrls);
-        assertFalse(filteredUniqueRequestUrls.isEmpty());
-        assertEquals(uniqueRequestUrls.size(), filteredUniqueRequestUrls.size() + ignoredRequestUrls.size());
-        assertTrue(uniqueRequestUrls.containsAll(filteredUniqueRequestUrls));
-        assertTrue(filteredUniqueRequestUrls.containsAll(notIgnoredRequestUrls));
-        assertTrue(Collections.disjoint(filteredUniqueRequestUrls, ignoredRequestUrls));
+        
+        return result;
     }
 
-    protected Map<String, Long> getCalculatedTransactionMetrics(String executionKey, String... metrics) throws Exception {
+    protected Map<String, Long> getTransactionsStatistics(String executionKey) throws Exception {
         AnalyticsOverallStatisticsRequest request = new AnalyticsOverallStatisticsRequest();
         request.setNamespace(AnalyticsNamespace.TRANSACTIONS.getValue());
-        request.setMetrics(Arrays.asList(metrics));
+        request.setMetrics(Arrays.asList(
+                TransactionsBasicMetrics.COUNT.getValue(),
+                TransactionsBasicMetrics.STATUS_SUCCESSFUL_COUNT.getValue(),
+                TransactionsBasicMetrics.STATUS_FAILED_COUNT.getValue(),
+                TransactionsBasicMetrics.STATUS_IN_PROGRESS_COUNT.getValue()
+        ));
 
         List<AnalyticsOverallStatisticsResult> payloads = analyticsApi.getOverallStatistics(
                 projectKey, executionKey, List.of(request)
@@ -603,6 +622,83 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
                 .map(map -> map.get("request_url"))
                 .map(String::valueOf)
                 .collect(Collectors.toCollection(HashSet::new));
+    }
+    
+    protected class LoadGeneratorRunContext {
+        
+        private L loadGenerator;
+        private C loadGeneratorConfig;
+        private S suiteConfig;
+        private String projectKey;
+        private String executionKey;
+        private String browserCloudKey;
+        private Map<String, Long> requestsStatistics;
+        private Map<String, Long> transactionsStatistics;
+
+        public L getLoadGenerator() {
+            return loadGenerator;
+        }
+
+        public void setLoadGenerator(L loadGenerator) {
+            this.loadGenerator = loadGenerator;
+        }
+
+        public C getLoadGeneratorConfig() {
+            return loadGeneratorConfig;
+        }
+
+        public void setLoadGeneratorConfig(C loadGeneratorConfig) {
+            this.loadGeneratorConfig = loadGeneratorConfig;
+        }
+
+        public S getSuiteConfig() {
+            return suiteConfig;
+        }
+
+        public void setSuiteConfig(S suiteConfig) {
+            this.suiteConfig = suiteConfig;
+        }
+
+        public String getProjectKey() {
+            return projectKey;
+        }
+
+        public void setProjectKey(String projectKey) {
+            this.projectKey = projectKey;
+        }
+
+        public String getExecutionKey() {
+            return executionKey;
+        }
+
+        public void setExecutionKey(String executionKey) {
+            this.executionKey = executionKey;
+        }
+
+        public String getBrowserCloudKey() {
+            return browserCloudKey;
+        }
+
+        public void setBrowserCloudKey(String browserCloudKey) {
+            this.browserCloudKey = browserCloudKey;
+        }
+
+        public Map<String, Long> getRequestsStatistics() {
+            return requestsStatistics;
+        }
+
+        public void setRequestsStatistics(Map<String, Long> requestsStatistics) {
+            this.requestsStatistics = requestsStatistics;
+        }
+
+        public Map<String, Long> getTransactionsStatistics() {
+            return transactionsStatistics;
+        }
+
+        public void setTransactionsStatistics(Map<String, Long> transactionsStatistics) {
+            this.transactionsStatistics = transactionsStatistics;
+        }
+        
     }
 
 }
