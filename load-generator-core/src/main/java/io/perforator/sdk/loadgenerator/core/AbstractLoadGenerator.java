@@ -141,10 +141,11 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
 
         List<Future> futures = new ArrayList<>();
         for (SuiteConfig suiteConfig : suiteConfigs) {
+            AtomicInteger preStartCounter = new AtomicInteger();
             for (int i = 0; i < suiteConfig.getConcurrency(); i++) {
                 futures.add(
                         executor.submit(
-                                new SuiteRunner(suiteConfig, i)
+                                new SuiteRunner(preStartCounter, suiteConfig, i)
                         )
                 );
             }
@@ -346,10 +347,12 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
 
     private class SuiteRunner implements Runnable {
 
+        private final AtomicInteger preStartCounter;
         private final int workerNumber;
         private final SuiteConfig suiteConfig;
 
-        public SuiteRunner(SuiteConfig suiteConfig, int workerNumber) {
+        public SuiteRunner(AtomicInteger preStartCounter, SuiteConfig suiteConfig, int workerNumber) {
+            this.preStartCounter = preStartCounter;
             this.suiteConfig = suiteConfig;
             this.workerNumber = workerNumber;
         }
@@ -385,17 +388,15 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
                     slowdown = 0;
                 }
                 
-                int currentConcurrency = mediator.getCurrentConcurrency(suiteConfig);
-                int desiredConcurrency = mediator.getDesiredConcurrency(suiteConfig);
-                if(currentConcurrency >= desiredConcurrency) {
-                    Threaded.sleep(1);
-                    continue;
+                SuiteContext suiteContext = startSuiteContextIfAllowed();
+                if (suiteContext == null) {
+                    if (shouldBeFinished()) {
+                        return;
+                    } else {
+                        Threaded.sleep(1);
+                        continue;
+                    }
                 }
-
-                SuiteContext suiteContext = mediator.onSuiteInstanceStarted(
-                        workerNumber,
-                        suiteConfig
-                );
 
                 if (logger.isDebugEnabled()) {
                     logger.debug(
@@ -449,6 +450,25 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
                 } finally {
                     cleanupConsumerContext();
                 }
+            }
+        }
+        
+        private SuiteContext startSuiteContextIfAllowed() {
+            try {
+                int suitesToBeStarted = preStartCounter.incrementAndGet();
+                int currentConcurrency = mediator.getCurrentConcurrency(suiteConfig);
+                int desiredConcurrency = mediator.getDesiredConcurrency(suiteConfig);
+
+                if (currentConcurrency + suitesToBeStarted <= desiredConcurrency && !shouldBeFinished()) {
+                    return mediator.onSuiteInstanceStarted(
+                            workerNumber,
+                            suiteConfig
+                    );
+                } else {
+                    return null;
+                }
+            } finally {
+                preStartCounter.decrementAndGet();
             }
         }
 

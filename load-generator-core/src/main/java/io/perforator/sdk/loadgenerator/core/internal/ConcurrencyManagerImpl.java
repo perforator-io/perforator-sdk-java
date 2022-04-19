@@ -83,14 +83,16 @@ class ConcurrencyManagerImpl implements ConcurrencyManager {
             } else {
                 int oldDesiredConcurrency = concurrencyContext.getDesiredConcurrency();
                 int newDesiredConcurrency = concurrencyContext.updateDesiredConcurrency(-1 * scaleAdjustment);
-
-                LOGGER.warn(
-                        "Reducing desired concurrency from {} to {} due to {} suite fails out of {} recent",
-                        oldDesiredConcurrency,
-                        newDesiredConcurrency,
-                        failedSuites,
-                        totalSuites
-                );
+                
+                if (newDesiredConcurrency < oldDesiredConcurrency) {
+                    LOGGER.warn(
+                            "Reducing desired concurrency from {} to {} due to {} suite fails out of {} recent",
+                            oldDesiredConcurrency,
+                            newDesiredConcurrency,
+                            failedSuites,
+                            totalSuites
+                    );
+                }
             }
         }
     }

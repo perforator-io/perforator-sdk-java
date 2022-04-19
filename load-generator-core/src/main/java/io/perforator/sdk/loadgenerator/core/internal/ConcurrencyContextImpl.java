@@ -30,13 +30,21 @@ class ConcurrencyContextImpl {
     public ConcurrencyContextImpl(SuiteConfig suiteConfig, boolean slowdownEnabled, long nextRecalcTimestamp) {
         this.suiteConfig = suiteConfig;
         this.slowdownEnabled = slowdownEnabled;
-        this.minConcurrency = 1;
         this.maxConcurrency = suiteConfig.getConcurrency();
+        this.minConcurrency = determineMinConcurrency(maxConcurrency);
         this.currentConcurrency = new AtomicInteger(0);
         this.desiredConcurrency = new AtomicInteger(maxConcurrency);
         this.failedSuitesCounter = new AtomicInteger(0);
         this.successfulSuitesCounter = new AtomicInteger(0);
         this.nextRecalcTimestamp = new AtomicLong(nextRecalcTimestamp);
+    }
+    
+    private static int determineMinConcurrency(int maxConcurrency) {
+        if(maxConcurrency <= 25) {
+            return maxConcurrency;
+        } else {
+            return Math.max(25, maxConcurrency / 20);
+        }
     }
 
     public int getMinConcurrency() {
