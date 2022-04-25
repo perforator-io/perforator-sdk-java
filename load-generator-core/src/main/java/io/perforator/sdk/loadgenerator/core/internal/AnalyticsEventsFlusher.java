@@ -10,6 +10,6 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-interface TransactionEventsFlusher extends IntegrationListener {
+interface AnalyticsEventsFlusher extends IntegrationListener {
 
 }

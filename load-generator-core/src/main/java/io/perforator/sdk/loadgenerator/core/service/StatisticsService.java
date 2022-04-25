@@ -20,5 +20,8 @@ public interface StatisticsService {
     long getActiveTransactionsCount();
     long getSuccessfulTransactionsCount();
     long getFailedTransactionsCount();
+    long getActiveTopLevelTransactionsCount();
+    long getActiveNestedTransactionsCount();
+    long getActiveSessionsCount();
     
 }

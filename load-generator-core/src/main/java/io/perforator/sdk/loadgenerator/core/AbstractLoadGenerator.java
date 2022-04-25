@@ -209,7 +209,22 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
     public final long getActiveTransactionsCount() {
         return mediator.getActiveTransactionsCount();
     }
-    
+
+    @Override
+    public long getActiveTopLevelTransactionsCount() {
+        return mediator.getActiveTopLevelTransactionsCount();
+    }
+
+    @Override
+    public long getActiveNestedTransactionsCount() {
+        return mediator.getActiveNestedTransactionsCount();
+    }
+
+    @Override
+    public long getActiveSessionsCount() {
+        return mediator.getActiveSessionsCount();
+    }
+
     protected final boolean shouldBeFinished() {
         return finished.get() || cancelled.get() || Threaded.isInterrupted();
     }
