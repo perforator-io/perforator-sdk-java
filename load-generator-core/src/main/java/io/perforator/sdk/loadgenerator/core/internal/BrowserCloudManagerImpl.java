@@ -127,16 +127,16 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
                     usePreAllocatedIPs,
                     dataCapturingExcludes
             );
-            
+
             LOGGER.info("Created browser cloud {}", browserCloud.getUuid());
-            
+
             if(dataCapturingExcludes != null && !dataCapturingExcludes.isEmpty()){
                 LOGGER.warn(
                         "Browser cloud will avoid capturing the following HTTP requests: {}",
                         dataCapturingExcludes
                 );
             }
-            
+
             browserCloudKey = browserCloud.getUuid();
         } catch (ApiException e) {
             throw new RuntimeException(
@@ -277,8 +277,8 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
                             + browserCloudLastStatus.toUpperCase()
                             + " status within "
                             + (browserCloudLastStatus.equalsIgnoreCase("queued")
-                                    ? awaitQueuedDuration.toMillis()
-                                    : awaitProvisioningDuration.toMillis())
+                            ? awaitQueuedDuration.toMillis()
+                            : awaitProvisioningDuration.toMillis())
                             + " millis"
             );
         }
@@ -439,9 +439,37 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
     }
 
     //TODO: create configurable property LoadGenerator.executionNotesGeneratorClass
-    private String generateExecutionNotes(LoadGeneratorContextImpl loadGeneratorContex, List<SuiteConfig> suiteConfigs) {
-        //TODO: serialize loadGeneratorContex + suiteConfigs to YAML
-        return null;
+    private String generateExecutionNotes(LoadGeneratorContextImpl loadGeneratorContext, List<SuiteConfig> suiteConfigs) {
+
+        StringBuilder stb = new StringBuilder();
+        int estimatedConcurrency = 0;
+        long estimatedDuration = 0;
+
+        StringBuilder suitesInfoStb = new StringBuilder();
+        for (SuiteConfig suiteConfig: suiteConfigs){
+            if(suiteConfig.getWebDriverMode() != WebDriverMode.cloud){
+                continue;
+            }
+            estimatedConcurrency += suiteConfig.getConcurrency();
+            estimatedDuration = Math.max(estimatedDuration, suiteConfig.getDuration().toMillis());
+
+            suitesInfoStb.append("<p><strong>Suite</strong>: ").append(suiteConfig.getName()).append("</p>")
+                    .append("<ul>")
+                    .append("<li>concurrency: ").append(suiteConfig.getConcurrency()).append("</p>")
+                    .append("<li>duration: ").append(suiteConfig.getDuration().toString().toLowerCase().replace("pt", "")).append("</li>")
+                    .append("<li>delay: ").append(suiteConfig.getDelay().toString().toLowerCase().replace("pt", "")).append("</li>")
+                    .append("<li>rampUp: ").append(suiteConfig.getRampUp().toString().toLowerCase().replace("pt", "")).append("</li>")
+                    .append("<li>rampDown: ").append(suiteConfig.getRampDown().toString().toLowerCase().replace("pt", "")).append("</li>")
+                    .append("</ul>");
+        }
+
+        stb.append("<p><strong>Estimated concurrency</strong>: ").append(estimatedConcurrency).append("</p>")
+                .append("<p><strong>Estimated duration</strong>: ").append(Duration.ofMillis(estimatedDuration).toString().toLowerCase().replace("pt", "")).append("</p>")
+                .append("<p><strong>Suites</strong>: ").append(suiteConfigs.size()).append("</p></br>")
+                .append(suitesInfoStb);
+
+
+        return stb.toString();
     }
 
     @FunctionalInterface
