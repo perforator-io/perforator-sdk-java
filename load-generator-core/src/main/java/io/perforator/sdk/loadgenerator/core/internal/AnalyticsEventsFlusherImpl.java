@@ -12,8 +12,8 @@ package io.perforator.sdk.loadgenerator.core.internal;
 
 import com.google.gson.Gson;
 import io.perforator.sdk.api.okhttpgson.invoker.ApiException;
-import io.perforator.sdk.api.okhttpgson.model.TransactionEvent;
-import io.perforator.sdk.api.okhttpgson.model.TransactionEventsSubmissionResult;
+import io.perforator.sdk.api.okhttpgson.model.AnalyticsEvent;
+import io.perforator.sdk.api.okhttpgson.model.AnalyticsEventsSubmissionResult;
 import io.perforator.sdk.loadgenerator.core.Threaded;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import org.slf4j.Logger;
@@ -26,9 +26,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-final class TransactionEventsFlusherImpl implements TransactionEventsFlusher {
+final class AnalyticsEventsFlusherImpl implements AnalyticsEventsFlusher {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionEventsFlusherImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnalyticsEventsFlusherImpl.class);
     private static final Gson GSON = new Gson();
 
     private final AtomicInteger inflightEvents = new AtomicInteger(0);
@@ -68,11 +68,11 @@ final class TransactionEventsFlusherImpl implements TransactionEventsFlusher {
     @Override
     public void onHeartbeat(long timestamp, LoadGeneratorContextImpl context) {
         int threshold = context.getLoadGeneratorConfig().getEventsFlushThreshold();
-        List<TransactionEvent> batch = new ArrayList<>(threshold);
-        List<TransactionEvent> events = null;
+        List<AnalyticsEvent> batch = new ArrayList<>(threshold);
+        List<AnalyticsEvent> events = null;
 
         while ((events = context.getEventsBuffer().poll()) != null) {
-            for (TransactionEvent event : events) {
+            for (AnalyticsEvent event : events) {
                 inflightEvents.addAndGet(1);
                 batch.add(event);
                 if (batch.size() >= threshold) {
@@ -87,7 +87,7 @@ final class TransactionEventsFlusherImpl implements TransactionEventsFlusher {
         }
     }
 
-    private void submitEventsToExecutor(LoadGeneratorContextImpl context, List<TransactionEvent> batch) {
+    private void submitEventsToExecutor(LoadGeneratorContextImpl context, List<AnalyticsEvent> batch) {
         CompletableFuture.supplyAsync(
                 () -> sendAnalyticalEvents(context, batch),
                 executor
@@ -102,13 +102,12 @@ final class TransactionEventsFlusherImpl implements TransactionEventsFlusher {
         });
     }
 
-    private List<TransactionEvent> sendAnalyticalEvents(LoadGeneratorContextImpl context, List<TransactionEvent> events) {
-        List<TransactionEvent> retryableEvents = new ArrayList<>();
+    private List<AnalyticsEvent> sendAnalyticalEvents(LoadGeneratorContextImpl context, List<AnalyticsEvent> events) {
+        List<AnalyticsEvent> retryableEvents = new ArrayList<>();
 
         try {
             LOGGER.debug("Sending {} events for processing", events.size());
-
-            TransactionEventsSubmissionResult result = context.getBrowserCloudsApi().sendTransactionEvents(
+            AnalyticsEventsSubmissionResult result = context.getBrowserCloudsApi().sendAnalyticsEvents(
                     context.getBrowserCloudContext().getProjectKey(),
                     context.getBrowserCloudContext().getExecutionKey(),
                     context.getBrowserCloudContext().getBrowserCloudKey(),

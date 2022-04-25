@@ -30,7 +30,8 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
     private final HeartbeatManager heartbeatManager;
     private final TransactionsManager transactionsManager;
     private final TransactionEventsAggregator transactionEventsAggregator;
-    private final TransactionEventsFlusher transactionEventsFlusher;
+    private final ConcurrencyEventsAggregatorImpl concurrencyEventsAggregator;
+    private final AnalyticsEventsFlusher analyticsEventsFlusher;
     private final SlowdownManager slowdownManager;
     private final ConcurrencyManager concurrencyManager;
     private final LoggingContextManager loggingContextManager;
@@ -53,7 +54,8 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
         this.heartbeatManager = new HeartbeatManagerImpl(timeProvider, eventsRouter);
         this.transactionsManager = new TransactionsManagerImpl(timeProvider, eventsRouter);
         this.transactionEventsAggregator = new TransactionEventsAggregatorImpl();
-        this.transactionEventsFlusher = new TransactionEventsFlusherImpl();
+        this.analyticsEventsFlusher = new AnalyticsEventsFlusherImpl();
+        this.concurrencyEventsAggregator = new ConcurrencyEventsAggregatorImpl();
         this.slowdownManager = new SlowdownManagerImpl(timeProvider, loadGeneratorConfig);
         this.concurrencyManager = new ConcurrencyManagerImpl();
         this.loggingContextManager = new LoggingContextManagerImpl(loadGeneratorConfig);
@@ -75,7 +77,7 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
                 browserCloudManager,
                 transactionEventsAggregator,
                 heartbeatManager,
-                transactionEventsFlusher,
+                analyticsEventsFlusher,
                 reportingManager,
                 seleniumLoggingManager,
                 infoMessagesManager,
@@ -88,7 +90,7 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
                 httpClientsManager,
                 browserCloudManager,
                 reportingManager,
-                transactionEventsFlusher,
+                analyticsEventsFlusher,
                 heartbeatManager,
                 transactionEventsAggregator,
                 infoMessagesManager
@@ -122,11 +124,13 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
         ));
 
         eventsRouter.setRemoteWebDriverStartedListeners(Arrays.asList(
+                statisticsManager,
                 loggingContextManager,
                 transactionEventsAggregator
         ));
 
         eventsRouter.setRemoteWebDriverFinishedListeners(Arrays.asList(
+                statisticsManager,
                 transactionEventsAggregator,
                 loggingContextManager
         ));
@@ -134,7 +138,8 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
         eventsRouter.setHeartbeatListeners(Arrays.asList(
                 concurrencyManager,
                 transactionEventsAggregator,
-                transactionEventsFlusher,
+                concurrencyEventsAggregator,
+                analyticsEventsFlusher,
                 reportingManager
         ));
     }
@@ -164,15 +169,15 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
     @Override
     public long onSuiteInstanceFinished(SuiteContextImpl suiteContext, Throwable suiteError) {
         long slowdownTimeout = slowdownManager.getSlowdownTimeout(
-                suiteContext, 
+                suiteContext,
                 suiteError
         );
-        
+
         suiteManager.stopSuiteInstance(
-                suiteContext, 
+                suiteContext,
                 suiteError
         );
-        
+
         return slowdownTimeout;
     }
 
@@ -219,6 +224,21 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
     @Override
     public long getFailedTransactionsCount() {
         return loadGeneratorContext.getStatisticsContext().getTransactionsFailed();
+    }
+
+    @Override
+    public long getActiveTopLevelTransactionsCount() {
+        return loadGeneratorContext.getStatisticsContext().getTopLevelTransactionsInProgress();
+    }
+
+    @Override
+    public long getActiveNestedTransactionsCount() {
+        return loadGeneratorContext.getStatisticsContext().getNestedTransactionsInProgress();
+    }
+
+    @Override
+    public long getActiveSessionsCount() {
+        return loadGeneratorContext.getStatisticsContext().getSessionsInProgress();
     }
 
     @Override

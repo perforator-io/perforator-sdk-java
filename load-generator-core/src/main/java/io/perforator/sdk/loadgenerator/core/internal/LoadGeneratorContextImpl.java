@@ -10,7 +10,7 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-import io.perforator.sdk.api.okhttpgson.model.TransactionEvent;
+import io.perforator.sdk.api.okhttpgson.model.AnalyticsEvent;
 import io.perforator.sdk.api.okhttpgson.operations.*;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
@@ -28,8 +28,9 @@ final class LoadGeneratorContextImpl {
     private final LoadGeneratorConfig loadGeneratorConfig;
     private final List<SuiteConfig> suiteConfigs;
     private final Set<SuiteContextImpl> suiteContexts;
-    private final Queue<List<TransactionEvent>> eventsBuffer;
+    private final Queue<List<AnalyticsEvent>> eventsBuffer;
     private final StatisticsContextImpl statisticsContext;
+    private final ConcurrentHashMap<String, StatisticsContextImpl> suiteStatisticsContext = new ConcurrentHashMap<>();
 
     private AsyncHttpClient httpClient;
     private CreditsApi creditsApi;
@@ -64,7 +65,7 @@ final class LoadGeneratorContextImpl {
         return suiteContexts;
     }
 
-    public Queue<List<TransactionEvent>> getEventsBuffer() {
+    public Queue<List<AnalyticsEvent>> getEventsBuffer() {
         return eventsBuffer;
     }
 
@@ -128,4 +129,11 @@ final class LoadGeneratorContextImpl {
         this.browserCloudContext = browserCloudContext;
     }
 
+    public StatisticsContextImpl getSuiteStatisticsContext(String suiteName) {
+        return suiteStatisticsContext.computeIfAbsent(suiteName, s -> new StatisticsContextImpl());
+    }
+
+    public ConcurrentHashMap<String, StatisticsContextImpl> getSuiteStatisticsContexts() {
+        return suiteStatisticsContext;
+    }
 }

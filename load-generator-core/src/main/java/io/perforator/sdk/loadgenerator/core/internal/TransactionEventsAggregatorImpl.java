@@ -11,22 +11,22 @@
 package io.perforator.sdk.loadgenerator.core.internal;
 
 import com.google.common.collect.Lists;
-import io.perforator.sdk.api.okhttpgson.model.TransactionEvent;
+import io.perforator.sdk.api.okhttpgson.model.AnalyticsEvent;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 final class TransactionEventsAggregatorImpl implements TransactionEventsAggregator {
-    
+
     private static final int TRANSACTIONS_AGGREGATION_PER_THREAD = 1024;
-    
+
     private ExecutorService aggregationExecutor;
 
     @Override
@@ -38,7 +38,7 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
 
     @Override
     public void onLoadGeneratorFinished(long timestamp, LoadGeneratorContextImpl loadGeneratorContext, Throwable error) {
-        if(aggregationExecutor != null) {
+        if (aggregationExecutor != null) {
             aggregationExecutor.shutdown();
         }
     }
@@ -50,7 +50,7 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
         }
 
         context.getLoadGeneratorContext().getEventsBuffer().add(
-                createAnalyticalEvents(
+                createTransactionEvents(
                         timestamp,
                         context,
                         EventType.transaction_heartbeat,
@@ -66,7 +66,7 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
         }
 
         context.getLoadGeneratorContext().getEventsBuffer().add(
-                createAnalyticalEvents(
+                createTransactionEvents(
                         timestamp,
                         context,
                         EventType.transaction_completed,
@@ -84,9 +84,9 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
             return;
         }
 
-        List<TransactionEvent> localBuffer = new ArrayList<>();
+        List<AnalyticsEvent> localBuffer = new ArrayList<>();
         suiteContext.getTransactions().forEach(transaction -> {
-            TransactionEvent eventDto = new TransactionEvent();
+            AnalyticsEvent eventDto = new AnalyticsEvent();
             eventDto.setTimestamp(timestamp);
             eventDto.setSuiteName(suiteConfig.getName());
             eventDto.setSuiteInstanceId(suiteContext.getSuiteInstanceID());
@@ -123,9 +123,9 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
             return;
         }
 
-        List<TransactionEvent> localBuffer = new ArrayList<>();
+        List<AnalyticsEvent> localBuffer = new ArrayList<>();
         suiteContext.getTransactions().forEach(transaction -> {
-            TransactionEvent eventDto = new TransactionEvent();
+            AnalyticsEvent eventDto = new AnalyticsEvent();
             eventDto.setTimestamp(timestamp);
             eventDto.setSuiteName(suiteConfig.getName());
             eventDto.setSuiteInstanceId(suiteContext.getSuiteInstanceID());
@@ -160,18 +160,18 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
         ).forEach(suiteContext -> {
             transactions.addAll(suiteContext.getTransactions());
         });
-        
+
         List<List<TransactionContextImpl>> partitions = Lists.partition(
-                transactions, 
+                transactions,
                 TRANSACTIONS_AGGREGATION_PER_THREAD
         );
-        
+
         for (List<TransactionContextImpl> partition : partitions) {
             aggregationExecutor.submit(() -> {
-                List<TransactionEvent> localBuffer = new ArrayList<>();
+                List<AnalyticsEvent> localBuffer = new ArrayList<>();
 
                 for (TransactionContextImpl transaction : partition) {
-                    localBuffer.addAll(createAnalyticalEvents(
+                    localBuffer.addAll(createTransactionEvents(
                             timestamp,
                             transaction,
                             EventType.transaction_heartbeat,
@@ -186,7 +186,7 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
         }
     }
 
-    private List<TransactionEvent> createAnalyticalEvents(
+    private List<AnalyticsEvent> createTransactionEvents(
             long timestamp,
             TransactionContextImpl transaction,
             EventType eventType,
@@ -196,10 +196,10 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
         SuiteConfig suiteConfig = suiteContext.getSuiteConfig();
         Map<String, RemoteWebDriverContextImpl> suiteDriverContexts = suiteContext.getDrivers();
 
-        List<TransactionEvent> events = new ArrayList<>();
+        List<AnalyticsEvent> events = new ArrayList<>();
 
         if (suiteDriverContexts == null || suiteDriverContexts.isEmpty()) {
-            TransactionEvent eventDto = new TransactionEvent();
+            AnalyticsEvent eventDto = new AnalyticsEvent();
             eventDto.setTimestamp(timestamp);
             eventDto.setSuiteName(suiteConfig.getName());
             eventDto.setSuiteInstanceId(suiteContext.getSuiteInstanceID());
@@ -227,7 +227,7 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
             events.add(eventDto);
         } else {
             suiteDriverContexts.values().forEach(driverContext -> {
-                TransactionEvent eventDto = new TransactionEvent();
+                AnalyticsEvent eventDto = new AnalyticsEvent();
                 eventDto.setTimestamp(timestamp);
                 eventDto.setSuiteName(suiteConfig.getName());
                 eventDto.setSuiteInstanceId(suiteContext.getSuiteInstanceID());
@@ -262,10 +262,4 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
         }
         return events;
     }
-
-    public enum EventType {
-        transaction_heartbeat,
-        transaction_completed
-    }
-
 }

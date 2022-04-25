@@ -1144,22 +1144,30 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
-  '/v1/projects/{project_key}/executions/{execution_key}/browser_clouds/{browser_cloud_key}/transaction_events':
+  '/v1/projects/{project_key}/executions/{execution_key}/browser_clouds/{browser_cloud_key}/analytics_events':
     post:
       tags:
         - Browser clouds
       summary: Send transaction events for analytics
       description: |
-        Call this operation if you want to submit transaction events from the load-generator side.
+        Call this operation if you want to submit analytics events from the load-generator side.
         ***
         **Special notes**:
-        - In the majority of the cases, you don't need to call this operation manually since Perforator provides pre-build integrations that automatically submit transaction events for processing.
+        - In the majority of the cases, you don't need to call this operation manually since Perforator provides pre-build integrations that automatically submit analytics events for processing.
         - One of the pre-built integrations allows you to utilize the full power of [TestNG](https://testng.org/doc/documentation-main.html) paired with Perforator. Feel free to explore such integration in the [Perforator public GitLab repo](https://gitlab.com/perforator-public/java-tools/-/tree/master/testng).
         ***
         **Event Types**:
         Only the following event types(`eventType`) are allowed to be submitted:
         - `transaction_heartbeat` - event describing that specific transaction is still alive. Typically such events are submitted every 250ms for every active transaction.
         - `transaction_completed` - event describing that specific transaction has been completed. Events with such type should only be sent once when the transaction is completed.
+        - `concurrency` - event describing that record should be treated as reporting point for concurrency. Typically such events are submitted every 250ms.
+        ***
+        **Concurrency Types**:
+        Only the following concurrency types(`concurrencyType`) are allowed to be submitted:
+        - `concurrent_top_level_transactions` - type of concurrency describing how many active 'top level' transactions at the specific moment.
+        - `concurrent_nested_transactions` - type of concurrency describing how many active 'nested level' transactions at the specific moment.
+        - `concurrent_transactions` - type of concurrency describing how many active transactions at the specific moment.
+        - `concurrent_sessions` - type of concurrency describing how many active sessions at the specific moment.
         ***
         **Processing flow**:
         When the list of events is accepted, it is first validated and then placed in the async processing queue, meaning that such events will be processed eventually in the future.
@@ -1172,18 +1180,20 @@ paths:
         ***
         **Validations**:
         - `timestamp` - required, its value can't be in the future and can't be more than 24h back in the past.
-        - `eventType` - required, should be either 'transaction_heartbeat' or 'transaction_completed'.
+        - `eventType` - required, should be once of 'transaction_heartbeat', 'transaction_completed' or 'concurrency'.
         - `failureMessage` - optional, but if present, it should have less than 65K symbols.
         - `failed` - should be provided for `transaction_completed` events.
-        - `suiteName` - required, should be less than 256 symbols.
-        - `transactionID` - required, should be in [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) format.
-        - `transactionName` - required, should be less than 1024 symbols.
+        - `suiteName` - required only if eventType == 'transaction_heartbeat' or eventType == 'transaction_completed', should be less than 256 symbols.
+        - `transactionID` - required only if eventType == 'transaction_heartbeat' or eventType == 'transaction_completed', should be in [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) format.
+        - `transactionName` - required only if eventType == 'transaction_heartbeat' or eventType == 'transaction_completed', should be less than 1024 symbols.
         - `parentTransactionID` - optional, but if present, it should be in [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) format.
         - `parentTransactionName` - optional, but should be provided if `parentTransactionID` is present.
         - `browserName` - optional, but if present, it should be less than 256 symbols.
         - `browserVersion` - optional, but if present, it should be less than 256 symbols.
         - `sessionId` - optional, but if present, it should be less than 64 symbols.
-      operationId: sendTransactionEvents
+        - `concurrencyType` - required only if eventType == 'concurrency', should be one of 'concurrent_top_level_transactions', 'concurrent_nested_transactions', 'concurrent_transactions' or 'concurrent_sessions'.
+        - `concurrencyValue` - required only if eventType == 'concurrency'.
+      operationId: sendAnalyticsEvents
       parameters:
         - name: project_key
           in: path
@@ -1215,7 +1225,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/TransactionEvent'
+                $ref: '#/components/schemas/AnalyticsEvent'
             example:
               - timestamp: 1626062953605
                 eventType: transaction_heartbeat
@@ -1239,6 +1249,11 @@ paths:
                 parentTransactionId: 90ef01d8-7c84-4ad6-b365-ec663246a326
                 parentTransactionName: Visit public website
                 suiteName: System stress test
+              - timestamp: 1626063315325
+                eventType: concurrency
+                suiteName: System stress test
+                concurrencyType: concurrent_sessions
+                concurrencyValue: 1500
         required: true
       responses:
         '200':
@@ -1246,7 +1261,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionEventsSubmissionResult'
+                $ref: '#/components/schemas/AnalyticsEventsSubmissionResult'
               example:
                 rejectedEvents:
                   - error: Invalid event type
@@ -11693,7 +11708,7 @@ components:
         - seleniumHubURL
         - status
         - uuid
-    TransactionEvent:
+    AnalyticsEvent:
       type: object
       properties:
         timestamp:
@@ -11723,22 +11738,27 @@ components:
           type: string
         suiteInstanceId:
           type: string
-    TransactionEventsSubmissionResult:
+        concurrencyType:
+          type: string
+        concurrencyValue:
+          type: integer
+          format: int32
+    AnalyticsEventsSubmissionResult:
       type: object
       properties:
         rejectedEvents:
           type: array
           items:
-            $ref: '#/components/schemas/TransactionEventErrorDetails'
+            $ref: '#/components/schemas/AnalyticsEventErrorDetails'
         retryableEvents:
           type: array
           items:
-            $ref: '#/components/schemas/TransactionEvent'
-    TransactionEventErrorDetails:
+            $ref: '#/components/schemas/AnalyticsEvent'
+    AnalyticsEventErrorDetails:
       type: object
       properties:
         event:
-          $ref: '#/components/schemas/TransactionEvent'
+          $ref: '#/components/schemas/AnalyticsEvent'
         error:
           type: string
     AnalyticsNamespace:

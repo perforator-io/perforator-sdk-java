@@ -34,6 +34,9 @@ public class IntegrationServiceMock implements IntegrationService<SuiteContextMo
     private final AtomicInteger suiteInstancesActive = new AtomicInteger(0);
     private final AtomicInteger suiteInstancesSuccessful = new AtomicInteger(0);
     private final AtomicInteger suiteInstancesFailed = new AtomicInteger(0);
+    private final AtomicInteger topLevelTransactionsInProgress = new AtomicInteger(0);
+    private final AtomicInteger nestedTransactionsInProgress = new AtomicInteger(0);
+    private final AtomicInteger sessionsInProgress = new AtomicInteger(0);
     private final ConcurrentHashMap<String, TransactionContextMock> transactionsActive = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, TransactionContextMock> transactionsSuccessful = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, TransactionContextMock> transactionsFailed = new ConcurrentHashMap<>();
@@ -86,11 +89,13 @@ public class IntegrationServiceMock implements IntegrationService<SuiteContextMo
                 result.getTransactionID(),
                 result
         );
+        topLevelTransactionsInProgress.incrementAndGet();
         return result;
     }
 
     @Override
     public void finishTransaction(TransactionContextMock transactionContext, Throwable transactionError) {
+        topLevelTransactionsInProgress.decrementAndGet();
         transactionsActive.remove(
                 transactionContext.getTransactionID()
         );
@@ -128,6 +133,7 @@ public class IntegrationServiceMock implements IntegrationService<SuiteContextMo
                 driver.getSessionId().toString(),
                 context
         );
+        sessionsInProgress.incrementAndGet();
         return context;
     }
 
@@ -167,6 +173,21 @@ public class IntegrationServiceMock implements IntegrationService<SuiteContextMo
     @Override
     public long getFailedTransactionsCount() {
         return transactionsFailed.size();
+    }
+
+    @Override
+    public long getActiveTopLevelTransactionsCount() {
+        return topLevelTransactionsInProgress.get();
+    }
+
+    @Override
+    public long getActiveNestedTransactionsCount() {
+        return nestedTransactionsInProgress.get();
+    }
+
+    @Override
+    public long getActiveSessionsCount() {
+        return sessionsInProgress.get();
     }
 
     public Collection<TransactionContextMock> getActiveTransactions() {
