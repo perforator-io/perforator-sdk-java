@@ -31,7 +31,7 @@ final class RemoteWebDriverManagerImpl implements RemoteWebDriverManager {
     }
 
     @Override
-    public void onSuiteInstanceFinished(long timestamp, SuiteContextImpl context, Throwable error) {
+    public void onSuiteInstanceFinished(long timestamp, SuiteInstanceContextImpl context, Throwable error) {
         for (RemoteWebDriverContextImpl driverContext : context.getDrivers().values()) {
             try {
                 driverContext.getRemoteWebDriver().quit();
@@ -44,21 +44,21 @@ final class RemoteWebDriverManagerImpl implements RemoteWebDriverManager {
     }
 
     @Override
-    public RemoteWebDriverContextImpl startRemoteWebDriver(SuiteContextImpl suiteContext, Capabilities capabilities) {
-        if (suiteContext == null) {
+    public RemoteWebDriverContextImpl startRemoteWebDriver(SuiteInstanceContextImpl suiteInstanceContext, Capabilities capabilities) {
+        if (suiteInstanceContext == null) {
             throw new IllegalArgumentException(
                     "Can't start selenium web driver - suiteInstanceID should not be blank"
             );
         }
 
-        SuiteConfig suiteConfig = suiteContext.getSuiteConfig();
+        SuiteConfig suiteConfig = suiteInstanceContext.getSuiteConfigContext().getSuiteConfig();
 
         RemoteWebDriver remoteWebDriver;
         if (suiteConfig.getWebDriverMode() == WebDriverMode.cloud) {
             RemoteWebDriverCommandExecutor commandExecutor = new RemoteWebDriverCommandExecutor(
                     timeProvider,
                     eventsRouter,
-                    suiteContext
+                    suiteInstanceContext
             );
 
             remoteWebDriver = new RemoteWebDriver(
@@ -84,10 +84,10 @@ final class RemoteWebDriverManagerImpl implements RemoteWebDriverManager {
         long timestamp = timeProvider.getCurrentTime();
         RemoteWebDriverContextImpl result = new RemoteWebDriverContextImpl(
                 timestamp,
-                suiteContext,
+                suiteInstanceContext,
                 remoteWebDriver
         );
-        suiteContext.getDrivers().put(
+        suiteInstanceContext.getDrivers().put(
                 result.getSessionID(),
                 result
         );

@@ -10,32 +10,31 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
-import io.perforator.sdk.loadgenerator.core.context.SuiteContext;
+import io.perforator.sdk.loadgenerator.core.context.SuiteInstanceContext;
 
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-final class SuiteContextImpl implements SuiteContext {
+final class SuiteInstanceContextImpl implements SuiteInstanceContext {
     
     private final int workerID;
     private final long startedAt;
     private final long iterationNumber;
-    private final SuiteConfig suiteConfig;
     private final String suiteInstanceID;
     private final LoadGeneratorContextImpl loadGeneratorContext;
+    private final SuiteConfigContextImpl suiteConfigContext;
     private final ConcurrentLinkedDeque<TransactionContextImpl> transactions = new ConcurrentLinkedDeque<>();
     private final ConcurrentHashMap<String, RemoteWebDriverContextImpl> drivers = new ConcurrentHashMap<>();
 
-    public SuiteContextImpl(int workerID, long startedAt, long iterationNumber, LoadGeneratorContextImpl loadGeneratorContext, SuiteConfig suiteConfig) {
+    public SuiteInstanceContextImpl(int workerID, long startedAt, long iterationNumber, LoadGeneratorContextImpl loadGeneratorContext, SuiteConfigContextImpl suiteConfigContext) {
         this.workerID = workerID;
         this.startedAt = startedAt;
         this.iterationNumber = iterationNumber;
         this.loadGeneratorContext = loadGeneratorContext;
-        this.suiteConfig = suiteConfig;
         this.suiteInstanceID = UUID.randomUUID().toString();
+        this.suiteConfigContext = suiteConfigContext;
     }
 
     @Override
@@ -65,13 +64,13 @@ final class SuiteContextImpl implements SuiteContext {
     }
 
     @Override
-    public SuiteConfig getSuiteConfig() {
-        return suiteConfig;
+    public String getSuiteInstanceID() {
+        return suiteInstanceID;
     }
 
     @Override
-    public String getSuiteInstanceID() {
-        return suiteInstanceID;
+    public SuiteConfigContextImpl getSuiteConfigContext() {
+        return suiteConfigContext;
     }
 
     @Override
@@ -92,7 +91,7 @@ final class SuiteContextImpl implements SuiteContext {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final SuiteContextImpl other = (SuiteContextImpl) obj;
+        final SuiteInstanceContextImpl other = (SuiteInstanceContextImpl) obj;
         return Objects.equals(this.suiteInstanceID, other.suiteInstanceID);
     }
 

@@ -19,16 +19,16 @@ final class RemoteWebDriverContextImpl implements RemoteWebDriverContext {
     
     private final long startedAt;
     private final LoadGeneratorContextImpl loadGeneratorContext;
-    private final SuiteContextImpl suiteContext;
+    private final SuiteInstanceContextImpl suiteInstanceContext;
     private final String sessionID;
     private final String browserName;
     private final String browserVersion;
     private final RemoteWebDriver remoteWebDriver;
 
-    RemoteWebDriverContextImpl(long startedAt, SuiteContextImpl suiteContext, RemoteWebDriver remoteWebDriver) {
+    RemoteWebDriverContextImpl(long startedAt, SuiteInstanceContextImpl suiteInstanceContext, RemoteWebDriver remoteWebDriver) {
         this.startedAt = startedAt;
-        this.loadGeneratorContext = suiteContext.getLoadGeneratorContext();
-        this.suiteContext = suiteContext;
+        this.loadGeneratorContext = suiteInstanceContext.getLoadGeneratorContext();
+        this.suiteInstanceContext = suiteInstanceContext;
         this.sessionID = remoteWebDriver.getSessionId().toString();
         this.browserName = remoteWebDriver.getCapabilities().getBrowserName();
         this.browserVersion = remoteWebDriver.getCapabilities().getVersion();
@@ -44,8 +44,8 @@ final class RemoteWebDriverContextImpl implements RemoteWebDriverContext {
         return loadGeneratorContext;
     }
     
-    public SuiteContextImpl getSuiteContext() {
-        return suiteContext;
+    public SuiteInstanceContextImpl getSuiteInstanceContext() {
+        return suiteInstanceContext;
     }
 
     @Override

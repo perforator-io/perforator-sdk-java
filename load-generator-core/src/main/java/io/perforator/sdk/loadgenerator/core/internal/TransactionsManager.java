@@ -12,7 +12,7 @@ package io.perforator.sdk.loadgenerator.core.internal;
 
 interface TransactionsManager extends IntegrationListener {
     
-    TransactionContextImpl startTransaction(SuiteContextImpl suiteContext, String transactionName);
+    TransactionContextImpl startTransaction(SuiteInstanceContextImpl suiteInstanceContext, String transactionName);
 
     void finishTransaction(TransactionContextImpl transactionContext, Throwable transactionError);
 

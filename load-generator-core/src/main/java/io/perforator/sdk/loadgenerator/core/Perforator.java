@@ -10,7 +10,7 @@
  */
 package io.perforator.sdk.loadgenerator.core;
 
-import io.perforator.sdk.loadgenerator.core.context.SuiteContext;
+import io.perforator.sdk.loadgenerator.core.context.SuiteInstanceContext;
 import io.perforator.sdk.loadgenerator.core.context.TransactionContext;
 import io.perforator.sdk.loadgenerator.core.service.RemoteWebDriverService;
 import io.perforator.sdk.loadgenerator.core.service.TransactionsService;
@@ -43,7 +43,7 @@ public final class Perforator {
      */
     public static final String CLOSE_WEB_DRIVER_TRANSACTION_NAME = "Close browser session";
     
-    static final ThreadLocal<SuiteContext> SUITE_CONTEXT = new InheritableThreadLocal<>();
+    static final ThreadLocal<SuiteInstanceContext> SUITE_INSTANCE_CONTEXT = new InheritableThreadLocal<>();
 
     static final ThreadLocal<RemoteWebDriverService> REMOTE_WEBDRIVER_SERVICE = new InheritableThreadLocal<>();
 
@@ -138,9 +138,9 @@ public final class Perforator {
      * @return a new {@link org.openqa.selenium.remote.RemoteWebDriver RemoteWebDriver} session.
      */
     public static final RemoteWebDriver startRemoteWebDriver(Capabilities capabilities) {
-        SuiteContext suiteContext = SUITE_CONTEXT.get();
+        SuiteInstanceContext suiteInstanceContext = SUITE_INSTANCE_CONTEXT.get();
         
-        if (suiteContext == null) {
+        if (suiteInstanceContext == null) {
             return RemoteWebDriverHelper.createLocalChromeDriver(capabilities);
         }
 
@@ -152,7 +152,7 @@ public final class Perforator {
         }
 
         return remoteWebDriverService.startRemoteWebDriver(
-                suiteContext,
+                suiteInstanceContext,
                 capabilities
         ).getRemoteWebDriver();
     }
@@ -174,9 +174,9 @@ public final class Perforator {
      * @return transaction id.
      */
     public static final String startTransaction(String transactionName) {
-        SuiteContext suiteContext = SUITE_CONTEXT.get();
+        SuiteInstanceContext suiteInstanceContext = SUITE_INSTANCE_CONTEXT.get();
         
-        if (suiteContext == null) {
+        if (suiteInstanceContext == null) {
             return UUID.randomUUID().toString();
         }
 
@@ -187,7 +187,7 @@ public final class Perforator {
             );
         }
 
-        TransactionContext transaction = transactionsService.startTransaction(suiteContext, transactionName);
+        TransactionContext transaction = transactionsService.startTransaction(suiteInstanceContext, transactionName);
         TRANSACTIONS.get().put(transaction.getTransactionID(), transaction);
         return transaction.getTransactionID();
     }
@@ -201,9 +201,9 @@ public final class Perforator {
      * processing.
      */
     public static final void finishTransaction(String transactionId, Throwable transactionError) {
-        SuiteContext suiteContext = SUITE_CONTEXT.get();
+        SuiteInstanceContext suiteInstanceContext = SUITE_INSTANCE_CONTEXT.get();
         
-        if (suiteContext == null) {
+        if (suiteInstanceContext == null) {
             return;
         }
 

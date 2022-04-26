@@ -23,7 +23,7 @@ final class SlowdownManagerImpl implements SlowdownManager {
     }
     
     @Override
-    public long getSlowdownTimeout(SuiteContextImpl suiteContext, Throwable suiteError) {
+    public long getSlowdownTimeout(SuiteInstanceContextImpl suiteInstanceContext, Throwable suiteError) {
         if(!slowdownEnabled || suiteError == null) {
             return 0;
         }

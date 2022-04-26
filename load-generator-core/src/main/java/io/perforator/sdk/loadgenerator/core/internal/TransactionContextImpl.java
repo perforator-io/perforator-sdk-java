@@ -18,12 +18,12 @@ final class TransactionContextImpl implements TransactionContext {
 
     private final long startedAt;
     private final LoadGeneratorContextImpl loadGeneratorContext;
-    private final SuiteContextImpl suiteContext;
+    private final SuiteInstanceContextImpl suiteContext;
     private final TransactionContextImpl parentTransactionContext;
     private final String transactionID;
     private final String transactionName;
 
-    TransactionContextImpl(long startedAt, SuiteContextImpl suiteContext, TransactionContextImpl parentTransactionContext, String transactionID, String transactionName) {
+    TransactionContextImpl(long startedAt, SuiteInstanceContextImpl suiteContext, TransactionContextImpl parentTransactionContext, String transactionID, String transactionName) {
         this.startedAt = startedAt;
         this.loadGeneratorContext = suiteContext.getLoadGeneratorContext();
         this.suiteContext = suiteContext;
@@ -41,7 +41,7 @@ final class TransactionContextImpl implements TransactionContext {
         return loadGeneratorContext;
     }
     
-    public SuiteContextImpl getSuiteContext() {
+    public SuiteInstanceContextImpl getSuiteContext() {
         return suiteContext;
     }
 

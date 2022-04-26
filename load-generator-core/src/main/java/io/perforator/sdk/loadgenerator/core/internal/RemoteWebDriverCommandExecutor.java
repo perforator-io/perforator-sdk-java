@@ -24,17 +24,17 @@ final class RemoteWebDriverCommandExecutor extends HttpCommandExecutor {
 
     private final TimeProvider timeProvider;
     private final EventsRouter eventsRouter;
-    private final SuiteContextImpl suiteContext;
+    private final SuiteInstanceContextImpl suiteInstanceContext;
 
-    public RemoteWebDriverCommandExecutor(TimeProvider timeProvider, EventsRouter eventsRouter, SuiteContextImpl suiteContext) {
+    public RemoteWebDriverCommandExecutor(TimeProvider timeProvider, EventsRouter eventsRouter, SuiteInstanceContextImpl suiteInstanceContext) {
         super(
                 Collections.EMPTY_MAP, 
-                suiteContext.getLoadGeneratorContext().getBrowserCloudContext().getSeleniumHubURL(), 
-                new RemoteWebDriverHttpClientFactory(suiteContext)
+                suiteInstanceContext.getLoadGeneratorContext().getBrowserCloudContext().getSeleniumHubURL(),
+                new RemoteWebDriverHttpClientFactory(suiteInstanceContext)
         );
         this.timeProvider = timeProvider;
         this.eventsRouter = eventsRouter;
-        this.suiteContext = suiteContext;
+        this.suiteInstanceContext = suiteInstanceContext;
     }
 
     @Override
@@ -49,7 +49,7 @@ final class RemoteWebDriverCommandExecutor extends HttpCommandExecutor {
             if (command.getName().equals(DriverCommand.QUIT)) {
                 String sessionID = command.getSessionId().toString();
 
-                RemoteWebDriverContextImpl remoteWebDriverContext = suiteContext.getDrivers().remove(
+                RemoteWebDriverContextImpl remoteWebDriverContext = suiteInstanceContext.getDrivers().remove(
                         sessionID
                 );
 

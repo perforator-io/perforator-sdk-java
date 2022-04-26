@@ -39,14 +39,14 @@ final class EventsRouterImpl implements EventsRouter {
     }
 
     @Override
-    public void onSuiteInstanceStarted(long timestamp, SuiteContextImpl context) {
+    public void onSuiteInstanceStarted(long timestamp, SuiteInstanceContextImpl context) {
         suiteInstanceStartedListeners.forEach(
                 listener -> listener.onSuiteInstanceStarted(timestamp, context)
         );
     }
 
     @Override
-    public void onSuiteInstanceFinished(long timestamp, SuiteContextImpl context, Throwable error) {
+    public void onSuiteInstanceFinished(long timestamp, SuiteInstanceContextImpl context, Throwable error) {
         suiteInstanceFinishedListeners.forEach(
                 listener -> listener.onSuiteInstanceFinished(timestamp, context, error)
         );

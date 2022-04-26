@@ -12,26 +12,28 @@ package io.perforator.sdk.loadgenerator.core.internal;
 
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import java.util.HashMap;
+
+import io.perforator.sdk.loadgenerator.core.context.SuiteConfigContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class ConcurrencyManagerImpl implements ConcurrencyManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConcurrencyManagerImpl.class);
-    private static final long RECALC_PERIOD = 30000l;
+    private static final long RECALC_PERIOD = 30000L;
 
     private final HashMap<String, ConcurrencyContextImpl> concurrencyContexts = new HashMap<>();
 
     @Override
     public void onLoadGeneratorStarted(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
         concurrencyContexts.clear();
-        for (SuiteConfig suiteConfig : loadGeneratorContext.getSuiteConfigs()) {
+        for (SuiteConfigContextImpl suiteConfigContext : loadGeneratorContext.getSuiteConfigContexts()) {
             ConcurrencyContextImpl concurrencyContext = new ConcurrencyContextImpl(
-                    suiteConfig,
+                    suiteConfigContext.getSuiteConfig(),
                     loadGeneratorContext.getLoadGeneratorConfig().isSlowdown(),
                     timestamp + RECALC_PERIOD
             );
-            concurrencyContexts.put(suiteConfig.getId(), concurrencyContext);
+            concurrencyContexts.put(suiteConfigContext.getSuiteConfig().getId(), concurrencyContext);
         }
     }
 
@@ -98,16 +100,16 @@ class ConcurrencyManagerImpl implements ConcurrencyManager {
     }
 
     @Override
-    public void onSuiteInstanceStarted(long timestamp, SuiteContextImpl suiteContext) {
+    public void onSuiteInstanceStarted(long timestamp, SuiteInstanceContextImpl suiteContext) {
         concurrencyContexts.get(
-                suiteContext.getSuiteConfig().getId()
+                suiteContext.getSuiteConfigContext().getSuiteConfig().getId()
         ).updateCurrentConcurrency(1);
     }
 
     @Override
-    public void onSuiteInstanceFinished(long timestamp, SuiteContextImpl suiteContext, Throwable error) {
+    public void onSuiteInstanceFinished(long timestamp, SuiteInstanceContextImpl suiteContext, Throwable error) {
         ConcurrencyContextImpl concurrencyContext = concurrencyContexts.get(
-                suiteContext.getSuiteConfig().getId()
+                suiteContext.getSuiteConfigContext().getSuiteConfig().getId()
         );
 
         concurrencyContext.updateCurrentConcurrency(-1);
@@ -124,23 +126,23 @@ class ConcurrencyManagerImpl implements ConcurrencyManager {
     }
 
     @Override
-    public int getMaxConcurrency(SuiteConfig suiteConfig) {
-        return concurrencyContexts.get(suiteConfig.getId()).getMaxConcurrency();
+    public int getMaxConcurrency(SuiteConfigContext suiteConfigContext) {
+        return concurrencyContexts.get(suiteConfigContext.getSuiteConfig().getId()).getMaxConcurrency();
     }
 
     @Override
-    public int getMinConcurrency(SuiteConfig suiteConfig) {
-        return concurrencyContexts.get(suiteConfig.getId()).getMinConcurrency();
+    public int getMinConcurrency(SuiteConfigContext suiteConfigContext) {
+        return concurrencyContexts.get(suiteConfigContext.getSuiteConfig().getId()).getMinConcurrency();
     }
 
     @Override
-    public int getDesiredConcurrency(SuiteConfig suiteConfig) {
-        return concurrencyContexts.get(suiteConfig.getId()).getDesiredConcurrency();
+    public int getDesiredConcurrency(SuiteConfigContext suiteConfigContext) {
+        return concurrencyContexts.get(suiteConfigContext.getSuiteConfig().getId()).getDesiredConcurrency();
     }
 
     @Override
-    public int getCurrentConcurrency(SuiteConfig suiteConfig) {
-        return concurrencyContexts.get(suiteConfig.getId()).getCurrentConcurrency();
+    public int getCurrentConcurrency(SuiteConfigContext suiteConfigContext) {
+        return concurrencyContexts.get(suiteConfigContext.getSuiteConfig().getId()).getCurrentConcurrency();
     }
 
 }

@@ -17,8 +17,8 @@ final class RemoteWebDriverHttpClientFactory implements HttpClient.Factory {
 
     private final RemoteWebDriverHttpClient client;
 
-    public RemoteWebDriverHttpClientFactory(SuiteContextImpl suiteContext) {
-        this.client = new RemoteWebDriverHttpClient(suiteContext);
+    public RemoteWebDriverHttpClientFactory(SuiteInstanceContextImpl suiteInstanceContext) {
+        this.client = new RemoteWebDriverHttpClient(suiteInstanceContext);
     }
 
     @Override

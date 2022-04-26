@@ -10,7 +10,6 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Dsl;
 import org.asynchttpclient.HttpResponseStatus;
@@ -33,7 +32,7 @@ final class HttpClientsManagerImpl implements HttpClientsManager {
                 buildAsyncHttpClient(
                         loadGeneratorContext.getLoadGeneratorConfig().getHttpConnectTimeout(),
                         loadGeneratorContext.getLoadGeneratorConfig().getHttpReadTimeout(),
-                        loadGeneratorContext.getSuiteConfigs().stream().mapToInt(SuiteConfig::getConcurrency).sum()
+                        loadGeneratorContext.getSuiteConfigContexts().stream().mapToInt(c -> c.getSuiteConfig().getConcurrency()).sum()
                 )
         );
     }

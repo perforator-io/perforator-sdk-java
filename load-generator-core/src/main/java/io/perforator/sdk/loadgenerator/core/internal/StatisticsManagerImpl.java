@@ -13,85 +13,78 @@ package io.perforator.sdk.loadgenerator.core.internal;
 class StatisticsManagerImpl implements StatisticsManager {
 
     @Override
-    public void onSuiteInstanceStarted(long timestamp, SuiteContextImpl context) {
-        LoadGeneratorContextImpl loadGeneratorContext = context.getLoadGeneratorContext();
-        loadGeneratorContext.getStatisticsContext().incrementSuiteInstancesInProgress();
-        loadGeneratorContext.getSuiteStatisticsContext(context.getSuiteConfig().getName()).incrementSuiteInstancesInProgress();
+    public void onSuiteInstanceStarted(long timestamp, SuiteInstanceContextImpl context) {
+        context.getLoadGeneratorContext().getStatisticsContext().incrementSuiteInstancesInProgress();
+        context.getSuiteConfigContext().getStatisticsContext().incrementSuiteInstancesInProgress();
     }
 
     @Override
-    public void onSuiteInstanceFinished(long timestamp, SuiteContextImpl context, Throwable error) {
+    public void onSuiteInstanceFinished(long timestamp, SuiteInstanceContextImpl context, Throwable error) {
         LoadGeneratorContextImpl loadGeneratorContext = context.getLoadGeneratorContext();
-        String suiteName = context.getSuiteConfig().getName();
+        SuiteConfigContextImpl suiteConfigContext = context.getSuiteConfigContext();
 
         loadGeneratorContext.getStatisticsContext().decrementSuiteInstancesInProgress();
-        loadGeneratorContext.getSuiteStatisticsContext(suiteName).decrementSuiteInstancesInProgress();
+        suiteConfigContext.getStatisticsContext().decrementSuiteInstancesInProgress();
 
         if (error == null) {
             loadGeneratorContext.getStatisticsContext().incrementSuiteInstancesSuccessful();
-            loadGeneratorContext.getSuiteStatisticsContext(suiteName).incrementSuiteInstancesSuccessful();
+            suiteConfigContext.getStatisticsContext().incrementSuiteInstancesSuccessful();
         } else {
             loadGeneratorContext.getStatisticsContext().incrementSuiteInstancesFailed();
-            loadGeneratorContext.getSuiteStatisticsContext(suiteName).incrementSuiteInstancesFailed();
+            suiteConfigContext.getStatisticsContext().incrementSuiteInstancesFailed();
         }
     }
 
     @Override
     public void onTransactionStarted(long timestamp, TransactionContextImpl context) {
         LoadGeneratorContextImpl loadGeneratorContext = context.getLoadGeneratorContext();
-        String suiteName = context.getSuiteContext().getSuiteConfig().getName();
+        SuiteConfigContextImpl suiteConfigContext = context.getSuiteContext().getSuiteConfigContext();
 
         loadGeneratorContext.getStatisticsContext().incrementTransactionsInProgress();
-        loadGeneratorContext.getSuiteStatisticsContext(suiteName).incrementTransactionsInProgress();
+        suiteConfigContext.getStatisticsContext().incrementTransactionsInProgress();
         
         if (context.isNested()) {
             loadGeneratorContext.getStatisticsContext().incrementNestedTransactionsInProgress();
-            loadGeneratorContext.getSuiteStatisticsContext(suiteName).incrementNestedTransactionsInProgress();
+            suiteConfigContext.getStatisticsContext().incrementNestedTransactionsInProgress();
         } else {
             loadGeneratorContext.getStatisticsContext().incrementTopLevelTransactionsInProgress();
-            loadGeneratorContext.getSuiteStatisticsContext(suiteName).incrementTopLevelTransactionsInProgress();
+            suiteConfigContext.getStatisticsContext().incrementTopLevelTransactionsInProgress();
         }
     }
 
     @Override
     public void onTransactionFinished(long timestamp, TransactionContextImpl context, Throwable error) {
         LoadGeneratorContextImpl loadGeneratorContext = context.getLoadGeneratorContext();
-        String suiteName = context.getSuiteContext().getSuiteConfig().getName();
+        SuiteConfigContextImpl suiteConfigContext = context.getSuiteContext().getSuiteConfigContext();
 
         loadGeneratorContext.getStatisticsContext().decrementTransactionsInProgress();
-        loadGeneratorContext.getSuiteStatisticsContext(suiteName).decrementTransactionsInProgress();
+        suiteConfigContext.getStatisticsContext().decrementTransactionsInProgress();
 
         if (error == null) {
             loadGeneratorContext.getStatisticsContext().incrementTransactionsSuccessful();
-            loadGeneratorContext.getSuiteStatisticsContext(suiteName).incrementTransactionsSuccessful();
+            suiteConfigContext.getStatisticsContext().incrementTransactionsSuccessful();
         } else {
             loadGeneratorContext.getStatisticsContext().incrementTransactionsFailed();
-            loadGeneratorContext.getSuiteStatisticsContext(suiteName).incrementTransactionsFailed();
+            suiteConfigContext.getStatisticsContext().incrementTransactionsFailed();
         }
         if (context.isNested()) {
             loadGeneratorContext.getStatisticsContext().decrementNestedTransactionsInProgress();
-            loadGeneratorContext.getSuiteStatisticsContext(suiteName).decrementNestedTransactionsInProgress();
+            suiteConfigContext.getStatisticsContext().decrementNestedTransactionsInProgress();
         } else {
             loadGeneratorContext.getStatisticsContext().decrementTopLevelTransactionsInProgress();
-            loadGeneratorContext.getSuiteStatisticsContext(suiteName).decrementTopLevelTransactionsInProgress();
+            suiteConfigContext.getStatisticsContext().decrementTopLevelTransactionsInProgress();
         }
     }
 
     @Override
     public void onRemoteWebDriverStarted(long timestamp, RemoteWebDriverContextImpl context) {
-        LoadGeneratorContextImpl loadGeneratorContext = context.getLoadGeneratorContext();
-        String suiteName = context.getSuiteContext().getSuiteConfig().getName();
-
-        loadGeneratorContext.getStatisticsContext().incrementSessionsInProgress();
-        loadGeneratorContext.getSuiteStatisticsContext(suiteName).incrementSessionsInProgress();
+        context.getLoadGeneratorContext().getStatisticsContext().incrementSessionsInProgress();
+        context.getSuiteInstanceContext().getSuiteConfigContext().getStatisticsContext().incrementSessionsInProgress();
     }
 
     @Override
     public void onRemoteWebDriverFinished(long timestamp, RemoteWebDriverContextImpl context, Throwable error) {
-        LoadGeneratorContextImpl loadGeneratorContext = context.getLoadGeneratorContext();
-        String suiteName = context.getSuiteContext().getSuiteConfig().getName();
-
-        loadGeneratorContext.getStatisticsContext().decrementSessionsInProgress();
-        loadGeneratorContext.getSuiteStatisticsContext(suiteName).decrementSessionsInProgress();
+        context.getLoadGeneratorContext().getStatisticsContext().decrementSessionsInProgress();
+        context.getSuiteInstanceContext().getSuiteConfigContext().getStatisticsContext().decrementSessionsInProgress();
     }
 }

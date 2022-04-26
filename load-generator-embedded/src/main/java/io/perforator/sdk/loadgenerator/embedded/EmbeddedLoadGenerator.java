@@ -13,7 +13,7 @@ package io.perforator.sdk.loadgenerator.embedded;
 import io.perforator.sdk.loadgenerator.core.AbstractLoadGenerator;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
-import io.perforator.sdk.loadgenerator.core.context.SuiteContext;
+import io.perforator.sdk.loadgenerator.core.context.SuiteInstanceContext;
 import io.perforator.sdk.loadgenerator.core.service.IntegrationService;
 
 import java.lang.reflect.Constructor;
@@ -68,9 +68,9 @@ public class EmbeddedLoadGenerator extends AbstractLoadGenerator {
     }
 
     @Override
-    protected void runSuite(SuiteContext suiteContext) {
-        String suiteInstanceID = suiteContext.getSuiteInstanceID();
-        EmbeddedSuiteConfig embeddedSuiteConfig = (EmbeddedSuiteConfig) suiteContext.getSuiteConfig();
+    protected void runSuite(SuiteInstanceContext suiteInstanceContext) {
+        String suiteInstanceID = suiteInstanceContext.getSuiteInstanceID();
+        EmbeddedSuiteConfig embeddedSuiteConfig = (EmbeddedSuiteConfig) suiteInstanceContext.getSuiteConfigContext().getSuiteConfig();
         
         EmbeddedSuiteProcessor processor;
         if(embeddedSuiteConfig.isProcessorSingleton()) {
@@ -86,7 +86,7 @@ public class EmbeddedLoadGenerator extends AbstractLoadGenerator {
         }
         
         processor.onBeforeSuite(
-                suiteContext.getIterationNumber(),
+                suiteInstanceContext.getIterationNumber(),
                 suiteInstanceID, 
                 embeddedSuiteConfig
         );
@@ -97,7 +97,7 @@ public class EmbeddedLoadGenerator extends AbstractLoadGenerator {
                 return;
             }
             processor.processSuite(
-                    suiteContext.getIterationNumber(),
+                    suiteInstanceContext.getIterationNumber(),
                     suiteInstanceID,
                     embeddedSuiteConfig
             );
@@ -106,7 +106,7 @@ public class EmbeddedLoadGenerator extends AbstractLoadGenerator {
             throw e;
         } finally {
             processor.onAfterSuite(
-                    suiteContext.getIterationNumber(),
+                    suiteInstanceContext.getIterationNumber(),
                     suiteInstanceID,
                     embeddedSuiteConfig, 
                     suiteInstanceProcessingError

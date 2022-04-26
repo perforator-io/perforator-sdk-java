@@ -15,26 +15,31 @@ import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 final class ConcurrencyEventsAggregatorImpl implements ConcurrencyEventsAggregator {
 
+    private final AtomicBoolean finish = new AtomicBoolean(false);
+
+    @Override
+    public void onLoadGeneratorFinished(long timestamp, LoadGeneratorContextImpl loadGeneratorContext, Throwable error) {
+        finish.set(true);
+    }
+
     @Override
     public void onHeartbeat(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
-
-        boolean runningInCloud = loadGeneratorContext.getSuiteContexts().stream()
-                .map(SuiteContextImpl::getSuiteConfig)
-                .anyMatch(suiteConfig -> suiteConfig.getWebDriverMode() == WebDriverMode.cloud);
-
-        if(!runningInCloud){
+        if (finish.get()) {
             return;
         }
-
         List<AnalyticsEvent> events = new ArrayList<>();
 
-        for(Map.Entry<String, StatisticsContextImpl> entry : loadGeneratorContext.getSuiteStatisticsContexts().entrySet()){
-            String suiteName = entry.getKey();
-            StatisticsContextImpl statisticsContext = entry.getValue();
+        for (SuiteConfigContextImpl suiteConfigContext : loadGeneratorContext.getSuiteConfigContexts()) {
+            if (suiteConfigContext.getSuiteConfig().getWebDriverMode() != WebDriverMode.cloud) {
+                continue;
+            }
+
+            String suiteName = suiteConfigContext.getSuiteConfig().getName();
+            StatisticsContextImpl statisticsContext = suiteConfigContext.getStatisticsContext();
 
             events.add(
                     createConcurrencyEvent(
