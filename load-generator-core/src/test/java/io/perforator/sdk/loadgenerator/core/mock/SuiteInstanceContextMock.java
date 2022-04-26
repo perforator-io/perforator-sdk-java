@@ -10,25 +10,25 @@
  */
 package io.perforator.sdk.loadgenerator.core.mock;
 
-import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
-import io.perforator.sdk.loadgenerator.core.context.SuiteContext;
+import io.perforator.sdk.loadgenerator.core.context.SuiteConfigContext;
+import io.perforator.sdk.loadgenerator.core.context.SuiteInstanceContext;
 import java.util.UUID;
 
-public class SuiteContextMock implements SuiteContext {
-    
-    private final SuiteConfig suiteConfig;
+public class SuiteInstanceContextMock implements SuiteInstanceContext {
+
+    private final SuiteConfigContextMock suiteConfigContext;
     private final String suiteInstanceID;
     private final int workerID;
     private final long iterationNumber;
-    
-    public SuiteContextMock(int workerID, long iterationNumber, SuiteConfig suiteConfig) {
-        this(workerID, iterationNumber, suiteConfig, UUID.randomUUID().toString());
+
+    public SuiteInstanceContextMock(int workerID, long iterationNumber, SuiteConfigContextMock suiteConfigContext) {
+        this(workerID, iterationNumber, suiteConfigContext, UUID.randomUUID().toString());
     }
 
-    public SuiteContextMock(int workerID, long iterationNumber, SuiteConfig suiteConfig, String suiteInstanceID) {
+    public SuiteInstanceContextMock(int workerID, long iterationNumber, SuiteConfigContextMock suiteConfigContext, String suiteInstanceID) {
         this.workerID = workerID;
         this.iterationNumber = iterationNumber;
-        this.suiteConfig = suiteConfig;
+        this.suiteConfigContext = suiteConfigContext;
         this.suiteInstanceID = suiteInstanceID;
     }
 
@@ -43,13 +43,13 @@ public class SuiteContextMock implements SuiteContext {
     }
 
     @Override
-    public SuiteConfig getSuiteConfig() {
-        return suiteConfig;
+    public SuiteConfigContext getSuiteConfigContext() {
+        return suiteConfigContext;
     }
 
     @Override
     public int getWorkerID() {
         return workerID;
     }
-    
+
 }

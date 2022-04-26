@@ -11,6 +11,7 @@
 package io.perforator.sdk.loadgenerator.core.internal;
 
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
+
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,42 +31,43 @@ final class SuiteManagerImpl implements SuiteManager {
 
     @Override
     public void onLoadGeneratorStarted(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
-        for (SuiteConfig suiteConfig : loadGeneratorContext.getSuiteConfigs()) {
-            validate(suiteConfig);
+        for (SuiteConfigContextImpl suiteConfig : loadGeneratorContext.getSuiteConfigContexts()) {
+            validate(suiteConfig.getSuiteConfig());
         }
     }
 
     @Override
-    public SuiteContextImpl startSuiteInstance(int workerID, LoadGeneratorContextImpl loadGeneratorContext, SuiteConfig suiteConfig) {
-        if (suiteConfig == null) {
+    public SuiteInstanceContextImpl startSuiteInstance(int workerID, LoadGeneratorContextImpl loadGeneratorContext, SuiteConfigContextImpl suiteConfigContext) {
+        if (suiteConfigContext == null) {
+            throw new IllegalArgumentException(
+                    "suiteConfigContext should not be null"
+            );
+        }
+        if (suiteConfigContext.getSuiteConfig() == null) {
             throw new IllegalArgumentException(
                     "suiteConfig should not be null"
             );
         }
 
         long iterationNumber = counters.computeIfAbsent(
-                suiteConfig.getId(), 
+                suiteConfigContext.getSuiteConfig().getId(),
                 i -> new AtomicLong(0)
         ).getAndIncrement();
         long timestamp = timeProvider.getCurrentTime();
-        
-        SuiteContextImpl result = new SuiteContextImpl(
+        SuiteInstanceContextImpl result = new SuiteInstanceContextImpl(
                 workerID,
                 timestamp,
                 iterationNumber,
                 loadGeneratorContext,
-                suiteConfig
+                suiteConfigContext
         );
-
-        loadGeneratorContext.getSuiteContexts().add(result);
-
+        suiteConfigContext.getSuiteInstanceContexts().add(result);
         eventsRouter.onSuiteInstanceStarted(timestamp, result);
-
         return result;
     }
 
     @Override
-    public void stopSuiteInstance(SuiteContextImpl suiteContext, Throwable error) {
+    public void stopSuiteInstance(SuiteInstanceContextImpl suiteContext, Throwable error) {
         stopSuiteInstance(
                 timeProvider.getCurrentTime(),
                 suiteContext,
@@ -73,14 +75,14 @@ final class SuiteManagerImpl implements SuiteManager {
         );
     }
 
-    private void stopSuiteInstance(long timestamp, SuiteContextImpl suiteContext, Throwable error) {
+    private void stopSuiteInstance(long timestamp, SuiteInstanceContextImpl suiteContext, Throwable error) {
         if (suiteContext == null) {
             throw new IllegalArgumentException(
                     "suiteInstance should not be null"
             );
         }
 
-        if (suiteContext.getLoadGeneratorContext().getSuiteContexts().remove(suiteContext)) {
+        if (suiteContext.getSuiteConfigContext().getSuiteInstanceContexts().remove(suiteContext)) {
             eventsRouter.onSuiteInstanceFinished(
                     timestamp,
                     suiteContext,
@@ -91,12 +93,14 @@ final class SuiteManagerImpl implements SuiteManager {
 
     @Override
     public void onLoadGeneratorFinished(long timestamp, LoadGeneratorContextImpl loadGeneratorContext, Throwable error) {
-        for (SuiteContextImpl suiteContext : loadGeneratorContext.getSuiteContexts()) {
-            stopSuiteInstance(
-                    timestamp,
-                    suiteContext,
-                    error
-            );
+        for (SuiteConfigContextImpl suiteConfigContext : loadGeneratorContext.getSuiteConfigContexts()) {
+            for (SuiteInstanceContextImpl suiteInstanceContext: suiteConfigContext.getSuiteInstanceContexts()){
+                stopSuiteInstance(
+                        timestamp,
+                        suiteInstanceContext,
+                        error
+                );
+            }
         }
     }
 

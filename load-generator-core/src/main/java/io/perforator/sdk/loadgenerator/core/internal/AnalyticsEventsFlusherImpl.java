@@ -15,7 +15,6 @@ import io.perforator.sdk.api.okhttpgson.invoker.ApiException;
 import io.perforator.sdk.api.okhttpgson.model.AnalyticsEvent;
 import io.perforator.sdk.api.okhttpgson.model.AnalyticsEventsSubmissionResult;
 import io.perforator.sdk.loadgenerator.core.Threaded;
-import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +35,7 @@ final class AnalyticsEventsFlusherImpl implements AnalyticsEventsFlusher {
 
     @Override
     public void onLoadGeneratorStarted(long timestamp, LoadGeneratorContextImpl context) {
-        int concurrency = context.getSuiteConfigs().stream().mapToInt(SuiteConfig::getConcurrency).sum();
+        int concurrency = context.getSuiteConfigContexts().stream().mapToInt(c -> c.getSuiteConfig().getConcurrency()).sum();
         int flusherThreads = concurrency * 4 / context.getLoadGeneratorConfig().getEventsFlushThreshold() + 1;
 
         executor = Executors.newFixedThreadPool(flusherThreads);

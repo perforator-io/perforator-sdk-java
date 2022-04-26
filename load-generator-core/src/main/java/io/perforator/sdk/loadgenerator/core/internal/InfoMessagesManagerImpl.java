@@ -73,9 +73,9 @@ final class InfoMessagesManagerImpl implements InfoMessagesManager {
     }
 
     private boolean isLocalOnly(LoadGeneratorContextImpl loadGeneratorContext) {
-        return loadGeneratorContext.getSuiteConfigs()
+        return loadGeneratorContext.getSuiteConfigContexts()
                 .stream()
-                .noneMatch(suite -> suite.getWebDriverMode() == WebDriverMode.cloud);
+                .noneMatch(suite -> suite.getSuiteConfig().getWebDriverMode() == WebDriverMode.cloud);
     }
 
     private String getUrl(LoadGeneratorConfig config) {

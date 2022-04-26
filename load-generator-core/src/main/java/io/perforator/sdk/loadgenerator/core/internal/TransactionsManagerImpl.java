@@ -24,8 +24,8 @@ final class TransactionsManagerImpl implements TransactionsManager {
     }
 
     @Override
-    public TransactionContextImpl startTransaction(SuiteContextImpl suiteContext, String transactionName) {
-        if (suiteContext == null) {
+    public TransactionContextImpl startTransaction(SuiteInstanceContextImpl suiteInstanceContext, String transactionName) {
+        if (suiteInstanceContext == null) {
             throw new IllegalArgumentException(
                     "Can't start new transaction - suiteContext should not be blank"
             );
@@ -37,18 +37,18 @@ final class TransactionsManagerImpl implements TransactionsManager {
             );
         }
 
-        TransactionContextImpl rootTransaction = suiteContext.getTransactions().peekLast();
+        TransactionContextImpl rootTransaction = suiteInstanceContext.getTransactions().peekLast();
 
         long timestamp = timeProvider.getCurrentTime();
         TransactionContextImpl result = new TransactionContextImpl(
                 timestamp,
-                suiteContext,
+                suiteInstanceContext,
                 rootTransaction,
-                rootTransaction == null ? suiteContext.getSuiteInstanceID() : UUID.randomUUID().toString(),
+                rootTransaction == null ? suiteInstanceContext.getSuiteInstanceID() : UUID.randomUUID().toString(),
                 transactionName
         );
 
-        suiteContext.getTransactions().push(result);
+        suiteInstanceContext.getTransactions().push(result);
 
         eventsRouter.onTransactionStarted(timestamp, result);
 
@@ -73,15 +73,15 @@ final class TransactionsManagerImpl implements TransactionsManager {
     }
 
     @Override
-    public void onSuiteInstanceStarted(long timestamp, SuiteContextImpl context) {
+    public void onSuiteInstanceStarted(long timestamp, SuiteInstanceContextImpl context) {
         startTransaction(
                 context,
-                "suite - " + context.getSuiteConfig().getName()
+                "suite - " + context.getSuiteConfigContext().getSuiteConfig().getName()
         );
     }
 
     @Override
-    public void onSuiteInstanceFinished(long timestamp, SuiteContextImpl context, Throwable error) {
+    public void onSuiteInstanceFinished(long timestamp, SuiteInstanceContextImpl context, Throwable error) {
         ConcurrentLinkedDeque<TransactionContextImpl> transactions = context.getTransactions();
         TransactionContextImpl transaction;
         while ((transaction = transactions.poll()) != null) {

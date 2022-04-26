@@ -8,19 +8,21 @@
  * the Business Source License, use of this software will be governed
  * by the Apache License, Version 2.0.
  */
-package io.perforator.sdk.loadgenerator.core.internal;
+package io.perforator.sdk.loadgenerator.core.mock;
 
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.context.SuiteConfigContext;
 
-interface ConcurrencyManager extends IntegrationListener {
+public class SuiteConfigContextMock implements SuiteConfigContext {
 
-    int getMaxConcurrency(SuiteConfigContext suiteConfigContext);
+    private SuiteConfig suiteConfig;
 
-    int getMinConcurrency(SuiteConfigContext suiteConfigContext);
+    public SuiteConfigContextMock(SuiteConfig suiteConfig) {
+        this.suiteConfig = suiteConfig;
+    }
 
-    int getDesiredConcurrency(SuiteConfigContext suiteConfigContext);
-
-    int getCurrentConcurrency(SuiteConfigContext suiteConfigContext);
-
+    @Override
+    public SuiteConfig getSuiteConfig() {
+        return suiteConfig;
+    }
 }

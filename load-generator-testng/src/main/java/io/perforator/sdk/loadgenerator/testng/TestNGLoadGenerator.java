@@ -13,7 +13,7 @@ package io.perforator.sdk.loadgenerator.testng;
 import io.perforator.sdk.loadgenerator.core.AbstractLoadGenerator;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
-import io.perforator.sdk.loadgenerator.core.context.SuiteContext;
+import io.perforator.sdk.loadgenerator.core.context.SuiteInstanceContext;
 import io.perforator.sdk.loadgenerator.core.context.TransactionContext;
 import io.perforator.sdk.loadgenerator.core.service.IntegrationService;
 import org.testng.*;
@@ -87,12 +87,12 @@ public class TestNGLoadGenerator extends AbstractLoadGenerator {
     }
 
     @Override
-    protected void runSuite(SuiteContext suiteContext) {
-        TestNGSuiteConfig suiteConfig = (TestNGSuiteConfig) suiteContext.getSuiteConfig();
+    protected void runSuite(SuiteInstanceContext suiteInstanceContext) {
+        TestNGSuiteConfig suiteConfig = (TestNGSuiteConfig) suiteInstanceContext.getSuiteConfigContext().getSuiteConfig();
 
         TestNG testNG = new TestNG(false);
-        testNG.addListener(new TestListener(suiteContext));
-        testNG.addListener(new TestMethodListener(suiteContext));
+        testNG.addListener(new TestListener(suiteInstanceContext));
+        testNG.addListener(new TestMethodListener(suiteInstanceContext));
         testNG.setTestSuites(
                 Collections.singletonList(suiteConfig.getSuiteXmlFile())
         );
@@ -111,10 +111,10 @@ public class TestNGLoadGenerator extends AbstractLoadGenerator {
     private class TestMethodListener implements IInvokedMethodListener {
 
         private final Stack<TransactionContext> transactions = new Stack<>();
-        private final SuiteContext suiteContext;
+        private final SuiteInstanceContext suiteInstanceContext;
 
-        public TestMethodListener(SuiteContext suiteContext) {
-            this.suiteContext = suiteContext;
+        public TestMethodListener(SuiteInstanceContext suiteInstanceContext) {
+            this.suiteInstanceContext = suiteInstanceContext;
         }
 
         @Override
@@ -138,7 +138,7 @@ public class TestNGLoadGenerator extends AbstractLoadGenerator {
             }
 
             TransactionContext transactionContext = startTransaction(
-                    suiteContext,
+                    suiteInstanceContext,
                     transactionName
             );
             transactions.push(transactionContext);
@@ -187,10 +187,10 @@ public class TestNGLoadGenerator extends AbstractLoadGenerator {
     private class TestListener implements ITestListener {
 
         private final Stack<TransactionContext> transactions = new Stack();
-        private final SuiteContext suiteContext;
+        private final SuiteInstanceContext suiteInstanceContext;
 
-        public TestListener(SuiteContext suiteContext) {
-            this.suiteContext = suiteContext;
+        public TestListener(SuiteInstanceContext suiteInstanceContext) {
+            this.suiteInstanceContext = suiteInstanceContext;
         }
 
         @Override
@@ -200,7 +200,7 @@ public class TestNGLoadGenerator extends AbstractLoadGenerator {
             }
 
             TransactionContext transactionContext = startTransaction(
-                    suiteContext,
+                    suiteInstanceContext,
                     "test - " + context.getName()
             );
             transactions.push(transactionContext);

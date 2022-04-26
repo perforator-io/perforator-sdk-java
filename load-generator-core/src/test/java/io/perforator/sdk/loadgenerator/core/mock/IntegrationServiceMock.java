@@ -24,8 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class IntegrationServiceMock implements IntegrationService<SuiteContextMock, TransactionContextMock, RemoteWebDriverContextMock> {
-    
+public class IntegrationServiceMock implements IntegrationService<SuiteConfigContextMock, SuiteInstanceContextMock, TransactionContextMock, RemoteWebDriverContextMock> {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationServiceMock.class);
 
     private final ConcurrentHashMap<String, AtomicLong> counters = new ConcurrentHashMap<>();
@@ -48,24 +48,30 @@ public class IntegrationServiceMock implements IntegrationService<SuiteContextMo
     }
 
     @Override
-    public SuiteContextMock onSuiteInstanceStarted(int workerID, SuiteConfig suiteConfig) {
-        long iterationNumber = counters.computeIfAbsent(
-                suiteConfig.getId(), 
-                i -> new AtomicLong(0)
-        ).getAndIncrement();
-        suiteInstancesActive.incrementAndGet();
-        return new SuiteContextMock(workerID, iterationNumber, suiteConfig);
+    public SuiteConfigContextMock onSuiteConfigCreated(SuiteConfig suiteConfig) {
+        return new SuiteConfigContextMock(suiteConfig);
     }
 
     @Override
-    public long onSuiteInstanceFinished(SuiteContextMock suiteContext, Throwable suiteError) {
+    public SuiteInstanceContextMock onSuiteInstanceStarted(int workerID, SuiteConfigContextMock suiteConfigContext) {
+        SuiteConfig suiteConfig = suiteConfigContext.getSuiteConfig();
+        long iterationNumber = counters.computeIfAbsent(
+                suiteConfig.getId(),
+                i -> new AtomicLong(0)
+        ).getAndIncrement();
+        suiteInstancesActive.incrementAndGet();
+        return new SuiteInstanceContextMock(workerID, iterationNumber, new SuiteConfigContextMock(suiteConfig));
+    }
+
+    @Override
+    public long onSuiteInstanceFinished(SuiteInstanceContextMock suiteContext, Throwable suiteError) {
         suiteInstancesActive.decrementAndGet();
         if (suiteError != null) {
             suiteInstancesFailed.incrementAndGet();
-            
+
             LOGGER.error(
                     "Suite {}, {} failed with error",
-                    suiteContext.getSuiteConfig().getName(),
+                    suiteContext.getSuiteConfigContext().getSuiteConfig().getName(),
                     suiteContext.getSuiteInstanceID(),
                     suiteError
             );
@@ -81,7 +87,7 @@ public class IntegrationServiceMock implements IntegrationService<SuiteContextMo
     }
 
     @Override
-    public TransactionContextMock startTransaction(SuiteContextMock suiteContext, String transactionName) {
+    public TransactionContextMock startTransaction(SuiteInstanceContextMock suiteContext, String transactionName) {
         TransactionContextMock result = new TransactionContextMock(
                 transactionName
         );
@@ -105,7 +111,7 @@ public class IntegrationServiceMock implements IntegrationService<SuiteContextMo
                     transactionContext.getTransactionID(),
                     transactionContext
             );
-            
+
             LOGGER.error(
                     "Transaction {}, {} failed with error",
                     transactionContext.getTransactionName(),
@@ -121,10 +127,10 @@ public class IntegrationServiceMock implements IntegrationService<SuiteContextMo
     }
 
     @Override
-    public RemoteWebDriverContextMock startRemoteWebDriver(SuiteContextMock suiteContext, Capabilities capabilities) {
+    public RemoteWebDriverContextMock startRemoteWebDriver(SuiteInstanceContextMock suiteContext, Capabilities capabilities) {
         RemoteWebDriver driver = RemoteWebDriverHelper.createLocalChromeDriver(
                 capabilities,
-                suiteContext.getSuiteConfig()
+                suiteContext.getSuiteConfigContext().getSuiteConfig()
         );
         RemoteWebDriverContextMock context = new RemoteWebDriverContextMock(
                 driver
@@ -207,13 +213,13 @@ public class IntegrationServiceMock implements IntegrationService<SuiteContextMo
     }
 
     @Override
-    public int getCurrentConcurrency(SuiteConfig suiteConfig) {
+    public int getCurrentConcurrency(SuiteConfigContextMock suiteConfigContext) {
         return suiteInstancesActive.get();
     }
 
     @Override
-    public int getDesiredConcurrency(SuiteConfig suiteConfig) {
-        return suiteConfig.getConcurrency();
+    public int getDesiredConcurrency(SuiteConfigContextMock suiteConfigContext) {
+        return suiteConfigContext.getSuiteConfig().getConcurrency();
     }
 
 }

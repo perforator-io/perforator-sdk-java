@@ -32,14 +32,14 @@ final class LoggingContextManagerImpl implements LoggingContextManager {
     }
 
     @Override
-    public final void onSuiteInstanceStarted(long timestamp, SuiteContextImpl context) {
+    public final void onSuiteInstanceStarted(long timestamp, SuiteInstanceContextImpl context) {
         if (logWorkerID || logSuiteInstanceID) {
             MDC.put(MDC_PERFORATOR_CONTEXT, rebuildLoggingContext(context));
         }
     }
 
     @Override
-    public final void onSuiteInstanceFinished(long timestamp, SuiteContextImpl context, Throwable error) {
+    public final void onSuiteInstanceFinished(long timestamp, SuiteInstanceContextImpl context, Throwable error) {
         MDC.clear();
     }
 
@@ -60,18 +60,18 @@ final class LoggingContextManagerImpl implements LoggingContextManager {
     @Override
     public final void onRemoteWebDriverStarted(long timestamp, RemoteWebDriverContextImpl context) {
         if (logRemoteWebDriverSessionID) {
-            MDC.put(MDC_PERFORATOR_CONTEXT, rebuildLoggingContext(context.getSuiteContext()));
+            MDC.put(MDC_PERFORATOR_CONTEXT, rebuildLoggingContext(context.getSuiteInstanceContext()));
         }
     }
 
     @Override
     public final void onRemoteWebDriverFinished(long timestamp, RemoteWebDriverContextImpl context, Throwable error) {
         if (logRemoteWebDriverSessionID) {
-            MDC.put(MDC_PERFORATOR_CONTEXT, rebuildLoggingContext(context.getSuiteContext()));
+            MDC.put(MDC_PERFORATOR_CONTEXT, rebuildLoggingContext(context.getSuiteInstanceContext()));
         }
     }
 
-    private String rebuildLoggingContext(SuiteContextImpl context) {
+    private String rebuildLoggingContext(SuiteInstanceContextImpl context) {
         StringBuilder result = new StringBuilder();
 
         if (logWorkerID) {

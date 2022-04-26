@@ -12,7 +12,8 @@ package io.perforator.sdk.loadgenerator.core;
 
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
-import io.perforator.sdk.loadgenerator.core.context.SuiteContext;
+import io.perforator.sdk.loadgenerator.core.context.SuiteConfigContext;
+import io.perforator.sdk.loadgenerator.core.context.SuiteInstanceContext;
 import io.perforator.sdk.loadgenerator.core.context.TransactionContext;
 import io.perforator.sdk.loadgenerator.core.service.*;
 import org.slf4j.Logger;
@@ -120,7 +121,7 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
         return result;
     }
 
-    protected abstract void runSuite(SuiteContext suiteContext);
+    protected abstract void runSuite(SuiteInstanceContext suiteInstanceContext);
 
     @Override
     public final void run() {
@@ -142,10 +143,11 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
         List<Future> futures = new ArrayList<>();
         for (SuiteConfig suiteConfig : suiteConfigs) {
             AtomicInteger preStartCounter = new AtomicInteger();
+            SuiteConfigContext suiteConfigContext = mediator.onSuiteConfigCreated(suiteConfig);
             for (int i = 0; i < suiteConfig.getConcurrency(); i++) {
                 futures.add(
                         executor.submit(
-                                new SuiteRunner(preStartCounter, suiteConfig, i)
+                                new SuiteRunner(preStartCounter, suiteConfigContext, i)
                         )
                 );
             }
@@ -253,8 +255,8 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
         return mediator;
     }
     
-    protected final TransactionContext startTransaction(SuiteContext suiteContext, String transactionName) {
-        return mediator.startTransaction(suiteContext, transactionName);
+    protected final TransactionContext startTransaction(SuiteInstanceContext suiteInstanceContext, String transactionName) {
+        return mediator.startTransaction(suiteInstanceContext, transactionName);
     }
     
     protected final void finishTransaction(TransactionContext transactionContext, Throwable transactionError) {
@@ -275,15 +277,15 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
         return loadGeneratorConfig;
     }
 
-    private void propagateConsumerContext(SuiteContext suiteContext) {
-        Perforator.SUITE_CONTEXT.set(suiteContext);
+    private void propagateConsumerContext(SuiteInstanceContext suiteInstanceContext) {
+        Perforator.SUITE_INSTANCE_CONTEXT.set(suiteInstanceContext);
         Perforator.REMOTE_WEBDRIVER_SERVICE.set(mediator);
         Perforator.TRANSACTIONS_SERVICE.set(mediator);
         Perforator.TRANSACTIONS.set(new HashMap<>());
     }
 
     private void cleanupConsumerContext() {
-        Perforator.SUITE_CONTEXT.remove();
+        Perforator.SUITE_INSTANCE_CONTEXT.remove();
         Perforator.REMOTE_WEBDRIVER_SERVICE.remove();
         Perforator.TRANSACTIONS_SERVICE.remove();
         Perforator.TRANSACTIONS.remove();
@@ -364,16 +366,17 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
 
         private final AtomicInteger preStartCounter;
         private final int workerNumber;
-        private final SuiteConfig suiteConfig;
+        private final SuiteConfigContext suiteConfigContext;
 
-        public SuiteRunner(AtomicInteger preStartCounter, SuiteConfig suiteConfig, int workerNumber) {
+        public SuiteRunner(AtomicInteger preStartCounter, SuiteConfigContext suiteConfigContext, int workerNumber) {
             this.preStartCounter = preStartCounter;
-            this.suiteConfig = suiteConfig;
+            this.suiteConfigContext = suiteConfigContext;
             this.workerNumber = workerNumber;
         }
 
         @Override
         public void run() {
+            SuiteConfig suiteConfig = suiteConfigContext.getSuiteConfig();
             long startTime = System.currentTimeMillis();
             long endTime = startTime + suiteConfig.getDuration().toMillis() - suiteConfig.getRampDown().toMillis();
             long delay = suiteConfig.getDelay().toMillis() + (suiteConfig.getRampUp().toMillis() / suiteConfig.getConcurrency()) * workerNumber;
@@ -403,8 +406,8 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
                     slowdown = 0;
                 }
                 
-                SuiteContext suiteContext = startSuiteContextIfAllowed();
-                if (suiteContext == null) {
+                SuiteInstanceContext suiteInstanceContext = startSuiteContextIfAllowed(this.suiteConfigContext);
+                if (suiteInstanceContext == null) {
                     if (shouldBeFinished()) {
                         return;
                     } else {
@@ -418,15 +421,15 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
                             "Worker {} has started processing suite {} using suite instance id {}",
                             workerNumber,
                             suiteConfig.getName(),
-                            suiteContext.getSuiteInstanceID()
+                            suiteInstanceContext.getSuiteInstanceID()
                     );
                 }
 
                 try {
-                    propagateConsumerContext(suiteContext);
-                    runSuite(suiteContext);
+                    propagateConsumerContext(suiteInstanceContext);
+                    runSuite(suiteInstanceContext);
                     slowdown = mediator.onSuiteInstanceFinished(
-                            suiteContext,
+                            suiteInstanceContext,
                             isCancelled() ? new RuntimeException(TERMINATION_EXCEPTION_MESSAGE) : null
                     );
 
@@ -435,7 +438,7 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
                                 "Worker {} has successfully completed processing suite {} using suite instance id {}",
                                 workerNumber,
                                 suiteConfig.getName(),
-                                suiteContext.getSuiteInstanceID()
+                                suiteInstanceContext.getSuiteInstanceID()
                         );
                     }
 
@@ -445,20 +448,20 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
                                 "Worker {} has failed processing suite {} using suite instance id {}",
                                 workerNumber,
                                 suiteConfig.getName(),
-                                suiteContext.getSuiteInstanceID(),
+                                suiteInstanceContext.getSuiteInstanceID(),
                                 e
                         );
                     }
 
                     if (shouldBeFinished()) {
                         mediator.onSuiteInstanceFinished(
-                                suiteContext,
+                                suiteInstanceContext,
                                 new RuntimeException(TERMINATION_EXCEPTION_MESSAGE)
                         );
                         return;
                     } else {
                         slowdown = mediator.onSuiteInstanceFinished(
-                                suiteContext,
+                                suiteInstanceContext,
                                 e
                         );
                     }
@@ -468,16 +471,16 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
             }
         }
         
-        private SuiteContext startSuiteContextIfAllowed() {
+        private SuiteInstanceContext startSuiteContextIfAllowed(SuiteConfigContext suiteConfigContext) {
             try {
                 int suitesToBeStarted = preStartCounter.incrementAndGet();
-                int currentConcurrency = mediator.getCurrentConcurrency(suiteConfig);
-                int desiredConcurrency = mediator.getDesiredConcurrency(suiteConfig);
+                int currentConcurrency = mediator.getCurrentConcurrency(suiteConfigContext);
+                int desiredConcurrency = mediator.getDesiredConcurrency(suiteConfigContext);
 
                 if (currentConcurrency + suitesToBeStarted <= desiredConcurrency && !shouldBeFinished()) {
                     return mediator.onSuiteInstanceStarted(
                             workerNumber,
-                            suiteConfig
+                            suiteConfigContext
                     );
                 } else {
                     return null;

@@ -10,12 +10,10 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
-
 interface SuiteManager extends IntegrationListener {
 
-    SuiteContextImpl startSuiteInstance(int workerID, LoadGeneratorContextImpl loadGeneratorContext, SuiteConfig suiteConfig);
+    SuiteInstanceContextImpl startSuiteInstance(int workerID, LoadGeneratorContextImpl loadGeneratorContext, SuiteConfigContextImpl suiteConfigContext);
 
-    void stopSuiteInstance(SuiteContextImpl suiteContext, Throwable error);
+    void stopSuiteInstance(SuiteInstanceContextImpl suiteContext, Throwable error);
 
 }

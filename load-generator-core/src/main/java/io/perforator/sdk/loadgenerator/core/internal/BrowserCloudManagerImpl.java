@@ -22,10 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import static io.perforator.sdk.loadgenerator.core.Threaded.sleep;
 
@@ -58,19 +55,22 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
             return;
         }
 
-        List<SuiteConfig> suiteConfigs = loadGeneratorContext.getSuiteConfigs();
         LoadGeneratorConfig loadGeneratorConfig = loadGeneratorContext.getLoadGeneratorConfig();
 
-        int concurrency = suiteConfigs.stream()
-                .filter(suite -> suite.getWebDriverMode() == WebDriverMode.cloud)
-                .mapToInt(SuiteConfig::getConcurrency)
-                .sum();
+        List<SuiteConfig> suiteConfigs = new ArrayList<>();
+        int concurrency = 0;
+        int requiredDuration = 0;
 
-        int requiredDuration = suiteConfigs.stream()
-                .filter(suite -> suite.getWebDriverMode() == WebDriverMode.cloud)
-                .mapToInt(e -> (int) e.getDuration().toMillis() / 1000)
-                .max()
-                .orElse(0);
+        for (SuiteConfigContextImpl configContext: loadGeneratorContext.getSuiteConfigContexts()){
+            if(configContext.getSuiteConfig().getWebDriverMode() != WebDriverMode.cloud){
+                continue;
+            }
+            SuiteConfig suiteConfig = configContext.getSuiteConfig();
+            concurrency += suiteConfig.getConcurrency();
+            requiredDuration = Math.max(requiredDuration, (int) suiteConfig.getDuration().toMillis() / 1000);
+
+            suiteConfigs.add(suiteConfig);
+        }
 
         if (concurrency <= 0) {
             throw new RuntimeException(
@@ -189,9 +189,9 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
     }
 
     private boolean isLocalOnly(LoadGeneratorContextImpl loadGeneratorContext) {
-        return loadGeneratorContext.getSuiteConfigs()
+        return loadGeneratorContext.getSuiteConfigContexts()
                 .stream()
-                .noneMatch(suite -> suite.getWebDriverMode() == WebDriverMode.cloud);
+                .noneMatch(suite -> suite.getSuiteConfig().getWebDriverMode() == WebDriverMode.cloud);
     }
 
     private BrowserCloudDetails awaitBrowserCloud(LoadGeneratorContextImpl loadGeneratorContext, String projectKey, String executionKey, String browserCloudUuid, Duration awaitQueuedDuration, Duration awaitProvisioningDuration, Duration statusCheckInterval) {

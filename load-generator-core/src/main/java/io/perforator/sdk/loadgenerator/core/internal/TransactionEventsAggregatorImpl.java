@@ -31,7 +31,7 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
 
     @Override
     public void onLoadGeneratorStarted(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
-        int concurrency = loadGeneratorContext.getSuiteConfigs().stream().mapToInt(SuiteConfig::getConcurrency).sum();
+        int concurrency = loadGeneratorContext.getSuiteConfigContexts().stream().mapToInt(s -> s.getSuiteConfig().getConcurrency()).sum();
         int aggregationThreads = concurrency * 2 / TRANSACTIONS_AGGREGATION_PER_THREAD + 1;
         aggregationExecutor = Executors.newFixedThreadPool(aggregationThreads);
     }
@@ -45,7 +45,7 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
 
     @Override
     public void onTransactionStarted(long timestamp, TransactionContextImpl context) {
-        if (context.getSuiteContext().getSuiteConfig().getWebDriverMode() != WebDriverMode.cloud) {
+        if (context.getSuiteContext().getSuiteConfigContext().getSuiteConfig().getWebDriverMode() != WebDriverMode.cloud) {
             return;
         }
 
@@ -61,7 +61,7 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
 
     @Override
     public void onTransactionFinished(long timestamp, TransactionContextImpl context, Throwable error) {
-        if (context.getSuiteContext().getSuiteConfig().getWebDriverMode() != WebDriverMode.cloud) {
+        if (context.getSuiteContext().getSuiteConfigContext().getSuiteConfig().getWebDriverMode() != WebDriverMode.cloud) {
             return;
         }
 
@@ -77,8 +77,8 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
 
     @Override
     public void onRemoteWebDriverStarted(long timestamp, RemoteWebDriverContextImpl driverContext) {
-        SuiteContextImpl suiteContext = driverContext.getSuiteContext();
-        SuiteConfig suiteConfig = suiteContext.getSuiteConfig();
+        SuiteInstanceContextImpl suiteContext = driverContext.getSuiteInstanceContext();
+        SuiteConfig suiteConfig = suiteContext.getSuiteConfigContext().getSuiteConfig();
 
         if (suiteConfig.getWebDriverMode() != WebDriverMode.cloud) {
             return;
@@ -116,8 +116,8 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
 
     @Override
     public void onRemoteWebDriverFinished(long timestamp, RemoteWebDriverContextImpl driverContext, Throwable error) {
-        SuiteContextImpl suiteContext = driverContext.getSuiteContext();
-        SuiteConfig suiteConfig = suiteContext.getSuiteConfig();
+        SuiteInstanceContextImpl suiteContext = driverContext.getSuiteInstanceContext();
+        SuiteConfig suiteConfig = suiteContext.getSuiteConfigContext().getSuiteConfig();
 
         if (suiteConfig.getWebDriverMode() != WebDriverMode.cloud) {
             return;
@@ -155,11 +155,14 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
     @Override
     public void onHeartbeat(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
         List<TransactionContextImpl> transactions = new ArrayList<>();
-        loadGeneratorContext.getSuiteContexts().stream().filter(
-                s -> s.getSuiteConfig().getWebDriverMode() == WebDriverMode.cloud
-        ).forEach(suiteContext -> {
-            transactions.addAll(suiteContext.getTransactions());
-        });
+        for (SuiteConfigContextImpl suiteConfigContext: loadGeneratorContext.getSuiteConfigContexts()){
+            if(suiteConfigContext.getSuiteConfig().getWebDriverMode() != WebDriverMode.cloud){
+                continue;
+            }
+            for(SuiteInstanceContextImpl suiteInstanceContext: suiteConfigContext.getSuiteInstanceContexts()){
+                transactions.addAll(suiteInstanceContext.getTransactions());
+            }
+        }
 
         List<List<TransactionContextImpl>> partitions = Lists.partition(
                 transactions,
@@ -192,8 +195,8 @@ final class TransactionEventsAggregatorImpl implements TransactionEventsAggregat
             EventType eventType,
             Throwable error
     ) {
-        SuiteContextImpl suiteContext = transaction.getSuiteContext();
-        SuiteConfig suiteConfig = suiteContext.getSuiteConfig();
+        SuiteInstanceContextImpl suiteContext = transaction.getSuiteContext();
+        SuiteConfig suiteConfig = suiteContext.getSuiteConfigContext().getSuiteConfig();
         Map<String, RemoteWebDriverContextImpl> suiteDriverContexts = suiteContext.getDrivers();
 
         List<AnalyticsEvent> events = new ArrayList<>();

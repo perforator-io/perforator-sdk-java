@@ -16,9 +16,9 @@ interface IntegrationListener {
 
     default void onLoadGeneratorFinished(long timestamp, LoadGeneratorContextImpl loadGeneratorContext, Throwable error) {}
 
-    default void onSuiteInstanceStarted(long timestamp, SuiteContextImpl context) {}
+    default void onSuiteInstanceStarted(long timestamp, SuiteInstanceContextImpl context) {}
 
-    default void onSuiteInstanceFinished(long timestamp, SuiteContextImpl contextImpl, Throwable error) {}
+    default void onSuiteInstanceFinished(long timestamp, SuiteInstanceContextImpl contextImpl, Throwable error) {}
 
     default void onTransactionStarted(long timestamp, TransactionContextImpl context) {}
 

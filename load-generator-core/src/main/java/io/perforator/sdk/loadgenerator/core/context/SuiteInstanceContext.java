@@ -8,12 +8,17 @@
  * the Business Source License, use of this software will be governed
  * by the Apache License, Version 2.0.
  */
-package io.perforator.sdk.loadgenerator.core.internal;
+package io.perforator.sdk.loadgenerator.core.context;
 
-import org.openqa.selenium.Capabilities;
+//TODO: add javadoc
+public interface SuiteInstanceContext {
 
-interface RemoteWebDriverManager extends IntegrationListener {
-    
-    RemoteWebDriverContextImpl startRemoteWebDriver(SuiteInstanceContextImpl suiteInstanceContext, Capabilities capabilities);
+    String getSuiteInstanceID();
+
+    int getWorkerID();
+
+    long getIterationNumber();
+
+    SuiteConfigContext getSuiteConfigContext();
 
 }

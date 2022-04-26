@@ -18,7 +18,7 @@ import org.openqa.selenium.Capabilities;
 import java.util.Arrays;
 import java.util.List;
 
-final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteContextImpl, TransactionContextImpl, RemoteWebDriverContextImpl> {
+final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteConfigContextImpl, SuiteInstanceContextImpl, TransactionContextImpl, RemoteWebDriverContextImpl> {
 
     private final EventsRouterImpl eventsRouter;
     private final TimeProvider timeProvider;
@@ -85,6 +85,7 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
         ));
 
         eventsRouter.setLoadGeneratorFinishedListeners(Arrays.asList(
+                concurrencyEventsAggregator,
                 concurrencyManager,
                 suiteManager,
                 httpClientsManager,
@@ -162,12 +163,17 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
     }
 
     @Override
-    public SuiteContextImpl onSuiteInstanceStarted(int workerID, SuiteConfig suiteConfig) {
-        return suiteManager.startSuiteInstance(workerID, loadGeneratorContext, suiteConfig);
+    public SuiteConfigContextImpl onSuiteConfigCreated(SuiteConfig suiteConfig) {
+        return loadGeneratorContext.getSuiteConfigContext(suiteConfig);
     }
 
     @Override
-    public long onSuiteInstanceFinished(SuiteContextImpl suiteContext, Throwable suiteError) {
+    public SuiteInstanceContextImpl onSuiteInstanceStarted(int workerID, SuiteConfigContextImpl suiteConfigContext) {
+        return suiteManager.startSuiteInstance(workerID, loadGeneratorContext, suiteConfigContext);
+    }
+
+    @Override
+    public long onSuiteInstanceFinished(SuiteInstanceContextImpl suiteContext, Throwable suiteError) {
         long slowdownTimeout = slowdownManager.getSlowdownTimeout(
                 suiteContext,
                 suiteError
@@ -182,12 +188,12 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
     }
 
     @Override
-    public RemoteWebDriverContextImpl startRemoteWebDriver(SuiteContextImpl suiteContext, Capabilities capabilities) {
+    public RemoteWebDriverContextImpl startRemoteWebDriver(SuiteInstanceContextImpl suiteContext, Capabilities capabilities) {
         return remoteWebDriverManager.startRemoteWebDriver(suiteContext, capabilities);
     }
 
     @Override
-    public TransactionContextImpl startTransaction(SuiteContextImpl suiteContext, String transactionName) {
+    public TransactionContextImpl startTransaction(SuiteInstanceContextImpl suiteContext, String transactionName) {
         return transactionsManager.startTransaction(suiteContext, transactionName);
     }
 
@@ -242,13 +248,13 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
     }
 
     @Override
-    public int getCurrentConcurrency(SuiteConfig suiteConfig) {
-        return concurrencyManager.getCurrentConcurrency(suiteConfig);
+    public int getCurrentConcurrency(SuiteConfigContextImpl suiteConfigContext) {
+        return concurrencyManager.getCurrentConcurrency(suiteConfigContext);
     }
 
     @Override
-    public int getDesiredConcurrency(SuiteConfig suiteConfig) {
-        return concurrencyManager.getDesiredConcurrency(suiteConfig);
+    public int getDesiredConcurrency(SuiteConfigContextImpl suiteConfigContext) {
+        return concurrencyManager.getDesiredConcurrency(suiteConfigContext);
     }
 
     private long getCurrentTime() {

@@ -13,14 +13,6 @@ package io.perforator.sdk.loadgenerator.core.context;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 
 //TODO: add javadoc
-public interface SuiteContext {
-
-    String getSuiteInstanceID();
-
+public interface SuiteConfigContext {
     SuiteConfig getSuiteConfig();
-
-    int getWorkerID();
-    
-    long getIterationNumber();
-    
 }

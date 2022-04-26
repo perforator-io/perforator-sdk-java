@@ -16,21 +16,18 @@ import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import org.asynchttpclient.AsyncHttpClient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 final class LoadGeneratorContextImpl {
 
     private final long startedAt;
     private final LoadGeneratorConfig loadGeneratorConfig;
-    private final List<SuiteConfig> suiteConfigs;
-    private final Set<SuiteContextImpl> suiteContexts;
+    private final List<SuiteConfigContextImpl> suiteConfigContexts;
     private final Queue<List<AnalyticsEvent>> eventsBuffer;
     private final StatisticsContextImpl statisticsContext;
-    private final ConcurrentHashMap<String, StatisticsContextImpl> suiteStatisticsContext = new ConcurrentHashMap<>();
 
     private AsyncHttpClient httpClient;
     private CreditsApi creditsApi;
@@ -43,10 +40,23 @@ final class LoadGeneratorContextImpl {
     LoadGeneratorContextImpl(long startedAt, LoadGeneratorConfig loadGeneratorConfig, List<SuiteConfig> suiteConfigs) {
         this.startedAt = startedAt;
         this.loadGeneratorConfig = loadGeneratorConfig;
-        this.suiteConfigs = suiteConfigs;
-        this.suiteContexts = ConcurrentHashMap.newKeySet();
         this.eventsBuffer = new ConcurrentLinkedQueue<>();
         this.statisticsContext = new StatisticsContextImpl();
+        this.suiteConfigContexts = new ArrayList<>();
+        for (SuiteConfig suiteConfig: suiteConfigs){
+            this.suiteConfigContexts.add(
+                    new SuiteConfigContextImpl(suiteConfig)
+            );
+        }
+    }
+
+    public SuiteConfigContextImpl getSuiteConfigContext(SuiteConfig suiteConfig) {
+        for(SuiteConfigContextImpl context : this.suiteConfigContexts){
+            if(context.getSuiteConfig().equals(suiteConfig)){
+                return context;
+            }
+        }
+        throw new RuntimeException("Can't find SuiteConfigContext by SuiteConfig: " + suiteConfig.getId());
     }
 
     public long getStartedAt() {
@@ -57,12 +67,8 @@ final class LoadGeneratorContextImpl {
         return loadGeneratorConfig;
     }
 
-    public List<SuiteConfig> getSuiteConfigs() {
-        return suiteConfigs;
-    }
-
-    public Set<SuiteContextImpl> getSuiteContexts() {
-        return suiteContexts;
+    public List<SuiteConfigContextImpl> getSuiteConfigContexts() {
+        return suiteConfigContexts;
     }
 
     public Queue<List<AnalyticsEvent>> getEventsBuffer() {
@@ -127,13 +133,5 @@ final class LoadGeneratorContextImpl {
 
     public void setBrowserCloudContext(BrowserCloudContextImpl browserCloudContext) {
         this.browserCloudContext = browserCloudContext;
-    }
-
-    public StatisticsContextImpl getSuiteStatisticsContext(String suiteName) {
-        return suiteStatisticsContext.computeIfAbsent(suiteName, s -> new StatisticsContextImpl());
-    }
-
-    public ConcurrentHashMap<String, StatisticsContextImpl> getSuiteStatisticsContexts() {
-        return suiteStatisticsContext;
     }
 }

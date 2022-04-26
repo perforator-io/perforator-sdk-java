@@ -35,20 +35,20 @@ final class RemoteWebDriverHttpClient implements HttpClient {
     private static final long MIN_RETRY_DELAY = 250l;
     private static final long MAX_RETRY_DELAY = 5000l;
 
-    private final SuiteContextImpl suiteContext;
+    private final SuiteInstanceContextImpl suiteInstanceContext;
     private final AsyncHttpClient client;
     private final URL baseUrl;
     private final String userAgent;
     private final long createSessionRetryTimeout;
     private final long deleteSessionRetryTimeout;
 
-    public RemoteWebDriverHttpClient(SuiteContextImpl suiteContext) {
-        this.suiteContext = suiteContext;
-        this.client = suiteContext.getLoadGeneratorContext().getAsyncHttpClient();
-        this.baseUrl = suiteContext.getLoadGeneratorContext().getBrowserCloudContext().getSeleniumHubURL();
+    public RemoteWebDriverHttpClient(SuiteInstanceContextImpl suiteInstanceContext) {
+        this.suiteInstanceContext = suiteInstanceContext;
+        this.client = suiteInstanceContext.getLoadGeneratorContext().getAsyncHttpClient();
+        this.baseUrl = suiteInstanceContext.getLoadGeneratorContext().getBrowserCloudContext().getSeleniumHubURL();
         this.userAgent = ApiClientBuilder.DEFAULT_USER_AGENT;
-        this.createSessionRetryTimeout = suiteContext.getSuiteConfig().getWebDriverCreateSessionRetryTimeout().toMillis();
-        this.deleteSessionRetryTimeout = suiteContext.getSuiteConfig().getWebDriverDeleteSessionRetryTimeout().toMillis();
+        this.createSessionRetryTimeout = suiteInstanceContext.getSuiteConfigContext().getSuiteConfig().getWebDriverCreateSessionRetryTimeout().toMillis();
+        this.deleteSessionRetryTimeout = suiteInstanceContext.getSuiteConfigContext().getSuiteConfig().getWebDriverDeleteSessionRetryTimeout().toMillis();
     }
 
     @Override

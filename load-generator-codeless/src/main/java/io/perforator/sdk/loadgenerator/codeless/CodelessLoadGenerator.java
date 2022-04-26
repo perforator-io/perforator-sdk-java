@@ -18,7 +18,8 @@ import io.perforator.sdk.loadgenerator.codeless.config.*;
 import io.perforator.sdk.loadgenerator.core.AbstractLoadGenerator;
 import io.perforator.sdk.loadgenerator.core.Perforator;
 import io.perforator.sdk.loadgenerator.core.context.RemoteWebDriverContext;
-import io.perforator.sdk.loadgenerator.core.context.SuiteContext;
+import io.perforator.sdk.loadgenerator.core.context.SuiteConfigContext;
+import io.perforator.sdk.loadgenerator.core.context.SuiteInstanceContext;
 import io.perforator.sdk.loadgenerator.core.context.TransactionContext;
 import io.perforator.sdk.loadgenerator.core.service.IntegrationService;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -45,19 +46,19 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
         this(null, loadGeneratorConfig, suites);
     }
 
-    private CodelessLoadGenerator(IntegrationService<SuiteContext, TransactionContext, RemoteWebDriverContext> mediator, CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suites) {
+    private CodelessLoadGenerator(IntegrationService<SuiteConfigContext, SuiteInstanceContext, TransactionContext, RemoteWebDriverContext> mediator, CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suites) {
         super(mediator, loadGeneratorConfig, (List) CodelessSuiteConfigValidator.validate(loadGeneratorConfig, suites));
         this.logSteps = loadGeneratorConfig.isLogSteps();
         this.logActions = loadGeneratorConfig.isLogActions();
     }
 
     @Override
-    protected void runSuite(SuiteContext suiteContext) {
+    protected void runSuite(SuiteInstanceContext suiteInstanceContext) {
         if (shouldBeFinished()) {
             return;
         }
 
-        CodelessSuiteConfig suite = (CodelessSuiteConfig) suiteContext.getSuiteConfig();
+        CodelessSuiteConfig suite = (CodelessSuiteConfig) suiteInstanceContext.getSuiteConfigContext().getSuiteConfig();
         List<FormattingMap> formatters = suite.getProps();
         FormattingMap formatter;
 
@@ -65,23 +66,23 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
             formatter = FormattingMap.EMPTY;
         } else {
             formatter = formatters.get(
-                    (int) (suiteContext.getIterationNumber() % formatters.size())
+                    (int) (suiteInstanceContext.getIterationNumber() % formatters.size())
             );
         }
 
-        RemoteWebDriver driver = startRemoteWebDriver(suiteContext);
+        RemoteWebDriver driver = startRemoteWebDriver(suiteInstanceContext);
 
         try {
             for (CodelessStepConfig stepConfig : suite.getSteps()) {
-                processStep(suiteContext, stepConfig, formatter, driver);
+                processStep(suiteInstanceContext, stepConfig, formatter, driver);
             }
         } finally {
-            quiteRemoteWebDriver(driver, suiteContext);
+            quiteRemoteWebDriver(driver, suiteInstanceContext);
         }
     }
 
     private void processStep(
-            SuiteContext suiteContext,
+            SuiteInstanceContext suiteInstanceContext,
             CodelessStepConfig stepConfig,
             FormattingMap formatter,
             RemoteWebDriver driver
@@ -90,10 +91,10 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
             return;
         }
 
-        String suiteName = suiteContext.getSuiteConfig().getName();
+        String suiteName = suiteInstanceContext.getSuiteConfigContext().getSuiteConfig().getName();
         String stepName = formatter.format(stepConfig.getName());
         TransactionContext transactionContext = startTransaction(
-                suiteContext,
+                suiteInstanceContext,
                 "step - " + stepName
         );
         RuntimeException error = null;
@@ -107,7 +108,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
                 );
 
                 processAction(
-                        suiteContext,
+                        suiteInstanceContext,
                         stepName,
                         actionConfig,
                         actionProcessor,
@@ -125,7 +126,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
     }
 
     private void processAction(
-            SuiteContext suiteContext,
+            SuiteInstanceContext suiteInstanceContext,
             String stepName,
             ActionConfig actionConfig,
             ActionProcessor processor,
@@ -136,7 +137,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
             return;
         }
 
-        CodelessSuiteConfig suite = (CodelessSuiteConfig) suiteContext.getSuiteConfig();
+        CodelessSuiteConfig suite = (CodelessSuiteConfig) suiteInstanceContext.getSuiteConfigContext().getSuiteConfig();
 
         ActionInstance actionInstance = processor.buildActionInstance(
                 (CodelessLoadGeneratorConfig) getLoadGeneratorConfig(),
@@ -163,16 +164,16 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
         }
     }
 
-    private RemoteWebDriver startRemoteWebDriver(SuiteContext suiteContext) {
+    private RemoteWebDriver startRemoteWebDriver(SuiteInstanceContext suiteInstanceContext) {
         TransactionContext transactionContext = startTransaction(
-                suiteContext,
+                suiteInstanceContext,
                 Perforator.OPEN_WEB_DRIVER_TRANSACTION_NAME
         );
 
         RuntimeException webDriverException = null;
         try {
             return getRemoteWebDriverService().startRemoteWebDriver(
-                    suiteContext,
+                    suiteInstanceContext,
                     null
             ).getRemoteWebDriver();
         } catch (RuntimeException e) {
@@ -188,13 +189,13 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
         }
     }
 
-    private void quiteRemoteWebDriver(RemoteWebDriver driver, SuiteContext suiteContext) {
+    private void quiteRemoteWebDriver(RemoteWebDriver driver, SuiteInstanceContext suiteInstanceContext) {
         if (driver == null) {
             return;
         }
 
         TransactionContext transactionContext = startTransaction(
-                suiteContext,
+                suiteInstanceContext,
                 Perforator.CLOSE_WEB_DRIVER_TRANSACTION_NAME
         );
 
