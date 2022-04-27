@@ -11,7 +11,6 @@
 package io.perforator.sdk.loadgenerator.core.internal;
 
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
-import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +50,7 @@ final class InfoMessagesManagerImpl implements InfoMessagesManager {
 
     @Override
     public void onLoadGeneratorStarted(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
-        if (isLocalOnly(loadGeneratorContext)) {
+        if (loadGeneratorContext.isLocalOnly()) {
             return;
         }
         LoadGeneratorConfig config = loadGeneratorContext.getLoadGeneratorConfig();
@@ -63,19 +62,13 @@ final class InfoMessagesManagerImpl implements InfoMessagesManager {
 
     @Override
     public void onLoadGeneratorFinished(long timestamp, LoadGeneratorContextImpl loadGeneratorContext, Throwable error) {
-        if (isLocalOnly(loadGeneratorContext) || !startBannerShowedByConfigId.contains(loadGeneratorContext.getLoadGeneratorConfig().getId())) {
+        if (loadGeneratorContext.isLocalOnly() || !startBannerShowedByConfigId.contains(loadGeneratorContext.getLoadGeneratorConfig().getId())) {
             return;
         }
         LoadGeneratorConfig config = loadGeneratorContext.getLoadGeneratorConfig();
         LOGGER.info(
                 formatBanner(FINISH_BANNER, getUrl(config))
         );
-    }
-
-    private boolean isLocalOnly(LoadGeneratorContextImpl loadGeneratorContext) {
-        return loadGeneratorContext.getSuiteConfigContexts()
-                .stream()
-                .noneMatch(suite -> suite.getSuiteConfig().getWebDriverMode() == WebDriverMode.cloud);
     }
 
     private String getUrl(LoadGeneratorConfig config) {

@@ -14,12 +14,14 @@ import io.perforator.sdk.api.okhttpgson.model.AnalyticsEvent;
 import io.perforator.sdk.api.okhttpgson.operations.*;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
+import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 import org.asynchttpclient.AsyncHttpClient;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 final class LoadGeneratorContextImpl {
 
@@ -28,6 +30,7 @@ final class LoadGeneratorContextImpl {
     private final List<SuiteConfigContextImpl> suiteConfigContexts;
     private final Queue<List<AnalyticsEvent>> eventsBuffer;
     private final StatisticsContextImpl statisticsContext;
+    private final AtomicBoolean isLocalOnly = new AtomicBoolean(true);
 
     private AsyncHttpClient httpClient;
     private CreditsApi creditsApi;
@@ -36,6 +39,7 @@ final class LoadGeneratorContextImpl {
     private ExecutionsApi executionsApi;
     private BrowserCloudsApi browserCloudsApi;
     private BrowserCloudContextImpl browserCloudContext;
+    private AtomicBoolean isFinished = new AtomicBoolean(false);
 
     LoadGeneratorContextImpl(long startedAt, LoadGeneratorConfig loadGeneratorConfig, List<SuiteConfig> suiteConfigs) {
         this.startedAt = startedAt;
@@ -45,8 +49,11 @@ final class LoadGeneratorContextImpl {
         this.suiteConfigContexts = new ArrayList<>();
         for (SuiteConfig suiteConfig: suiteConfigs){
             this.suiteConfigContexts.add(
-                    new SuiteConfigContextImpl(suiteConfig)
+                    new SuiteConfigContextImpl(this, suiteConfig)
             );
+            if(suiteConfig.getWebDriverMode() == WebDriverMode.cloud){
+                isLocalOnly.set(false);
+            }
         }
     }
 
@@ -133,5 +140,17 @@ final class LoadGeneratorContextImpl {
 
     public void setBrowserCloudContext(BrowserCloudContextImpl browserCloudContext) {
         this.browserCloudContext = browserCloudContext;
+    }
+
+    public boolean isLocalOnly() {
+        return isLocalOnly.get();
+    }
+
+    public boolean isFinished() {
+        return isFinished.get();
+    }
+
+    public void setFinished() {
+        this.isFinished.set(true);
     }
 }

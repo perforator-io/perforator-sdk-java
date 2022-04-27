@@ -10,43 +10,25 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
-import java.util.HashMap;
-
-import io.perforator.sdk.loadgenerator.core.context.SuiteConfigContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ConcurrencyManagerImpl implements ConcurrencyManager {
+final class ConcurrencyManagerImpl implements ConcurrencyManager<SuiteConfigContextImpl> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConcurrencyManagerImpl.class);
     private static final long RECALC_PERIOD = 30000L;
 
-    private final HashMap<String, ConcurrencyContextImpl> concurrencyContexts = new HashMap<>();
-
-    @Override
-    public void onLoadGeneratorStarted(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
-        concurrencyContexts.clear();
-        for (SuiteConfigContextImpl suiteConfigContext : loadGeneratorContext.getSuiteConfigContexts()) {
-            ConcurrencyContextImpl concurrencyContext = new ConcurrencyContextImpl(
-                    suiteConfigContext.getSuiteConfig(),
-                    loadGeneratorContext.getLoadGeneratorConfig().isSlowdown(),
-                    timestamp + RECALC_PERIOD
-            );
-            concurrencyContexts.put(suiteConfigContext.getSuiteConfig().getId(), concurrencyContext);
-        }
-    }
-
     @Override
     public void onLoadGeneratorFinished(long timestamp, LoadGeneratorContextImpl loadGeneratorContext, Throwable error) {
-        for (ConcurrencyContextImpl concurrencyContext : concurrencyContexts.values()) {
-            concurrencyContext.setNextRecalcTimestamp(Long.MAX_VALUE);
+        for (SuiteConfigContextImpl suiteConfigContext : loadGeneratorContext.getSuiteConfigContexts()) {
+            suiteConfigContext.getConcurrencyContext().setNextRecalcTimestamp(Long.MAX_VALUE);
         }
     }
 
     @Override
     public void onHeartbeat(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
-        for (ConcurrencyContextImpl concurrencyContext : concurrencyContexts.values()) {
+        for (SuiteConfigContextImpl suiteConfigContext : loadGeneratorContext.getSuiteConfigContexts()) {
+            ConcurrencyContextImpl concurrencyContext = suiteConfigContext.getConcurrencyContext();
             if (!concurrencyContext.isSlowdownEnabled()) {
                 continue;
             }
@@ -85,7 +67,7 @@ class ConcurrencyManagerImpl implements ConcurrencyManager {
             } else {
                 int oldDesiredConcurrency = concurrencyContext.getDesiredConcurrency();
                 int newDesiredConcurrency = concurrencyContext.updateDesiredConcurrency(-1 * scaleAdjustment);
-                
+
                 if (newDesiredConcurrency < oldDesiredConcurrency) {
                     LOGGER.warn(
                             "Reducing desired concurrency from {} to {} due to {} suite fails out of {} recent",
@@ -101,16 +83,12 @@ class ConcurrencyManagerImpl implements ConcurrencyManager {
 
     @Override
     public void onSuiteInstanceStarted(long timestamp, SuiteInstanceContextImpl suiteContext) {
-        concurrencyContexts.get(
-                suiteContext.getSuiteConfigContext().getSuiteConfig().getId()
-        ).updateCurrentConcurrency(1);
+        suiteContext.getSuiteConfigContext().getConcurrencyContext().updateCurrentConcurrency(1);
     }
 
     @Override
     public void onSuiteInstanceFinished(long timestamp, SuiteInstanceContextImpl suiteContext, Throwable error) {
-        ConcurrencyContextImpl concurrencyContext = concurrencyContexts.get(
-                suiteContext.getSuiteConfigContext().getSuiteConfig().getId()
-        );
+        ConcurrencyContextImpl concurrencyContext = suiteContext.getSuiteConfigContext().getConcurrencyContext();
 
         concurrencyContext.updateCurrentConcurrency(-1);
 
@@ -126,23 +104,23 @@ class ConcurrencyManagerImpl implements ConcurrencyManager {
     }
 
     @Override
-    public int getMaxConcurrency(SuiteConfigContext suiteConfigContext) {
-        return concurrencyContexts.get(suiteConfigContext.getSuiteConfig().getId()).getMaxConcurrency();
+    public int getMaxConcurrency(SuiteConfigContextImpl suiteConfigContext) {
+        return suiteConfigContext.getConcurrencyContext().getMaxConcurrency();
     }
 
     @Override
-    public int getMinConcurrency(SuiteConfigContext suiteConfigContext) {
-        return concurrencyContexts.get(suiteConfigContext.getSuiteConfig().getId()).getMinConcurrency();
+    public int getMinConcurrency(SuiteConfigContextImpl suiteConfigContext) {
+        return suiteConfigContext.getConcurrencyContext().getMinConcurrency();
     }
 
     @Override
-    public int getDesiredConcurrency(SuiteConfigContext suiteConfigContext) {
-        return concurrencyContexts.get(suiteConfigContext.getSuiteConfig().getId()).getDesiredConcurrency();
+    public int getDesiredConcurrency(SuiteConfigContextImpl suiteConfigContext) {
+        return suiteConfigContext.getConcurrencyContext().getDesiredConcurrency();
     }
 
     @Override
-    public int getCurrentConcurrency(SuiteConfigContext suiteConfigContext) {
-        return concurrencyContexts.get(suiteConfigContext.getSuiteConfig().getId()).getCurrentConcurrency();
+    public int getCurrentConcurrency(SuiteConfigContextImpl suiteConfigContext) {
+        return suiteConfigContext.getConcurrencyContext().getCurrentConcurrency();
     }
 
 }

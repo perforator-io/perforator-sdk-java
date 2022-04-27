@@ -22,11 +22,17 @@ class SuiteConfigContextImpl implements SuiteConfigContext {
     private final SuiteConfig suiteConfig;
     private final StatisticsContextImpl statisticsContext;
     private final Set<SuiteInstanceContextImpl> suiteInstanceContexts;
+    private final ConcurrencyContextImpl concurrencyContext;
 
-    public SuiteConfigContextImpl(SuiteConfig suiteConfig) {
+    public SuiteConfigContextImpl(LoadGeneratorContextImpl loadGeneratorContext, SuiteConfig suiteConfig) {
         this.suiteConfig = suiteConfig;
         this.statisticsContext = new StatisticsContextImpl();
         this.suiteInstanceContexts = ConcurrentHashMap.newKeySet();
+        this.concurrencyContext = new ConcurrencyContextImpl(
+                suiteConfig,
+                loadGeneratorContext.getLoadGeneratorConfig().isSlowdown(),
+                Long.MIN_VALUE
+        );
     }
 
     @Override
@@ -40,6 +46,10 @@ class SuiteConfigContextImpl implements SuiteConfigContext {
 
     public Set<SuiteInstanceContextImpl> getSuiteInstanceContexts() {
         return suiteInstanceContexts;
+    }
+
+    public ConcurrencyContextImpl getConcurrencyContext() {
+        return concurrencyContext;
     }
 
     @Override

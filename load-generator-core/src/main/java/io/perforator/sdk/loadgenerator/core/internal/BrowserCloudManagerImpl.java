@@ -51,7 +51,7 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
 
     @Override
     public void onLoadGeneratorStarted(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
-        if (isLocalOnly(loadGeneratorContext)) {
+        if (loadGeneratorContext.isLocalOnly()) {
             return;
         }
 
@@ -178,7 +178,7 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
 
     @Override
     public void onLoadGeneratorFinished(long timestamp, LoadGeneratorContextImpl loadGeneratorContext, Throwable error) {
-        if (isLocalOnly(loadGeneratorContext)) {
+        if (loadGeneratorContext.isLocalOnly()) {
             return;
         }
         if (timer != null) {
@@ -186,12 +186,6 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
             timer = null;
         }
         cleanup(loadGeneratorContext);
-    }
-
-    private boolean isLocalOnly(LoadGeneratorContextImpl loadGeneratorContext) {
-        return loadGeneratorContext.getSuiteConfigContexts()
-                .stream()
-                .noneMatch(suite -> suite.getSuiteConfig().getWebDriverMode() == WebDriverMode.cloud);
     }
 
     private BrowserCloudDetails awaitBrowserCloud(LoadGeneratorContextImpl loadGeneratorContext, String projectKey, String executionKey, String browserCloudUuid, Duration awaitQueuedDuration, Duration awaitProvisioningDuration, Duration statusCheckInterval) {
