@@ -10,5 +10,5 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-public interface LoadGeneratorContextManager extends IntegrationListener{
+interface LoadGeneratorContextManager extends IntegrationListener{
 }
