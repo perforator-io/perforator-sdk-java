@@ -85,7 +85,6 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
         ));
 
         eventsRouter.setLoadGeneratorFinishedListeners(Arrays.asList(
-                concurrencyEventsAggregator,
                 concurrencyManager,
                 suiteManager,
                 httpClientsManager,

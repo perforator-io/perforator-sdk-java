@@ -15,22 +15,19 @@ import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 final class ConcurrencyEventsAggregatorImpl implements ConcurrencyEventsAggregator {
 
-    private final AtomicBoolean finish = new AtomicBoolean(false);
-
-    @Override
-    public void onLoadGeneratorFinished(long timestamp, LoadGeneratorContextImpl loadGeneratorContext, Throwable error) {
-        finish.set(true);
-    }
-
     @Override
     public void onHeartbeat(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
-        if (finish.get()) {
+        boolean runningInCloud = loadGeneratorContext.getSuiteConfigContexts().stream()
+                .map(SuiteConfigContextImpl::getSuiteConfig)
+                .anyMatch(suiteConfig -> suiteConfig.getWebDriverMode() == WebDriverMode.cloud);
+
+        if(!runningInCloud){
             return;
         }
+        
         List<AnalyticsEvent> events = new ArrayList<>();
 
         for (SuiteConfigContextImpl suiteConfigContext : loadGeneratorContext.getSuiteConfigContexts()) {
@@ -76,7 +73,7 @@ final class ConcurrencyEventsAggregatorImpl implements ConcurrencyEventsAggregat
         }
 
         StatisticsContextImpl loadGeneratorStatisticsContext = loadGeneratorContext.getStatisticsContext();
-
+        
         events.add(
                 createConcurrencyEvent(
                         timestamp,
