@@ -18,11 +18,11 @@ import io.perforator.sdk.api.okhttpgson.model.Execution;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.time.Duration;
 import java.util.*;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static io.perforator.sdk.loadgenerator.core.Threaded.sleep;
 
@@ -440,36 +440,38 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
 
     //TODO: create configurable property LoadGenerator.executionNotesGeneratorClass
     private String generateExecutionNotes(LoadGeneratorContextImpl loadGeneratorContext, List<SuiteConfig> suiteConfigs) {
-
-        StringBuilder stb = new StringBuilder();
-        int estimatedConcurrency = 0;
-        long estimatedDuration = 0;
-
-        StringBuilder suitesInfoStb = new StringBuilder();
+        List<String> suiteNotes = new ArrayList<>();
+        
         for (SuiteConfig suiteConfig: suiteConfigs){
             if(suiteConfig.getWebDriverMode() != WebDriverMode.cloud){
                 continue;
             }
-            estimatedConcurrency += suiteConfig.getConcurrency();
-            estimatedDuration = Math.max(estimatedDuration, suiteConfig.getDuration().toMillis());
-
-            suitesInfoStb.append("<p><strong>Suite</strong>: ").append(suiteConfig.getName()).append("</p>")
-                    .append("<ul>")
-                    .append("<li>concurrency: ").append(suiteConfig.getConcurrency()).append("</p>")
-                    .append("<li>duration: ").append(suiteConfig.getDuration().toString().toLowerCase().replace("pt", "")).append("</li>")
-                    .append("<li>delay: ").append(suiteConfig.getDelay().toString().toLowerCase().replace("pt", "")).append("</li>")
-                    .append("<li>rampUp: ").append(suiteConfig.getRampUp().toString().toLowerCase().replace("pt", "")).append("</li>")
-                    .append("<li>rampDown: ").append(suiteConfig.getRampDown().toString().toLowerCase().replace("pt", "")).append("</li>")
-                    .append("</ul>");
+            
+            suiteNotes.add(
+                    new StringBuilder()
+                            .append("<p><strong>suite</strong>:")
+                            .append(suiteConfig.getName())
+                            .append("</p>")
+                            .append("<p><strong>concurrency</strong>:")
+                            .append(suiteConfig.getConcurrency())
+                            .append("</p>")
+                            .append("<p><strong>duration</strong>:")
+                            .append(suiteConfig.getDuration().toString().toLowerCase().replace("pt", ""))
+                            .append("</p>")
+                            .append("<p><strong>delay</strong>:")
+                            .append(suiteConfig.getDelay().toString().toLowerCase().replace("pt", ""))
+                            .append("</p>")
+                            .append("<p><strong>rampUp</strong>:")
+                            .append(suiteConfig.getRampUp().toString().toLowerCase().replace("pt", ""))
+                            .append("</p>")
+                            .append("<p><strong>rampDown</strong>:")
+                            .append(suiteConfig.getRampDown().toString().toLowerCase().replace("pt", ""))
+                            .append("</p>")
+                            .toString()
+            );
         }
 
-        stb.append("<p><strong>Estimated concurrency</strong>: ").append(estimatedConcurrency).append("</p>")
-                .append("<p><strong>Estimated duration</strong>: ").append(Duration.ofMillis(estimatedDuration).toString().toLowerCase().replace("pt", "")).append("</p>")
-                .append("<p><strong>Suites</strong>: ").append(suiteConfigs.size()).append("</p></br>")
-                .append(suitesInfoStb);
-
-
-        return stb.toString();
+        return suiteNotes.stream().collect(Collectors.joining("<p>---</p>"));
     }
 
     @FunctionalInterface
