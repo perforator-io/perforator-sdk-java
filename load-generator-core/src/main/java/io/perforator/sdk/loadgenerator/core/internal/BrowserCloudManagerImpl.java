@@ -440,38 +440,38 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
 
     //TODO: create configurable property LoadGenerator.executionNotesGeneratorClass
     private String generateExecutionNotes(LoadGeneratorContextImpl loadGeneratorContext, List<SuiteConfig> suiteConfigs) {
-        List<String> suiteNotes = new ArrayList<>();
+        List<String> details = new ArrayList<>();
+        details.add("<p><span class=\"text-gray-700\">Load Generator Details:</span></p>");
         
         for (SuiteConfig suiteConfig: suiteConfigs){
-            if(suiteConfig.getWebDriverMode() != WebDriverMode.cloud){
-                continue;
-            }
-            
-            suiteNotes.add(
+            details.add(
                     new StringBuilder()
-                            .append("<p><strong>suite</strong>:")
+                            .append("<p><span class=\"text-gray-700\">suite</span>: ")
                             .append(suiteConfig.getName())
                             .append("</p>")
-                            .append("<p><strong>concurrency</strong>:")
+                            .append("<p><span class=\"text-gray-700\">webDriverMode</span>: ")
+                            .append(suiteConfig.getWebDriverMode())
+                            .append("</p>")
+                            .append("<p><span class=\"text-gray-700\">concurrency</span>: ")
                             .append(suiteConfig.getConcurrency())
                             .append("</p>")
-                            .append("<p><strong>duration</strong>:")
+                            .append("<p><span class=\"text-gray-700\">duration</span>: ")
                             .append(suiteConfig.getDuration().toString().toLowerCase().replace("pt", ""))
                             .append("</p>")
-                            .append("<p><strong>delay</strong>:")
+                            .append("<p><span class=\"text-gray-700\">delay</span>: ")
                             .append(suiteConfig.getDelay().toString().toLowerCase().replace("pt", ""))
                             .append("</p>")
-                            .append("<p><strong>rampUp</strong>:")
+                            .append("<p><span class=\"text-gray-700\">rampUp</span>: ")
                             .append(suiteConfig.getRampUp().toString().toLowerCase().replace("pt", ""))
                             .append("</p>")
-                            .append("<p><strong>rampDown</strong>:")
+                            .append("<p><span class=\"text-gray-700\">rampDown</span>: ")
                             .append(suiteConfig.getRampDown().toString().toLowerCase().replace("pt", ""))
                             .append("</p>")
                             .toString()
             );
         }
 
-        return suiteNotes.stream().collect(Collectors.joining("<p>---</p>"));
+        return details.stream().collect(Collectors.joining("<p><span class=\"text-gray-700\">---</span></p>"));
     }
 
     @FunctionalInterface
