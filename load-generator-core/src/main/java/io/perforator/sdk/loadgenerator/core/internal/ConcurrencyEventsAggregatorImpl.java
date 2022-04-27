@@ -31,10 +31,6 @@ final class ConcurrencyEventsAggregatorImpl implements ConcurrencyEventsAggregat
         List<AnalyticsEvent> events = new ArrayList<>();
 
         for (SuiteConfigContextImpl suiteConfigContext : loadGeneratorContext.getSuiteConfigContexts()) {
-            if (suiteConfigContext.getSuiteConfig().getWebDriverMode() != WebDriverMode.cloud) {
-                continue;
-            }
-
             String suiteName = suiteConfigContext.getSuiteConfig().getName();
             StatisticsContextImpl statisticsContext = suiteConfigContext.getStatisticsContext();
 
