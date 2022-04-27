@@ -11,7 +11,6 @@
 package io.perforator.sdk.loadgenerator.core.internal;
 
 import io.perforator.sdk.api.okhttpgson.model.AnalyticsEvent;
-import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +19,7 @@ final class ConcurrencyEventsAggregatorImpl implements ConcurrencyEventsAggregat
 
     @Override
     public void onHeartbeat(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
-        boolean runningInCloud = loadGeneratorContext.getSuiteConfigContexts().stream()
-                .map(SuiteConfigContextImpl::getSuiteConfig)
-                .anyMatch(suiteConfig -> suiteConfig.getWebDriverMode() == WebDriverMode.cloud);
-
-        if(!runningInCloud){
+        if(loadGeneratorContext.isFinished() || loadGeneratorContext.isLocalOnly()){
             return;
         }
         

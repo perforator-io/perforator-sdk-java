@@ -10,16 +10,5 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-import io.perforator.sdk.loadgenerator.core.context.SuiteConfigContext;
-
-interface ConcurrencyManager<C extends SuiteConfigContext> extends IntegrationListener {
-
-    int getMaxConcurrency(C suiteConfigContext);
-
-    int getMinConcurrency(C suiteConfigContext);
-
-    int getDesiredConcurrency(C suiteConfigContext);
-
-    int getCurrentConcurrency(C suiteConfigContext);
-
+public interface LoadGeneratorContextManager extends IntegrationListener{
 }

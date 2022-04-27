@@ -39,6 +39,7 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
     private final ReportingManager reportingManager;
     private final StatisticsManagerImpl statisticsManager;
     private final InfoMessagesManager infoMessagesManager;
+    private final LoadGeneratorContextManagerImpl loadGeneratorContextManager;
 
     private final LoadGeneratorContextImpl loadGeneratorContext;
 
@@ -63,6 +64,7 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
         this.reportingManager = new ReportingManagerImpl();
         this.statisticsManager = new StatisticsManagerImpl();
         this.infoMessagesManager = new InfoMessagesManagerImpl();
+        this.loadGeneratorContextManager = new LoadGeneratorContextManagerImpl();
 
         this.loadGeneratorContext = new LoadGeneratorContextImpl(
                 this.timeProvider.getCurrentTime(),
@@ -80,11 +82,11 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
                 analyticsEventsFlusher,
                 reportingManager,
                 seleniumLoggingManager,
-                infoMessagesManager,
-                concurrencyManager
+                infoMessagesManager
         ));
 
         eventsRouter.setLoadGeneratorFinishedListeners(Arrays.asList(
+                loadGeneratorContextManager,
                 concurrencyManager,
                 suiteManager,
                 httpClientsManager,
