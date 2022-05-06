@@ -45,6 +45,11 @@ public class CodelessSuiteConfig extends SuiteConfig {
     @FieldNameConstants.Include
     private List<FormattingMap> props = new ArrayList<>();
 
+    @Getter
+    @Setter
+    @FieldNameConstants.Include
+    private String propsFile;
+
     @JsonDeserialize(using = StepsDeserializer.class)
     @Getter
     @Setter

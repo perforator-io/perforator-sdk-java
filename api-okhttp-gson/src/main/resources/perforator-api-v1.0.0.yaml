@@ -1138,6 +1138,9 @@ paths:
                 readyAt: 1625928669754
                 expirationAt: 1625932269754
                 seleniumHubURL: 'https://selenium.perforator.io/d502c7b2-031c-40db-adcf-ec0661715e0a/1ee796e4-27fe-46e5-9767-56d5352310d0/wd/hub'
+                publicIPs:
+                  - 123.122.77.88
+                  - 34.554.3.55
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -11696,6 +11699,10 @@ components:
           format: int64
         seleniumHubURL:
           type: string
+        publicIPs:
+          type: array
+          items:
+            type: string
       required:
         - browserName
         - browserVersion
@@ -11705,6 +11712,7 @@ components:
         - duration
         - expirationAt
         - readyAt
+        - publicIPs
         - seleniumHubURL
         - status
         - uuid
