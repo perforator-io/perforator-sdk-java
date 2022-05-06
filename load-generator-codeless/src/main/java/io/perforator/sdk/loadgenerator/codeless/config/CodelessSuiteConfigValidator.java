@@ -47,6 +47,19 @@ public final class CodelessSuiteConfigValidator {
             );
         }
 
+        if(suiteConfig.getProps() != null && !suiteConfig.getProps().isEmpty() && suiteConfig.getPropsFile() != null && !suiteConfig.getPropsFile().isBlank()){
+            throw new RuntimeException(
+                    "Only " + SuiteConfig.DEFAULTS_FIELD_PREFIX
+                            + "."
+                            + CodelessSuiteConfig.Fields.props
+                            + " or "
+                            + SuiteConfig.DEFAULTS_FIELD_PREFIX
+                            + "."
+                            + CodelessSuiteConfig.Fields.propsFile
+                            + " field will be required"
+            );
+        }
+
         validaSuiteSteps(loadGeneratorConfig, suiteConfig);
 
         return suiteConfig;

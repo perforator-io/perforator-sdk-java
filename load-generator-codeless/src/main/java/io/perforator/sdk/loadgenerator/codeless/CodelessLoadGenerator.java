@@ -47,7 +47,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
     }
 
     private CodelessLoadGenerator(IntegrationService<SuiteConfigContext, SuiteInstanceContext, TransactionContext, RemoteWebDriverContext> mediator, CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suites) {
-        super(mediator, loadGeneratorConfig, (List) CodelessSuiteConfigValidator.validate(loadGeneratorConfig, suites));
+        super(mediator, loadGeneratorConfig, (List) suites);
         this.logSteps = loadGeneratorConfig.isLogSteps();
         this.logActions = loadGeneratorConfig.isLogActions();
     }
@@ -282,5 +282,4 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
             );
         }
     }
-    
 }
