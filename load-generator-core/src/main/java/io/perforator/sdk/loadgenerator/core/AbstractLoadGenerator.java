@@ -406,12 +406,20 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
                     slowdown = 0;
                 }
                 
-                SuiteInstanceContext suiteInstanceContext = startSuiteContextIfAllowed(this.suiteConfigContext);
+                SuiteInstanceContext suiteInstanceContext = startSuiteContextIfAllowed(
+                        this.suiteConfigContext
+                );
                 if (suiteInstanceContext == null) {
                     if (shouldBeFinished()) {
                         return;
                     } else {
-                        Threaded.sleep(1);
+                        Threaded.sleep(
+                                calculateDelayForDesiredConcurrency(
+                                        this.suiteConfigContext,
+                                        1,
+                                        250
+                                )
+                        );
                         continue;
                     }
                 }
@@ -469,6 +477,18 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
                     cleanupConsumerContext();
                 }
             }
+        }
+        
+        private long calculateDelayForDesiredConcurrency(SuiteConfigContext suiteConfigContext, long minDelay, long maxDelay) {
+            double maxConcurrency = suiteConfigContext.getSuiteConfig().getConcurrency();
+            double desiredConcurrency = mediator.getDesiredConcurrency(suiteConfigContext);
+            double delta = maxConcurrency - desiredConcurrency;
+            double multiplier = delta / maxConcurrency;
+            
+            return Math.max(
+                    minDelay, 
+                    (long)(multiplier * maxDelay)
+            );
         }
         
         private SuiteInstanceContext startSuiteContextIfAllowed(SuiteConfigContext suiteConfigContext) {
