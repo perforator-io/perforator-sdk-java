@@ -63,8 +63,7 @@ public class CodelessLoadGeneratorTest extends AbstractLoadGeneratorTest<Codeles
         stepConfig.setName("Step One");
         stepConfig.setActions(List.of(
                 OpenActionConfig.builder()
-                        //.duration field is required
-                        .timeout(verificationsBaseUrl)
+                        .timeout("invalid_duration")
                         .build()
         ));
 

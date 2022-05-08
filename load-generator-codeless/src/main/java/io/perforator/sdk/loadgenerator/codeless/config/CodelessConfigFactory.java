@@ -16,14 +16,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.DurationDeserializer;
-import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.core.configs.Configurable;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.DateTimeException;
 import java.time.Duration;
-import java.util.List;
 
 //TODO: add javadoc
 public final class CodelessConfigFactory {
@@ -54,13 +52,6 @@ public final class CodelessConfigFactory {
                         CodelessSuiteConfig::applyDefaults
                 );
             }
-        }
-
-        CodelessSuiteConfigValidator.validate(result.getLoadGeneratorConfig(), result.getSuiteConfigs());
-
-        for (CodelessSuiteConfig suiteConfig : result.getSuiteConfigs()) {
-            List<FormattingMap> propsFromCSV = CSVUtils.parseToFormattingMapList(suiteConfig.getPropsFile());
-            suiteConfig.getProps().addAll(propsFromCSV);
         }
 
         return result;

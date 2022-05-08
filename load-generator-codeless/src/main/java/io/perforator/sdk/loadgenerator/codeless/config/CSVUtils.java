@@ -27,11 +27,7 @@ import java.util.Map;
 
 public class CSVUtils {
 
-    private static final RowValidator SAME_NUMBER_COLUMNS_VALIDATOR = new RowMustHaveSameNumberOfColumnsAsFirstRowValidator();
-    private static final RowValidator HEADER_CELL_NAME_VALIDATOR = new HeaderCellNameRowValidator();
-
     public static List<FormattingMap> parseToFormattingMapList(String filePath) {
-
         if (filePath == null || filePath.isBlank()) {
             return Collections.EMPTY_LIST;
         }
@@ -39,21 +35,20 @@ public class CSVUtils {
         try {
             List<FormattingMap> props = new ArrayList<>();
             new CSVReaderBuilder(new FileReader(filePath))
-                    .withRowValidator(SAME_NUMBER_COLUMNS_VALIDATOR)
-                    .withRowValidator(HEADER_CELL_NAME_VALIDATOR)
+                    .withRowValidator(new RowMustHaveSameNumberOfColumnsAsFirstRowValidator())
+                    .withRowValidator(new HeaderCellNameRowValidator())
                     .withRowProcessor(new FillFormattingMapListRowProcessor(props))
                     .build()
                     .readAll();
             return props;
-
         } catch (IOException ioe) {
             throw new RuntimeException(
-                    filePath + " file not found",
+                    "Can't read csv file " + filePath,
                     ioe
             );
         } catch (CsvException csve) {
             throw new RuntimeException(
-                    "The exception reading CSV file",
+                    "Can't parse csv file " + filePath,
                     csve
             );
         }
@@ -96,34 +91,43 @@ public class CSVUtils {
 
     private static class HeaderCellNameRowValidator implements RowValidator {
 
-        private boolean isFirsRow = true;
+        private boolean headerRow = true;
 
         @Override
         public boolean isValid(String[] row) {
-            if (row != null && row.length != 0) {
-                if (!this.isFirsRow) {
-                    return true;
-                }
-                this.isFirsRow = false;
-
-                for (String name : row) {
-                    if (name == null || name.isBlank()) {
-                        return false;
-                    }
-                    if (!name.matches("^[-_a-zA-Z0-9]*$")) {
-                        return false;
-                    }
-                }
-            } else {
+            try {
+                validate(row);
+                return true;
+            } catch (CsvValidationException e) {
                 return false;
             }
-            return true;
         }
 
         @Override
-        public void validate(String[] rows) throws CsvValidationException {
-            if (!isValid(rows)) {
-                throw new CsvValidationException("One of the header's cells is wrong. The name could not be empty and should contain only a-z,A-Z,0-9,-,_ characters");
+        public void validate(String[] row) throws CsvValidationException {
+            if (row == null || row.length == 0) {
+                throw new CsvValidationException("CSV row can't be empty");
+            }
+
+            if (!headerRow) {
+                return;
+            } else {
+                headerRow = false;
+            }
+
+            for (String name : row) {
+                if (name == null || name.isBlank()) {
+                    throw new CsvValidationException(
+                            "CSV header cell can't be empty"
+                    );
+                }
+                if (!name.matches("^[-_a-zA-Z0-9]*$")) {
+                    throw new CsvValidationException(
+                            "CSV header cell '"
+                            + name
+                            + "' should contain only a-z,A-Z,0-9,-,_ characters"
+                    );
+                }
             }
         }
     }

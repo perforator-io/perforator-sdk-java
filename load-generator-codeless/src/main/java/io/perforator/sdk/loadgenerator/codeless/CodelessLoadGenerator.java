@@ -26,6 +26,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 //TODO: add javadoc
@@ -47,9 +48,32 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
     }
 
     private CodelessLoadGenerator(IntegrationService<SuiteConfigContext, SuiteInstanceContext, TransactionContext, RemoteWebDriverContext> mediator, CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suites) {
-        super(mediator, loadGeneratorConfig, (List) suites);
+        super(mediator, loadGeneratorConfig, (List) preprocessConfigs(loadGeneratorConfig, suites));
         this.logSteps = loadGeneratorConfig.isLogSteps();
         this.logActions = loadGeneratorConfig.isLogActions();
+    }
+    
+    private static List<CodelessSuiteConfig> preprocessConfigs(CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suites) {
+        CodelessSuiteConfigValidator.validate(loadGeneratorConfig, suites);
+        
+        List<String> propsFiles = new ArrayList<>(suites.size());
+        for (int i = 0; i < suites.size(); i++) {
+            CodelessSuiteConfig suite = suites.get(i);
+            String propsFile = suite.getPropsFile();
+            List<FormattingMap> propsFromCSV = CSVUtils.parseToFormattingMapList(propsFile);
+            
+            propsFiles.add(propsFile);
+            suite.getProps().addAll(propsFromCSV);
+            suite.setPropsFile(null);
+        }
+        
+        CodelessSuiteConfigValidator.validate(loadGeneratorConfig, suites);
+        
+        for (int i = 0; i < suites.size(); i++) {
+            suites.get(i).setPropsFile(propsFiles.get(i));
+        }
+        
+        return suites;
     }
 
     @Override
