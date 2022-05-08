@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-class SuiteConfigContextImpl implements SuiteConfigContext {
+final class SuiteConfigContextImpl implements SuiteConfigContext {
 
     private final SuiteConfig suiteConfig;
     private final StatisticsContextImpl statisticsContext;

@@ -12,7 +12,7 @@ package io.perforator.sdk.loadgenerator.core.internal;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-class StatisticsContextImpl {
+final class StatisticsContextImpl {
 
     private final AtomicLong suiteInstancesSuccessful = new AtomicLong(0);
     private final AtomicLong suiteInstancesFailed = new AtomicLong(0);

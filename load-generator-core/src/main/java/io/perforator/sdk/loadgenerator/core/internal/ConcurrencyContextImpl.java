@@ -14,7 +14,7 @@ import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-class ConcurrencyContextImpl {
+final class ConcurrencyContextImpl {
 
     private final SuiteConfig suiteConfig;
     private final boolean slowdownEnabled;
