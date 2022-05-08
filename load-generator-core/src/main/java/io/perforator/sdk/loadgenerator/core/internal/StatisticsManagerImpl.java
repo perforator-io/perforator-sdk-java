@@ -10,7 +10,7 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-class StatisticsManagerImpl implements StatisticsManager {
+final class StatisticsManagerImpl implements StatisticsManager {
 
     @Override
     public void onSuiteInstanceStarted(long timestamp, SuiteInstanceContextImpl context) {

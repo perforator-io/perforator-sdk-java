@@ -10,7 +10,7 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-class SeleniumLoggingManagerImpl implements SeleniumLoggingManager {
+final class SeleniumLoggingManagerImpl implements SeleniumLoggingManager {
     
     private static final String SELENIUM_PACKAGE_NAME = "org.openqa.selenium";
     private static final java.util.logging.Logger JUL_LOGGER = java.util.logging.Logger.getLogger(SELENIUM_PACKAGE_NAME);
