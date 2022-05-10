@@ -15,7 +15,6 @@ import io.perforator.sdk.api.okhttpgson.model.BrowserCloud;
 import io.perforator.sdk.api.okhttpgson.model.BrowserCloudDetails;
 import io.perforator.sdk.api.okhttpgson.model.CreditsBalance;
 import io.perforator.sdk.api.okhttpgson.model.Execution;
-import io.perforator.sdk.loadgenerator.core.configs.Headers;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
@@ -136,6 +135,13 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
                 LOGGER.warn(
                         "Browser cloud will avoid capturing the following HTTP requests: {}",
                         dataCapturingExcludes
+                );
+            }
+            
+            if(browserCloudHttpHeaders != null && !browserCloudHttpHeaders.isEmpty()) {
+                LOGGER.info(
+                        "Browser cloud will expose additional headers for all outgoing HTTP requests: {}",
+                        browserCloudHttpHeaders
                 );
             }
 
@@ -418,7 +424,6 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
         payload.setUsePreAllocatedIPs(usePreAllocatedIPs);
         payload.setDataCapturingExcludes(dataCapturingExcludes);
         payload.setHttpHeaders(browserCloudHttpHeaders);
-        LOGGER.info("HEADERS: {}", browserCloudHttpHeaders);
 
         return loadGeneratorContext.getBrowserCloudsApi().createBrowserCloud(
                 projectKey,
