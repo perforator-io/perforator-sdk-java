@@ -18,6 +18,7 @@ import lombok.experimental.FieldNameConstants;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -503,6 +504,13 @@ public class LoadGeneratorConfig implements Configurable {
      */
     @Getter @Setter @FieldNameConstants.Include
     protected List<String> dataCapturingExcludes;
+
+    /**
+     * Please set the 'browserCloudHttpHeaders' parameter if you would like to have
+     * additional HTTP headers in all browser requests. For example, to set the Authorization bearer token.
+     */
+    @Getter @Setter @FieldNameConstants.Include
+    protected Headers browserCloudHttpHeaders;
 
     /**
      * Default constructor looking up property defaults via the following providers:

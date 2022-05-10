@@ -853,6 +853,7 @@ paths:
         - `status` is a system-level field, so it will be ignored even if you try to submit it.
         - The platform automatically assigns random public IP addresses when creating a browser cloud, and such IPs are not known in advance. Please set `usePreAllocatedIPs` parameter to `true` if you would like all browsers to have preallocated IPs, for example, to establish network trust on your firewall side.
         - It might be a case when you need to exclude certain HTTP requests from capturing by cloud-based browsers so such requests don't affect analytics. Feel free to supply an optional parameter `dataCapturingExcludes` with the list of URLs to exclude from capturing.
+        - You can fill optionally field 'httpHeaders' if you want to set additional HTTP headers in all requests.
       operationId: createBrowserCloud
       parameters:
         - name: project_key
@@ -903,6 +904,16 @@ paths:
                   dataCapturingExcludes:
                     - 'https://example.com/font.ttf'
                     - 'https://example.com/page/*'
+              Create browser cloud with http headers:
+                value:
+                  concurrency: 50
+                  duration: 2
+                  httpHeaders:
+                    Authorization:
+                      - Basic YOUR_AUTHORIZATION_TOKEN
+                    Host:
+                      - example.com:8080
+                      - example.com
         required: true
       responses:
         '200':
@@ -11668,6 +11679,12 @@ components:
           type: array
           items:
             type: string
+        httpHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
     BrowserCloudDetails:
       type: object
       properties:
@@ -11703,6 +11720,12 @@ components:
           type: array
           items:
             type: string
+        httpHeaders:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
       required:
         - browserName
         - browserVersion
@@ -11714,6 +11737,7 @@ components:
         - readyAt
         - publicIPs
         - seleniumHubURL
+        - publicIPs
         - status
         - uuid
     AnalyticsEvent:

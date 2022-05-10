@@ -13,9 +13,7 @@ package io.perforator.sdk.loadgenerator.core.configs;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -121,6 +119,8 @@ public interface Configurable {
             field.set(instance, WebDriverMode.valueOf(defaultValue));
         } else if (field.getType() == List.class) {
             field.set(instance, parseList(defaultValue));
+        } else if (field.getType() == Headers.class) {
+            field.set(instance, parseHeaders(field.getName(), defaultValue));
         } else if (field.getType() == ChromeMode.class) {
             field.set(instance, ChromeMode.valueOf(defaultValue));
         } else if (field.getType() == Class.class) {
@@ -155,6 +155,33 @@ public interface Configurable {
         ).collect(
                 Collectors.toList()
         );
+    }
+
+    private static Headers parseHeaders(String fieldName, String items){
+        if(items == null || items.isBlank()) {
+            return null;
+        }
+
+        Headers result = new Headers();
+
+        List<String> headers = Arrays.stream(items.split(";"))
+                .map(String::trim)
+                .filter(i -> !i.isBlank())
+                .collect(Collectors.toList());
+
+        for (String header: headers){
+            String[] splitedHeader = header.split("=", 2);
+            if(splitedHeader.length < 2){
+                throw new RuntimeException("Bad '"+fieldName+"' field format");
+            }
+            String headerName = splitedHeader[0];
+            List<String> values = parseList(splitedHeader[1]);
+            if(headerName == null || headerName.isBlank() || values == null || values.isEmpty()){
+                throw new RuntimeException("Bad '"+fieldName+"' field format");
+            }
+            result.computeIfAbsent(headerName, s -> new ArrayList<>()).addAll(values);
+        }
+        return result;
     }
 
     private static String getDefaultValue(String fieldName, String prefix, Function<String, String>... providers) {
