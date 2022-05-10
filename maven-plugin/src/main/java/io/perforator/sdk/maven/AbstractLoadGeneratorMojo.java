@@ -425,6 +425,17 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
             property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.dataCapturingExcludes
     )
     protected String dataCapturingExcludes;
+
+    /**
+     * Please set the 'browserCloudHttpHeaders' parameter if you would like to have
+     * additional HTTP headers in all browser requests. For example, to set the Authorization bearer token.
+     */
+    @Parameter(
+            required = false,
+            alias = LoadGeneratorConfig.Fields.browserCloudHttpHeaders,
+            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.browserCloudHttpHeaders
+    )
+    protected String browserCloudHttpHeaders;
     
     /**
      * The name of the test suite.<br/>
