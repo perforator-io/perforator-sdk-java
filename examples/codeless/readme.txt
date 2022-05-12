@@ -661,6 +661,42 @@ a look at the below docs describing available options for the config.yml
     #    param2_name: param2_value1
     #  - param1_name: param1_value2
     #    param2_name: param2_value2
+
+    ############################################################################
+    # Props is an array of key-value pairs which can be referenced in the      #
+    # actions. Their you can specify in the CSV file. Load generator           #
+    # automatically picks the next item from the array new suite instance and  #
+    # preserves key-value pairs till the end of the suite instance.            #
+    #                                                                          #
+    # Action can refer to a value from a key-values map using the following    #
+    # syntax: ${key_name}                                                      #
+    #                                                                          #
+    # Example CSV file's data:                                                 #
+    # ---------------------------------------------                            #
+    # |   user_name           |   password        |                            #
+    # |--------------------------------------------                            #
+    # |   user1@example.com   |   user1Password   |                            #
+    # |   user2@example.com   |   user2Password   |                            #
+    # |   user3@example.com   |   user3Password   |                            #
+    # |   user4@example.com   |   user4Password   |                            #
+    # ---------------------------------------------                            #
+    #                                                                          #
+    # Example:                                                                 #
+    #   propsFile: path_to_csv_file                                            #
+    #  steps:                                                                  #
+    #    login:                                                                #
+    #      - open: https://example.com                                         #
+    #      - input:                                                            #
+    #          cssSelector: '#user_name'                                       #
+    #          value: '${user_name}'                                           #
+    #      - input:                                                            #
+    #          cssSelector: '#password'                                        #
+    #          value: '${password}'                                            #
+    #      - click: '#login_button'                                            #
+    #                                                                          #
+    # This is an optional property.                                            #
+    ############################################################################
+    #propsFile: path_to_csv_file
     
     ############################################################################
     # Every suite should have a collection of named steps, and a step          #
