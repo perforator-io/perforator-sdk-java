@@ -664,9 +664,12 @@ a look at the below docs describing available options for the config.yml
 
     ############################################################################
     # Props is an array of key-value pairs which can be referenced in the      #
-    # actions. Their you can specify in the CSV file. Load generator           #
-    # automatically picks the next item from the array new suite instance and  #
-    # preserves key-value pairs till the end of the suite instance.            #
+    # actions.                                                                 #
+    # Contradictory to 'props', where you specify values directly in the config#
+    # ,'propsFile' allows you to supply values stored in an external CSV file. #
+    # Load generator automatically picks the next row from CSV file when it    #
+    # starts executing a new suite instance and preserves key-value pairs till #
+    # the end of the suite instance.                                           #
     #                                                                          #
     # Action can refer to a value from a key-values map using the following    #
     # syntax: ${key_name}                                                      #
