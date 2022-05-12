@@ -10,10 +10,7 @@
  */
 package io.perforator.sdk.loadgenerator.codeless;
 
-import io.perforator.sdk.loadgenerator.codeless.config.CodelessConfig;
-import io.perforator.sdk.loadgenerator.codeless.config.CodelessConfigFactory;
-import io.perforator.sdk.loadgenerator.codeless.config.CodelessStepConfig;
-import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
+import io.perforator.sdk.loadgenerator.codeless.config.*;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import org.junit.jupiter.api.TestInstance;
@@ -40,7 +37,10 @@ public class ConfigFactoryTest {
     public void verifyNotValidConfig(Path path) throws Exception {
         assertThrows(
                 Exception.class,
-                () -> CodelessConfigFactory.INSTANCE.getCodelessConfig(path),
+                () -> {
+                    CodelessConfig config = CodelessConfigFactory.INSTANCE.getCodelessConfig(path);
+                    new CodelessLoadGenerator(config);
+                },
                 "Config at " + path + " should be invalid"
         );
     }
@@ -49,7 +49,11 @@ public class ConfigFactoryTest {
     @MethodSource("getValidConfigs")
     public void verifyValidConfig(Path path) throws Exception {
         CodelessConfig config = assertDoesNotThrow(
-                () -> CodelessConfigFactory.INSTANCE.getCodelessConfig(path),
+                () -> {
+                    CodelessConfig c = CodelessConfigFactory.INSTANCE.getCodelessConfig(path);
+                    new CodelessLoadGenerator(c);
+                    return c;
+                },
                 "Config at " + path + " should be valid"
         );
         
