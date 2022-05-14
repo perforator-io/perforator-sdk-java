@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 final class ConcurrencyContextImpl {
 
     private final SuiteConfig suiteConfig;
-    private final boolean slowdownEnabled;
+    private final boolean concurrencyAutoAdjustmentEnabled;
 
     private final AtomicInteger currentConcurrency;
     private final AtomicInteger desiredConcurrency;
@@ -27,9 +27,9 @@ final class ConcurrencyContextImpl {
     private final int minConcurrency;
     private final int maxConcurrency;
 
-    public ConcurrencyContextImpl(SuiteConfig suiteConfig, boolean slowdownEnabled, long nextRecalcTimestamp) {
+    public ConcurrencyContextImpl(SuiteConfig suiteConfig, boolean concurrencyAutoAdjustmentEnabled, long nextRecalcTimestamp) {
         this.suiteConfig = suiteConfig;
-        this.slowdownEnabled = slowdownEnabled;
+        this.concurrencyAutoAdjustmentEnabled = concurrencyAutoAdjustmentEnabled;
         this.maxConcurrency = suiteConfig.getConcurrency();
         this.minConcurrency = determineMinConcurrency(maxConcurrency);
         this.currentConcurrency = new AtomicInteger(0);
@@ -99,8 +99,8 @@ final class ConcurrencyContextImpl {
         return suiteConfig;
     }
 
-    public boolean isSlowdownEnabled() {
-        return slowdownEnabled;
+    public boolean isConcurrencyAutoAdjustmentEnabled() {
+        return concurrencyAutoAdjustmentEnabled;
     }
 
     public void setNextRecalcTimestamp(long nextRecalcTimestamp) {

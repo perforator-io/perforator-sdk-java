@@ -18,7 +18,7 @@ final class SlowdownManagerImpl implements SlowdownManager {
     private final TimeProvider timeProvider;
     
     public SlowdownManagerImpl(TimeProvider timeProvider, LoadGeneratorConfig loadGeneratorConfig) {
-        this.slowdownEnabled = loadGeneratorConfig.isSlowdown();
+        this.slowdownEnabled = loadGeneratorConfig.isConcurrencyAutoAdjustment();
         this.timeProvider = timeProvider;
     }
     

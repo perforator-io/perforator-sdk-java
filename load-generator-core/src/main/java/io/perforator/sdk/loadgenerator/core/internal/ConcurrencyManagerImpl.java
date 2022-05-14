@@ -29,7 +29,7 @@ final class ConcurrencyManagerImpl implements ConcurrencyManager<SuiteConfigCont
     public void onHeartbeat(long timestamp, LoadGeneratorContextImpl loadGeneratorContext) {
         for (SuiteConfigContextImpl suiteConfigContext : loadGeneratorContext.getSuiteConfigContexts()) {
             ConcurrencyContextImpl concurrencyContext = suiteConfigContext.getConcurrencyContext();
-            if (!concurrencyContext.isSlowdownEnabled()) {
+            if (!concurrencyContext.isConcurrencyAutoAdjustmentEnabled()) {
                 continue;
             }
 
@@ -92,7 +92,7 @@ final class ConcurrencyManagerImpl implements ConcurrencyManager<SuiteConfigCont
 
         concurrencyContext.updateCurrentConcurrency(-1);
 
-        if (!concurrencyContext.isSlowdownEnabled()) {
+        if (!concurrencyContext.isConcurrencyAutoAdjustmentEnabled()) {
             return;
         }
 

@@ -30,7 +30,7 @@ final class SuiteConfigContextImpl implements SuiteConfigContext {
         this.suiteInstanceContexts = ConcurrentHashMap.newKeySet();
         this.concurrencyContext = new ConcurrencyContextImpl(
                 suiteConfig,
-                loadGeneratorContext.getLoadGeneratorConfig().isSlowdown(),
+                loadGeneratorContext.getLoadGeneratorConfig().isConcurrencyAutoAdjustment(),
                 Long.MIN_VALUE
         );
     }

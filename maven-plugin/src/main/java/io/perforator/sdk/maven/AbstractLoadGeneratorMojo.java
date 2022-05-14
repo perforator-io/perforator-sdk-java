@@ -297,11 +297,11 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
      */
     @Parameter(
             required = false,
-            defaultValue = LoadGeneratorConfig.DEFAULT_SLOWDOWN_S,
-            alias = LoadGeneratorConfig.Fields.slowdown,
-            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.slowdown
+            defaultValue = LoadGeneratorConfig.DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT_S,
+            alias = LoadGeneratorConfig.Fields.concurrencyAutoAdjustment,
+            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.concurrencyAutoAdjustment
     )
-    protected String slowdown;
+    protected String concurrencyAutoAdjustment;
 
     /**
      * All the suites are processed concurrently via multiple thread workers.

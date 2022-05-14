@@ -79,7 +79,7 @@ public class ConfigFactoryTest {
             assertNotNull(config.getLoadGeneratorConfig());
             assertNotNull(config.getSuiteConfigs());
             
-            assertEquals(true, config.getLoadGeneratorConfig().isSlowdown());
+            assertEquals(true, config.getLoadGeneratorConfig().isConcurrencyAutoAdjustment());
             
             for (CodelessSuiteConfig suiteConfig : config.getSuiteConfigs()) {
                 assertNotEquals(Duration.ofSeconds(17), suiteConfig.getRampUp());
@@ -90,7 +90,7 @@ public class ConfigFactoryTest {
                     "17s"
             );
             System.setProperty(
-                    LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.slowdown, 
+                    LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.concurrencyAutoAdjustment, 
                     "false"
             );
             
@@ -101,7 +101,7 @@ public class ConfigFactoryTest {
             assertNotNull(config.getLoadGeneratorConfig());
             assertNotNull(config.getSuiteConfigs());
             
-            assertEquals(false, config.getLoadGeneratorConfig().isSlowdown());
+            assertEquals(false, config.getLoadGeneratorConfig().isConcurrencyAutoAdjustment());
             
             for (CodelessSuiteConfig suiteConfig : config.getSuiteConfigs()) {
                 assertEquals(Duration.ofSeconds(17), suiteConfig.getRampUp());
@@ -111,7 +111,7 @@ public class ConfigFactoryTest {
                     SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampUp
             );
             System.clearProperty(
-                    LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.slowdown
+                    LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.concurrencyAutoAdjustment
             );
         }
     }

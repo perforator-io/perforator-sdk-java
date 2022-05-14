@@ -233,10 +233,10 @@ a look at the below docs describing available options for the config.yml
   #                                                                            #
   # This is an optional property.                                              #
   # Overrides:                                                                 #
-  # - System property name: loadGenerator.slowdown                             #
-  # - Environment variable name: LOADGENERATOR_SLOWDOWN                        #
+  # - System property name: loadGenerator.concurrencyAutoAdjustment            #
+  # - Environment variable name: LOADGENERATOR_CONCURRENCYAUTOADJUSTMENT       #
   ##############################################################################
-  #slowdown: true
+  #concurrencyAutoAdjustment: true
 
   ##############################################################################
   # All the suites are processed concurrently via multiple thread workers.     #

@@ -18,7 +18,6 @@ import lombok.experimental.FieldNameConstants;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -179,18 +178,18 @@ public class LoadGeneratorConfig implements Configurable {
     
     /**
      * String representation of default value for 
-     * <b>{@link LoadGeneratorConfig#slowdown}</b>
+     * <b>{@link LoadGeneratorConfig#concurrencyAutoAdjustment}</b>
      * property.
      */
-    public static final String DEFAULT_SLOWDOWN_S = "true";
+    public static final String DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT_S = "true";
     
     /**
-     * Default value(<b>{@value LoadGeneratorConfig#DEFAULT_SLOWDOWN_S}</b>)
+     * Default value(<b>{@value LoadGeneratorConfig#DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT_S}</b>)
      * for 
-     * <b>{@link LoadGeneratorConfig#slowdown}</b>
+     * <b>{@link LoadGeneratorConfig#concurrencyAutoAdjustment}</b>
      * property.
      */
-    public static final boolean DEFAULT_SLOWDOWN = Boolean.parseBoolean(DEFAULT_SLOWDOWN_S);
+    public static final boolean DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT = Boolean.parseBoolean(DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT_S);
 
     /**
      * String representation of default value for 
@@ -422,7 +421,7 @@ public class LoadGeneratorConfig implements Configurable {
      * This flag controls whether automatic slowdown is enabled or not.
      */
     @Getter @Setter @FieldNameConstants.Include
-    protected boolean slowdown = DEFAULT_SLOWDOWN;
+    protected boolean concurrencyAutoAdjustment = DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT;
 
     /**
      * All the suites are processed concurrently via multiple thread workers.
