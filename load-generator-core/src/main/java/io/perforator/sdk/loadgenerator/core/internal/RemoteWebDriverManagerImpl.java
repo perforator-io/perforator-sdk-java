@@ -11,10 +11,11 @@
 package io.perforator.sdk.loadgenerator.core.internal;
 
 import io.perforator.sdk.loadgenerator.core.RemoteWebDriverHelper;
+import io.perforator.sdk.loadgenerator.core.configs.ChromeMode;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
-import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.remote.*;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,7 @@ final class RemoteWebDriverManagerImpl implements RemoteWebDriverManager {
     }
 
     @Override
-    public RemoteWebDriverContextImpl startRemoteWebDriver(SuiteInstanceContextImpl suiteInstanceContext, Capabilities capabilities) {
+    public RemoteWebDriverContextImpl startRemoteWebDriver(SuiteInstanceContextImpl suiteInstanceContext, ChromeOptions chromeOptions) {
         if (suiteInstanceContext == null) {
             throw new IllegalArgumentException(
                     "Can't start selenium web driver - suiteInstanceID should not be blank"
@@ -60,10 +61,19 @@ final class RemoteWebDriverManagerImpl implements RemoteWebDriverManager {
                     eventsRouter,
                     suiteInstanceContext
             );
+            
+            if(chromeOptions == null) {
+                chromeOptions = new ChromeOptions();
+            }
+            
+            chromeOptions.setHeadless(false);
+            if(suiteConfig.getChromeMode() == ChromeMode.headless) {
+                chromeOptions.addArguments("--headless=chrome");
+            }
 
             remoteWebDriver = new RemoteWebDriver(
                     commandExecutor,
-                    RemoteWebDriverHelper.buildChromeOptions(capabilities)
+                    chromeOptions
             );
 
             RemoteWebDriverHelper.applyDefaults(
@@ -72,7 +82,7 @@ final class RemoteWebDriverManagerImpl implements RemoteWebDriverManager {
             );
         } else if (suiteConfig.getWebDriverMode() == WebDriverMode.local) {
             remoteWebDriver = RemoteWebDriverHelper.createLocalChromeDriver(
-                    capabilities,
+                    chromeOptions,
                     suiteConfig
             );
         } else {

@@ -13,10 +13,10 @@ package io.perforator.sdk.loadgenerator.core.internal;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.service.IntegrationService;
-import org.openqa.selenium.Capabilities;
 
 import java.util.Arrays;
 import java.util.List;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteConfigContextImpl, SuiteInstanceContextImpl, TransactionContextImpl, RemoteWebDriverContextImpl> {
 
@@ -189,8 +189,8 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
     }
 
     @Override
-    public RemoteWebDriverContextImpl startRemoteWebDriver(SuiteInstanceContextImpl suiteContext, Capabilities capabilities) {
-        return remoteWebDriverManager.startRemoteWebDriver(suiteContext, capabilities);
+    public RemoteWebDriverContextImpl startRemoteWebDriver(SuiteInstanceContextImpl suiteContext, ChromeOptions chromeOptions) {
+        return remoteWebDriverManager.startRemoteWebDriver(suiteContext, chromeOptions);
     }
 
     @Override

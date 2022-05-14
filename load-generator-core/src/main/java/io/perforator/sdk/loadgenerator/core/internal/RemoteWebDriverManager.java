@@ -10,10 +10,10 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 interface RemoteWebDriverManager extends IntegrationListener {
     
-    RemoteWebDriverContextImpl startRemoteWebDriver(SuiteInstanceContextImpl suiteInstanceContext, Capabilities capabilities);
+    RemoteWebDriverContextImpl startRemoteWebDriver(SuiteInstanceContextImpl suiteInstanceContext, ChromeOptions chromeOptions);
 
 }

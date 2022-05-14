@@ -14,7 +14,7 @@ import io.perforator.sdk.loadgenerator.core.context.SuiteInstanceContext;
 import io.perforator.sdk.loadgenerator.core.context.TransactionContext;
 import io.perforator.sdk.loadgenerator.core.service.RemoteWebDriverService;
 import io.perforator.sdk.loadgenerator.core.service.TransactionsService;
-import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.Map;
@@ -133,15 +133,15 @@ public final class Perforator {
      *     </ul>
      *   </li>
      * </ul>
-     * @param capabilities additional capabilities to be applied while creating 
+     * @param chromeOptions additional capabilities to be applied while creating 
      * a new {@link org.openqa.selenium.remote.RemoteWebDriver RemoteWebDriver}
      * @return a new {@link org.openqa.selenium.remote.RemoteWebDriver RemoteWebDriver} session.
      */
-    public static final RemoteWebDriver startRemoteWebDriver(Capabilities capabilities) {
+    public static final RemoteWebDriver startRemoteWebDriver(ChromeOptions chromeOptions) {
         SuiteInstanceContext suiteInstanceContext = SUITE_INSTANCE_CONTEXT.get();
         
         if (suiteInstanceContext == null) {
-            return RemoteWebDriverHelper.createLocalChromeDriver(capabilities);
+            return RemoteWebDriverHelper.createLocalChromeDriver(chromeOptions);
         }
 
         RemoteWebDriverService remoteWebDriverService = REMOTE_WEBDRIVER_SERVICE.get();
@@ -153,7 +153,7 @@ public final class Perforator {
 
         return remoteWebDriverService.startRemoteWebDriver(
                 suiteInstanceContext,
-                capabilities
+                chromeOptions
         ).getRemoteWebDriver();
     }
 

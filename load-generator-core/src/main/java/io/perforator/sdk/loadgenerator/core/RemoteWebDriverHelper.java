@@ -16,7 +16,6 @@ import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
-import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
@@ -33,16 +32,16 @@ public class RemoteWebDriverHelper {
         return createLocalChromeDriver(null);
     }
 
-    public static RemoteWebDriver createLocalChromeDriver(Capabilities capabilities) {
+    public static RemoteWebDriver createLocalChromeDriver(ChromeOptions chromeOptions) {
         SuiteConfig suiteConfig = new SuiteConfig();
         if (suiteConfig.getWebDriverMode() == WebDriverMode.cloud) {
             suiteConfig.setWebDriverMode(WebDriverMode.local);
         }
 
-        return createLocalChromeDriver(capabilities, suiteConfig);
+        return createLocalChromeDriver(chromeOptions, suiteConfig);
     }
 
-    public static RemoteWebDriver createLocalChromeDriver(Capabilities capabilities, SuiteConfig suiteConfig) {
+    public static RemoteWebDriver createLocalChromeDriver(ChromeOptions chromeOptions, SuiteConfig suiteConfig) {
         if (!webDriverManagerInitialized) {
             synchronized (RemoteWebDriverHelper.class) {
                 if (!webDriverManagerInitialized) {
@@ -52,12 +51,18 @@ public class RemoteWebDriverHelper {
             }
         }
 
-        ChromeOptions chromeOptions = buildChromeOptions(capabilities);
+        if(chromeOptions == null) {
+            chromeOptions = new ChromeOptions();
+        }
 
         if (suiteConfig.getChromeMode() == ChromeMode.headless) {
-            chromeOptions.setHeadless(true);
-            chromeOptions.addArguments("--no-sandbox");
-            chromeOptions.addArguments("--disable-dev-shm-usage");
+            chromeOptions.setHeadless(false);
+            chromeOptions.addArguments(
+                    "--headless=chrome",
+                    "--no-sandbox",
+                    "--disable-gpu",
+                    "--disable-dev-shm-usage"
+            );
         }
 
         return applyDefaults(
@@ -67,16 +72,6 @@ public class RemoteWebDriverHelper {
                 ),
                 suiteConfig
         );
-    }
-
-    public static ChromeOptions buildChromeOptions(Capabilities capabilities) {
-        ChromeOptions result = new ChromeOptions();
-
-        if (capabilities != null) {
-            result.merge(capabilities);
-        }
-
-        return result;
     }
 
     public static RemoteWebDriver applyDefaults(RemoteWebDriver remoteWebDriver, SuiteConfig suiteConfig) {

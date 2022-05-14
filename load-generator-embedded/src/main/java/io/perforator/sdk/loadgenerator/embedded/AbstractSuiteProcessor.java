@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
@@ -100,9 +100,9 @@ public abstract class AbstractSuiteProcessor implements EmbeddedSuiteProcessor {
      * @param suiteConfig a reference to the 
      * {@link io.perforator.sdk.loadgenerator.embedded.EmbeddedSuiteConfig configuration} 
      * of the currently executed suite instance.
-     * @return additional {@link Capabilities} to be applied on {@link RemoteWebDriver}
+     * @return additional {@link ChromeOptions} to be applied on {@link RemoteWebDriver}
      */
-    protected Capabilities buildDefaultCapabilities(long iterationNumber, String suiteInstanceID, EmbeddedSuiteConfig suiteConfig) {
+    protected ChromeOptions buildDefaultCapabilities(long iterationNumber, String suiteInstanceID, EmbeddedSuiteConfig suiteConfig) {
         return null;
     }
 

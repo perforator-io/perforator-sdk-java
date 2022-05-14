@@ -10,7 +10,6 @@
  */
 package io.perforator.sdk.loadgenerator.core.service;
 
-import io.perforator.sdk.loadgenerator.core.configs.Configurable;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.context.RemoteWebDriverContext;
 import io.perforator.sdk.loadgenerator.core.context.SuiteConfigContext;

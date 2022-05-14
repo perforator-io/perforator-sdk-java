@@ -13,16 +13,15 @@ package io.perforator.sdk.loadgenerator.core.mock;
 import io.perforator.sdk.loadgenerator.core.RemoteWebDriverHelper;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.service.IntegrationService;
-import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IntegrationServiceMock implements IntegrationService<SuiteConfigContextMock, SuiteInstanceContextMock, TransactionContextMock, RemoteWebDriverContextMock> {
 
@@ -127,9 +126,9 @@ public class IntegrationServiceMock implements IntegrationService<SuiteConfigCon
     }
 
     @Override
-    public RemoteWebDriverContextMock startRemoteWebDriver(SuiteInstanceContextMock suiteContext, Capabilities capabilities) {
+    public RemoteWebDriverContextMock startRemoteWebDriver(SuiteInstanceContextMock suiteContext, ChromeOptions chromeOptions) {
         RemoteWebDriver driver = RemoteWebDriverHelper.createLocalChromeDriver(
-                capabilities,
+                chromeOptions,
                 suiteContext.getSuiteConfigContext().getSuiteConfig()
         );
         RemoteWebDriverContextMock context = new RemoteWebDriverContextMock(

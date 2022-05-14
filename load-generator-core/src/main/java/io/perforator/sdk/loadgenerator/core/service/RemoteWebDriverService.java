@@ -12,11 +12,11 @@ package io.perforator.sdk.loadgenerator.core.service;
 
 import io.perforator.sdk.loadgenerator.core.context.RemoteWebDriverContext;
 import io.perforator.sdk.loadgenerator.core.context.SuiteInstanceContext;
-import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 //TODO: add javadoc
 public interface RemoteWebDriverService<S extends SuiteInstanceContext, R extends RemoteWebDriverContext> {
     
-    R startRemoteWebDriver(S suiteContext, Capabilities capabilities);
+    R startRemoteWebDriver(S suiteContext, ChromeOptions chromeOptions);
     
 }
