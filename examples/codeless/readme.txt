@@ -283,7 +283,7 @@ a look at the below docs describing available options for the config.yml
   # This is an optional property.                                              #
   # Overrides:                                                                 #
   # - System property name: loadGenerator.concurrencyScaleUpMultiplier         #
-  # - Environment variable name: CONCURRENCYSCALEUPMULTIPLIER                  #
+  # - Environment variable name: LOADGENERATOR_CONCURRENCYSCALEUPMULTIPLIER    #
   ##############################################################################
   #concurrencyScaleUpMultiplier: 0.025
 
