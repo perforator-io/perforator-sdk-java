@@ -476,7 +476,7 @@ public class LoadGeneratorConfig implements Configurable {
      * Perforator automatically decreases concurrency if there are too many 
      * failing transactions.
      * <br>
-     * This flag determines concurrency multiplier to use while calculating 
+     * This property determines concurrency multiplier to use while calculating 
      * scale-down adjustment.
      * <br>
      * For example, suppose the target concurrency is 1000, and the multiplier is 0.05.
@@ -492,7 +492,7 @@ public class LoadGeneratorConfig implements Configurable {
      * slowing down due to failing transactions, and the amount of such failing 
      * transactions decreases.
      * <br>
-     * This flag determines concurrency multiplier to use while calculating 
+     * This property determines concurrency multiplier to use while calculating 
      * scale-up adjustment.
      * <br>
      * For example, suppose the target concurrency is 1000, and the multiplier is 0.025.

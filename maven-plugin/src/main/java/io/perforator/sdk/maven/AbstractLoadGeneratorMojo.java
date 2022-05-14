@@ -325,7 +325,7 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
      * Perforator automatically decreases concurrency if there are too many 
      * failing transactions.
      * <br>
-     * This flag determines concurrency multiplier to use while calculating 
+     * This property determines concurrency multiplier to use while calculating 
      * scale-down adjustment.
      * <br>
      * For example, suppose the target concurrency is 1000, and the multiplier is 0.05.
@@ -346,7 +346,7 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
      * slowing down due to failing transactions, and the amount of such failing 
      * transactions decreases.
      * <br>
-     * This flag determines concurrency multiplier to use while calculating 
+     * This property determines concurrency multiplier to use while calculating 
      * scale-up adjustment.
      * <br>
      * For example, suppose the target concurrency is 1000, and the multiplier is 0.025.

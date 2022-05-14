@@ -252,7 +252,7 @@ a look at the below docs describing available options for the config.yml
   # Perforator automatically decreases concurrency if there are too many       #
   # failing transactions.                                                      #
   #                                                                            #
-  # This flag determines concurrency multiplier to use while calculating       #
+  # This property determines concurrency multiplier to use while calculating   #
   # scale-down adjustment.                                                     #
   #                                                                            #
   # For example, suppose the target concurrency is 1000, and the multiplier is #
@@ -272,7 +272,7 @@ a look at the below docs describing available options for the config.yml
   # slowing down due to failing transactions, and the amount of such failing   #
   # transactions decreases.                                                    #
   #                                                                            #
-  # This flag determines concurrency multiplier to use while calculating       #
+  # This property determines concurrency multiplier to use while calculating   #
   # scale-up adjustment.                                                       #
   #                                                                            #
   # For example, suppose the target concurrency is 1000, and the multiplier is #
