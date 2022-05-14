@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 final class ConcurrencyManagerImpl implements ConcurrencyManager<SuiteConfigContextImpl> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConcurrencyManagerImpl.class);
-    private static final long RECALC_PERIOD = 30000L;
 
     @Override
     public void onLoadGeneratorFinished(long timestamp, LoadGeneratorContextImpl loadGeneratorContext, Throwable error) {
@@ -37,11 +36,11 @@ final class ConcurrencyManagerImpl implements ConcurrencyManager<SuiteConfigCont
                 continue;
             }
 
+            long recalcPeriod = concurrencyContext.getConcurrencyRecalcPeriod().toMillis();
             int successfulSuites = concurrencyContext.getSuccessfulSuitesCounter();
             int failedSuites = concurrencyContext.getFailedSuitesCounter();
             int totalSuites = successfulSuites + failedSuites;
             int recalcThreshold = Math.max(25, concurrencyContext.getMaxConcurrency() / 20);
-            int scaleAdjustment = Math.max(1, concurrencyContext.getMaxConcurrency() / 20);
 
             if (totalSuites < recalcThreshold) {
                 continue;
@@ -51,11 +50,15 @@ final class ConcurrencyManagerImpl implements ConcurrencyManager<SuiteConfigCont
 
             concurrencyContext.updateFailedSuitesCounter(-1 * failedSuites);
             concurrencyContext.updateSuccessfulSuitesCounter(-1 * successfulSuites);
-            concurrencyContext.setNextRecalcTimestamp(timestamp + RECALC_PERIOD);
+            concurrencyContext.setNextRecalcTimestamp(timestamp + recalcPeriod);
 
             if (failedPercentage < 5) {
+                int scaleUpAdjustment = Math.max(
+                        1, 
+                        (int)(concurrencyContext.getMaxConcurrency() * concurrencyContext.getConcurrencyScaleUpMultiplier())
+                );
                 int oldDesiredConcurrency = concurrencyContext.getDesiredConcurrency();
-                int newDesiredConcurrency = concurrencyContext.updateDesiredConcurrency(scaleAdjustment);
+                int newDesiredConcurrency = concurrencyContext.updateDesiredConcurrency(scaleUpAdjustment);
 
                 if (newDesiredConcurrency > oldDesiredConcurrency) {
                     LOGGER.info(
@@ -65,8 +68,12 @@ final class ConcurrencyManagerImpl implements ConcurrencyManager<SuiteConfigCont
                     );
                 }
             } else {
+                int scaleDownAdjustment = Math.max(
+                        1, 
+                        (int)(concurrencyContext.getMaxConcurrency() * concurrencyContext.getConcurrencyScaleDownMultiplier())
+                );
                 int oldDesiredConcurrency = concurrencyContext.getDesiredConcurrency();
-                int newDesiredConcurrency = concurrencyContext.updateDesiredConcurrency(-1 * scaleAdjustment);
+                int newDesiredConcurrency = concurrencyContext.updateDesiredConcurrency(-1 * scaleDownAdjustment);
 
                 if (newDesiredConcurrency < oldDesiredConcurrency) {
                     LOGGER.warn(

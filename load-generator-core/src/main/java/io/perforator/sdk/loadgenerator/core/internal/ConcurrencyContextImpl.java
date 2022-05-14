@@ -10,7 +10,9 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
+import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -18,6 +20,9 @@ final class ConcurrencyContextImpl {
 
     private final SuiteConfig suiteConfig;
     private final boolean concurrencyAutoAdjustmentEnabled;
+    private final Duration concurrencyRecalcPeriod;
+    private final double concurrencyScaleDownMultiplier;
+    private final double concurrencyScaleUpMultiplier;
 
     private final AtomicInteger currentConcurrency;
     private final AtomicInteger desiredConcurrency;
@@ -27,9 +32,25 @@ final class ConcurrencyContextImpl {
     private final int minConcurrency;
     private final int maxConcurrency;
 
-    public ConcurrencyContextImpl(SuiteConfig suiteConfig, boolean concurrencyAutoAdjustmentEnabled, long nextRecalcTimestamp) {
+    public ConcurrencyContextImpl(
+            SuiteConfig suiteConfig, 
+            boolean concurrencyAutoAdjustmentEnabled, 
+            Duration concurrencyRecalcPeriod,
+            double concurrencyScaleDownMultiplier,
+            double concurrencyScaleUpMultiplier,
+            long nextRecalcTimestamp
+    ) {
         this.suiteConfig = suiteConfig;
         this.concurrencyAutoAdjustmentEnabled = concurrencyAutoAdjustmentEnabled;
+        this.concurrencyRecalcPeriod = determineConcurrencyRecalcPeriod(
+                concurrencyRecalcPeriod
+        );
+        this.concurrencyScaleDownMultiplier = determineConcurrencyScaleDownMultiplier(
+                concurrencyScaleDownMultiplier
+        );
+        this.concurrencyScaleUpMultiplier = determineConcurrencyScaleUpMultiplier(
+                concurrencyScaleUpMultiplier
+        );
         this.maxConcurrency = suiteConfig.getConcurrency();
         this.minConcurrency = determineMinConcurrency(maxConcurrency);
         this.currentConcurrency = new AtomicInteger(0);
@@ -37,6 +58,36 @@ final class ConcurrencyContextImpl {
         this.failedSuitesCounter = new AtomicInteger(0);
         this.successfulSuitesCounter = new AtomicInteger(0);
         this.nextRecalcTimestamp = new AtomicLong(nextRecalcTimestamp);
+    }
+    
+    private static Duration determineConcurrencyRecalcPeriod(Duration concurrencyRecalcPeriod) {
+        if(concurrencyRecalcPeriod == null) {
+            return LoadGeneratorConfig.DEFAULT_CONCURRENCY_RECALC_PERIOD;
+        } else if(concurrencyRecalcPeriod.compareTo(Duration.ofSeconds(1)) < 0) {
+            return Duration.ofSeconds(1);
+        } else {
+            return concurrencyRecalcPeriod;
+        }
+    }
+    
+    private static double determineConcurrencyScaleDownMultiplier(double concurrencyScaleDownMultiplier) {
+        if(concurrencyScaleDownMultiplier < 0) {
+            return 0;
+        } else if(concurrencyScaleDownMultiplier > 100) {
+            return 100;
+        } else {
+            return concurrencyScaleDownMultiplier;
+        }
+    }
+    
+    private static double determineConcurrencyScaleUpMultiplier(double concurrencyScaleUpMultiplier) {
+        if(concurrencyScaleUpMultiplier < 0) {
+            return 0;
+        } else if(concurrencyScaleUpMultiplier > 100) {
+            return 100;
+        } else {
+            return concurrencyScaleUpMultiplier;
+        }
     }
     
     private static int determineMinConcurrency(int maxConcurrency) {
@@ -101,6 +152,18 @@ final class ConcurrencyContextImpl {
 
     public boolean isConcurrencyAutoAdjustmentEnabled() {
         return concurrencyAutoAdjustmentEnabled;
+    }
+
+    public Duration getConcurrencyRecalcPeriod() {
+        return concurrencyRecalcPeriod;
+    }
+
+    public double getConcurrencyScaleDownMultiplier() {
+        return concurrencyScaleDownMultiplier;
+    }
+
+    public double getConcurrencyScaleUpMultiplier() {
+        return concurrencyScaleUpMultiplier;
     }
 
     public void setNextRecalcTimestamp(long nextRecalcTimestamp) {

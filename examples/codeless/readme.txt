@@ -239,6 +239,55 @@ a look at the below docs describing available options for the config.yml
   #concurrencyAutoAdjustment: true
 
   ##############################################################################
+  # How often desired concurrency should be recalculated?                      #
+  #                                                                            #
+  # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.concurrencyRecalcPeriod              #
+  # - Environment variable name: LOADGENERATOR_CONCURRENCYRECALCPERIOD         #
+  ##############################################################################
+  #concurrencyRecalcPeriod: 30s
+
+  ##############################################################################
+  # Perforator automatically decreases concurrency if there are too many       #
+  # failing transactions.                                                      #
+  #                                                                            #
+  # This flag determines concurrency multiplier to use while calculating       #
+  # scale-down adjustment.                                                     #
+  #                                                                            #
+  # For example, suppose the target concurrency is 1000, and the multiplier is #
+  # 0.05. In that case, the scale-down adjustment for concurrency is           #
+  # 1000 x 0.05 = 50, so the system should decrease concurrency by 50 threads  #
+  # in case of too many failing transactions.                                  #
+  #                                                                            #
+  # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.concurrencyScaleDownMultiplier       #
+  # - Environment variable name: LOADGENERATOR_CONCURRENCYSCALEDOWNMULTIPLIER  #
+  ##############################################################################
+  #concurrencyScaleDownMultiplier: 0.05
+
+  ##############################################################################
+  # Perforator automatically increases concurrency if previously it was        #
+  # slowing down due to failing transactions, and the amount of such failing   #
+  # transactions decreases.                                                    #
+  #                                                                            #
+  # This flag determines concurrency multiplier to use while calculating       #
+  # scale-up adjustment.                                                       #
+  #                                                                            #
+  # For example, suppose the target concurrency is 1000, and the multiplier is #
+  # 0.025. In that case, the scale-up adjustment for concurrency is            #
+  # 1000 x 0.025 = 25, so the system should increase concurrency by 25 threads #
+  # in case failing transactions percent goes down.                            #
+  #                                                                            #
+  # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.concurrencyScaleUpMultiplier         #
+  # - Environment variable name: CONCURRENCYSCALEUPMULTIPLIER                  #
+  ##############################################################################
+  #concurrencyScaleUpMultiplier: 0.025
+
+  ##############################################################################
   # All the suites are processed concurrently via multiple thread workers.     #
   # Every thread worker has a dedicated ID.                                    #
   #                                                                            #

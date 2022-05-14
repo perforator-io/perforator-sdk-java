@@ -31,6 +31,9 @@ final class SuiteConfigContextImpl implements SuiteConfigContext {
         this.concurrencyContext = new ConcurrencyContextImpl(
                 suiteConfig,
                 loadGeneratorContext.getLoadGeneratorConfig().isConcurrencyAutoAdjustment(),
+                loadGeneratorContext.getLoadGeneratorConfig().getConcurrencyRecalcPeriod(),
+                loadGeneratorContext.getLoadGeneratorConfig().getConcurrencyScaleDownMultiplier(),
+                loadGeneratorContext.getLoadGeneratorConfig().getConcurrencyScaleUpMultiplier(),
                 Long.MIN_VALUE
         );
     }

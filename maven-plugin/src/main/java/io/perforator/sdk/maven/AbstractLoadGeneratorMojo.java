@@ -302,6 +302,65 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
             property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.concurrencyAutoAdjustment
     )
     protected String concurrencyAutoAdjustment;
+    
+    /**
+     * How often desired concurrency should be recalculated?
+     * <br/>
+     * <b>Expected format</b>: 's' symbol after the number represents seconds.<br/>
+     * <b>Examples</b>:
+     * <ul>
+     * <li>30s</li>
+     * <li>45.5s</li>
+     * </ul>
+     */
+    @Parameter(
+            required = false,
+            defaultValue = LoadGeneratorConfig.DEFAULT_CONCURRENCY_RECALC_PERIOD_S,
+            alias = LoadGeneratorConfig.Fields.concurrencyRecalcPeriod,
+            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.concurrencyRecalcPeriod
+    )
+    protected String concurrencyRecalcPeriod;
+    
+    /**
+     * Perforator automatically decreases concurrency if there are too many 
+     * failing transactions.
+     * <br>
+     * This flag determines concurrency multiplier to use while calculating 
+     * scale-down adjustment.
+     * <br>
+     * For example, suppose the target concurrency is 1000, and the multiplier is 0.05.
+     * In that case, the scale-down adjustment for concurrency is 1000 x 0.05 = 50, 
+     * so the system should decrease concurrency by 50 threads in case of 
+     * too many failing transactions.
+     */
+    @Parameter(
+            required = false,
+            defaultValue = LoadGeneratorConfig.DEFAULT_CONCURRENCY_SCALE_DOWN_MULTIPLIER_S,
+            alias = LoadGeneratorConfig.Fields.concurrencyScaleDownMultiplier,
+            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.concurrencyScaleDownMultiplier
+    )
+    protected String concurrencyScaleDownMultiplier;
+    
+    /**
+     * Perforator automatically increases concurrency if previously it was 
+     * slowing down due to failing transactions, and the amount of such failing 
+     * transactions decreases.
+     * <br>
+     * This flag determines concurrency multiplier to use while calculating 
+     * scale-up adjustment.
+     * <br>
+     * For example, suppose the target concurrency is 1000, and the multiplier is 0.025.
+     * In that case, the scale-up adjustment for concurrency is 1000 x 0.025 = 25, 
+     * so the system should increase concurrency by 25 threads in case failing 
+     * transactions percent goes down.
+     */
+    @Parameter(
+            required = false,
+            defaultValue = LoadGeneratorConfig.DEFAULT_CONCURRENCY_SCALE_UP_MULTIPLIER_S,
+            alias = LoadGeneratorConfig.Fields.concurrencyScaleUpMultiplier,
+            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.concurrencyScaleUpMultiplier
+    )
+    protected String concurrencyScaleUpMultiplier;
 
     /**
      * All the suites are processed concurrently via multiple thread workers.

@@ -190,6 +190,49 @@ public class LoadGeneratorConfig implements Configurable {
      * property.
      */
     public static final boolean DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT = Boolean.parseBoolean(DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT_S);
+    
+    /**
+     * String representation of default value for 
+     * <b>{@link LoadGeneratorConfig#concurrencyRecalcPeriod}</b>
+     * property.
+     */
+    public static final String DEFAULT_CONCURRENCY_RECALC_PERIOD_S = "30s";
+    
+    /**
+     * Default value(<b>{@value LoadGeneratorConfig#DEFAULT_CONCURRENCY_RECALC_PERIOD_S}</b>)
+     * for 
+     * <b>{@link LoadGeneratorConfig#concurrencyRecalcPeriod}</b>
+     * property.
+     */
+    public static final Duration DEFAULT_CONCURRENCY_RECALC_PERIOD = Configurable.parseDuration(DEFAULT_CONCURRENCY_RECALC_PERIOD_S);
+    
+    /**
+     * String representation of default value for 
+     * <b>{@link LoadGeneratorConfig#concurrencyScaleDownMultiplier}</b>
+     * property.
+     */
+    public static final String DEFAULT_CONCURRENCY_SCALE_DOWN_MULTIPLIER_S = "0.05";
+    
+    /**
+     * String representation of default value for 
+     * <b>{@link LoadGeneratorConfig#concurrencyScaleDownMultiplier}</b>
+     * property.
+     */
+    public static final double DEFAULT_CONCURRENCY_SCALE_DOWN_MULTIPLIER = Double.parseDouble(DEFAULT_CONCURRENCY_SCALE_DOWN_MULTIPLIER_S);
+    
+    /**
+     * String representation of default value for 
+     * <b>{@link LoadGeneratorConfig#concurrencyScaleUpMultiplier}</b>
+     * property.
+     */
+    public static final String DEFAULT_CONCURRENCY_SCALE_UP_MULTIPLIER_S = "0.025";
+    
+    /**
+     * String representation of default value for 
+     * <b>{@link LoadGeneratorConfig#concurrencyScaleUpMultiplier}</b>
+     * property.
+     */
+    public static final double DEFAULT_CONCURRENCY_SCALE_UP_MULTIPLIER = Double.parseDouble(DEFAULT_CONCURRENCY_SCALE_UP_MULTIPLIER_S);
 
     /**
      * String representation of default value for 
@@ -422,6 +465,43 @@ public class LoadGeneratorConfig implements Configurable {
      */
     @Getter @Setter @FieldNameConstants.Include
     protected boolean concurrencyAutoAdjustment = DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT;
+    
+    /**
+     * How often desired concurrency should be recalculated?
+     */
+    @Getter @Setter @FieldNameConstants.Include
+    protected Duration concurrencyRecalcPeriod = DEFAULT_CONCURRENCY_RECALC_PERIOD;
+    
+    /**
+     * Perforator automatically decreases concurrency if there are too many 
+     * failing transactions.
+     * <br>
+     * This flag determines concurrency multiplier to use while calculating 
+     * scale-down adjustment.
+     * <br>
+     * For example, suppose the target concurrency is 1000, and the multiplier is 0.05.
+     * In that case, the scale-down adjustment for concurrency is 1000 x 0.05 = 50, 
+     * so the system should decrease concurrency by 50 threads in case of 
+     * too many failing transactions.
+     */
+    @Getter @Setter @FieldNameConstants.Include
+    protected double concurrencyScaleDownMultiplier = DEFAULT_CONCURRENCY_SCALE_DOWN_MULTIPLIER;
+    
+    /**
+     * Perforator automatically increases concurrency if previously it was 
+     * slowing down due to failing transactions, and the amount of such failing 
+     * transactions decreases.
+     * <br>
+     * This flag determines concurrency multiplier to use while calculating 
+     * scale-up adjustment.
+     * <br>
+     * For example, suppose the target concurrency is 1000, and the multiplier is 0.025.
+     * In that case, the scale-up adjustment for concurrency is 1000 x 0.025 = 25, 
+     * so the system should increase concurrency by 25 threads in case failing 
+     * transactions percent goes down.
+     */
+    @Getter @Setter @FieldNameConstants.Include
+    protected double concurrencyScaleUpMultiplier = DEFAULT_CONCURRENCY_SCALE_UP_MULTIPLIER;
 
     /**
      * All the suites are processed concurrently via multiple thread workers.
