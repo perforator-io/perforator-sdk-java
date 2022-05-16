@@ -349,7 +349,7 @@ public class SuiteConfig implements Configurable {
     protected WebDriverMode webDriverMode = DEFAULT_WEB_DRIVER_MODE;
     
     /**
-     * The mode of launching local chrome instances.
+     * The mode of launching chrome instances.
      * <b>Available modes</b>:
      * <ul>
      * <li>{@link ChromeMode#headless headless}</li>

@@ -556,7 +556,7 @@ a look at the below docs describing available options for the config.yml
     #webDriverMode: cloud
     
     ############################################################################
-    # The mode of launching local chrome instances.                            #
+    # The mode of launching chrome instances.                                  #
     # Available modes:                                                         #
     # - headful                                                                #
     # - headless                                                               #

@@ -631,7 +631,7 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
     protected String webDriverMode;
     
     /**
-     * The mode of launching local chrome instances.
+     * The mode of launching chrome instances.
      * <b>Available modes</b>:
      * <ul>
      * <li>{@link io.perforator.sdk.loadgenerator.core.configs.ChromeMode#headful headful}</li>
