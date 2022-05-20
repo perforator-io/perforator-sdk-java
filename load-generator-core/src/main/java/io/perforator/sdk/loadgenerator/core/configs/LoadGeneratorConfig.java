@@ -585,8 +585,9 @@ public class LoadGeneratorConfig implements Configurable {
     protected List<String> dataCapturingExcludes;
 
     /**
-     * Please set the 'browserCloudHttpHeaders' parameter if you would like to have
-     * additional HTTP headers in all browser requests. For example, to set the Authorization bearer token.
+     * You can supply an optional field 'httpHeaders', and as a result, all browsers
+     * from the cloud will include such headers in every HTTP request. For example,
+     * to set the Authorization bearer token.
      */
     @Getter @Setter @FieldNameConstants.Include
     protected Headers browserCloudHttpHeaders;

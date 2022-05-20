@@ -15,6 +15,7 @@ import io.perforator.sdk.api.okhttpgson.model.BrowserCloud;
 import io.perforator.sdk.api.okhttpgson.model.BrowserCloudDetails;
 import io.perforator.sdk.api.okhttpgson.model.CreditsBalance;
 import io.perforator.sdk.api.okhttpgson.model.Execution;
+import io.perforator.sdk.loadgenerator.core.configs.Headers;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
@@ -92,7 +93,7 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
         String executionKey = loadGeneratorConfig.getExecutionKey();
         boolean usePreAllocatedIPs = loadGeneratorConfig.isUsePreAllocatedIPs();
         List<String> dataCapturingExcludes = loadGeneratorConfig.getDataCapturingExcludes();
-        Map<String, List<String>> browserCloudHttpHeaders = loadGeneratorConfig.getBrowserCloudHttpHeaders();
+        Map<String, String> browserCloudHttpHeaders = loadGeneratorConfig.getBrowserCloudHttpHeaders();
         String browserCloudKey;
         verifyProjectExists(loadGeneratorContext, projectKey);
 
@@ -417,7 +418,7 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
         );
     }
 
-    private BrowserCloud createBrowserCloud(LoadGeneratorContextImpl loadGeneratorContext, String projectKey, String executionKey, int concurrency, int duration, boolean usePreAllocatedIPs, List<String> dataCapturingExcludes, Map<String, List<String>> browserCloudHttpHeaders) throws ApiException {
+    private BrowserCloud createBrowserCloud(LoadGeneratorContextImpl loadGeneratorContext, String projectKey, String executionKey, int concurrency, int duration, boolean usePreAllocatedIPs, List<String> dataCapturingExcludes, Map<String, String> browserCloudHttpHeaders) throws ApiException {
         BrowserCloud payload = new BrowserCloud();
         payload.setConcurrency(concurrency);
         payload.duration(duration);

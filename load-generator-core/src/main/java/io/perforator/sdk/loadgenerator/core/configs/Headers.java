@@ -13,5 +13,5 @@ package io.perforator.sdk.loadgenerator.core.configs;
 import java.util.HashMap;
 import java.util.List;
 
-public class Headers extends HashMap<String, List<String>> {
+public class Headers extends HashMap<String, String> {
 }
