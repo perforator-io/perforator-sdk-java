@@ -44,4 +44,13 @@ public class RandomDuration {
             );
         }
     }
+
+    public Duration getFrom() {
+        return from;
+    }
+
+    public Duration getTo() {
+        return to;
+    }
+    
 }
