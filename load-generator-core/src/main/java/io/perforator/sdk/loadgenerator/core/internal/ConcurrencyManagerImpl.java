@@ -62,7 +62,8 @@ final class ConcurrencyManagerImpl implements ConcurrencyManager<SuiteConfigCont
 
                 if (newDesiredConcurrency > oldDesiredConcurrency) {
                     LOGGER.info(
-                            "Increasing desired concurrency from {} to {}",
+                            "Suite '{}' - increasing desired concurrency from {} to {}",
+                            suiteConfigContext.getSuiteConfig().getName(),
                             oldDesiredConcurrency,
                             newDesiredConcurrency
                     );
@@ -77,7 +78,8 @@ final class ConcurrencyManagerImpl implements ConcurrencyManager<SuiteConfigCont
 
                 if (newDesiredConcurrency < oldDesiredConcurrency) {
                     LOGGER.warn(
-                            "Reducing desired concurrency from {} to {} due to {} suite fails out of {} recent",
+                            "Suite '{}' - reducing desired concurrency from {} to {} due to {} suite fails out of {} recent",
+                            suiteConfigContext.getSuiteConfig().getName(),
                             oldDesiredConcurrency,
                             newDesiredConcurrency,
                             failedSuites,
