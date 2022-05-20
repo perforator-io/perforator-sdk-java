@@ -15,6 +15,8 @@ import java.lang.reflect.Modifier;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -164,22 +166,20 @@ public interface Configurable {
 
         Headers result = new Headers();
 
-        List<String> headers = Arrays.stream(items.split(";"))
-                .map(String::trim)
-                .filter(i -> !i.isBlank())
-                .collect(Collectors.toList());
+        Pattern pattern = Pattern.compile("(;\\s*|)(?<name>[\\w\\d-]+)=(?<value>[^;]+)");
 
-        for (String header: headers){
-            String[] splitedHeader = header.split("=", 2);
-            if(splitedHeader.length < 2){
-                throw new RuntimeException("Bad '"+fieldName+"' field format");
+        Matcher matcher = pattern.matcher(items);
+        
+        while (matcher.find()){
+            String name = matcher.group("name");
+            String value = matcher.group("value");
+            if(name == null){
+                throw new RuntimeException("Bad '"+fieldName+"' field format. The header's name is invalid.");
             }
-            String headerName = splitedHeader[0];
-            List<String> values = parseList(splitedHeader[1]);
-            if(headerName == null || headerName.isBlank() || values == null || values.isEmpty()){
-                throw new RuntimeException("Bad '"+fieldName+"' field format");
+            if(value == null){
+                throw new RuntimeException("Bad '"+fieldName+"' field format. The header's value is invalid.");
             }
-            result.computeIfAbsent(headerName, s -> new ArrayList<>()).addAll(values);
+            result.put(name.trim(), value.trim());
         }
         return result;
     }

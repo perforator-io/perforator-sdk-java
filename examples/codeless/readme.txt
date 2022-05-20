@@ -431,6 +431,20 @@ a look at the below docs describing available options for the config.yml
   #  - https://example.com/path/to/exclude
   #  - https://*.example.com/path/tracking.*
 
+  ##############################################################################
+  # You can supply a field 'browserCloudHttpHeaders', and as a result, all     #
+  # browsers from the cloud will include such headers in every HTTP request.   #
+  # For example, to set the Authorization bearer token.                        #
+  #                                                                            #
+  # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.browserCloudHttpHeaders              #
+  # - Environment variable name: LOADGENERATOR_BROWSERCLOUDHTTPHEADERS         #
+  ##############################################################################
+  #browserCloudHttpHeaders:
+  #  Authorization: Basic YOUR_AUTHORIZATION_TOKEN
+  #  Your-custom-header: your custom http headers value
+
 ################################################################################
 # Every load test has a set of one or more named suites.                       #
 # A suite configuration defines concurrency, and its related parameters, a list#
@@ -726,7 +740,7 @@ a look at the below docs describing available options for the config.yml
     # Example CSV file's data:                                                 #
     # ---------------------------------------------                            #
     # |   user_name           |   password        |                            #
-    # |--------------------------------------------                            #
+    # |-------------------------------------------|                            #
     # |   user1@example.com   |   user1Password   |                            #
     # |   user2@example.com   |   user2Password   |                            #
     # |   user3@example.com   |   user3Password   |                            #
