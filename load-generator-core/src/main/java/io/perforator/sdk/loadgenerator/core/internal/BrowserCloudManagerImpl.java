@@ -15,7 +15,6 @@ import io.perforator.sdk.api.okhttpgson.model.BrowserCloud;
 import io.perforator.sdk.api.okhttpgson.model.BrowserCloudDetails;
 import io.perforator.sdk.api.okhttpgson.model.CreditsBalance;
 import io.perforator.sdk.api.okhttpgson.model.Execution;
-import io.perforator.sdk.loadgenerator.core.configs.Headers;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;

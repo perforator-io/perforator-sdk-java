@@ -486,8 +486,9 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
     protected String dataCapturingExcludes;
 
     /**
-     * Please set the 'browserCloudHttpHeaders' parameter if you would like to have
-     * additional HTTP headers in all browser requests. For example, to set the Authorization bearer token.
+     * You can supply an optional field 'browserCloudHttpHeaders', and as a result, 
+     * all browsers from the cloud will include such headers in every HTTP request. 
+     * For example, to set the Authorization bearer token.
      */
     @Parameter(
             required = false,
