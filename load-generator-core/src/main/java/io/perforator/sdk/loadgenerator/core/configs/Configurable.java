@@ -90,7 +90,6 @@ public interface Configurable {
 
     private static void applyDefaults(Object instance, Field field, String prefix, Function<String, String>... providers) throws ReflectiveOperationException {
         String defaultValue = getDefaultValue(field.getName(), prefix, providers);
-
         if (defaultValue == null) {
             return;
         }
@@ -122,7 +121,9 @@ public interface Configurable {
         } else if (field.getType() == List.class) {
             field.set(instance, parseList(defaultValue));
         } else if (field.getType() == Headers.class) {
-            field.set(instance, parseHeaders(field.getName(), defaultValue));
+            field.set(instance, new Headers(parseMap(field.getName(), defaultValue)));
+        } else if (field.getType() == Hosts.class) {
+            field.set(instance, new Hosts(parseMap(field.getName(), defaultValue)));
         } else if (field.getType() == ChromeMode.class) {
             field.set(instance, ChromeMode.valueOf(defaultValue));
         } else if (field.getType() == Class.class) {
@@ -159,29 +160,28 @@ public interface Configurable {
         );
     }
 
-    private static Headers parseHeaders(String fieldName, String items){
+    private static Map<String, String> parseMap(String fieldName, String items) {
         if(items == null || items.isBlank()) {
             return null;
         }
 
-        Headers result = new Headers();
+        Map<String, String> map= new HashMap<>();
 
-        Pattern pattern = Pattern.compile("(;\\s*|)(?<name>[\\w\\d-]+)=(?<value>[^;]+)");
-
+        Pattern pattern = Pattern.compile("(?<key>[^;]+)=(?<value>[^;]+)");
         Matcher matcher = pattern.matcher(items);
-        
+
         while (matcher.find()){
-            String name = matcher.group("name");
+            String key = matcher.group("key");
             String value = matcher.group("value");
-            if(name == null){
-                throw new RuntimeException("Bad '"+fieldName+"' field format. The header's name is invalid.");
+            if(key == null){
+                throw new RuntimeException("Exception parsing field '" + fieldName + "'. Key is null");
             }
             if(value == null){
-                throw new RuntimeException("Bad '"+fieldName+"' field format. The header's value is invalid.");
+                throw new RuntimeException("Exception parsing field '" + fieldName + "'. Value is null");
             }
-            result.put(name.trim(), value.trim());
+            map.put(key.trim(), value.trim());
         }
-        return result;
+        return map;
     }
 
     private static String getDefaultValue(String fieldName, String prefix, Function<String, String>... providers) {
