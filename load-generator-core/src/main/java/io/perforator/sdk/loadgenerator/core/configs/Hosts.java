@@ -13,12 +13,11 @@ package io.perforator.sdk.loadgenerator.core.configs;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Headers extends HashMap<String, String> {
+public class Hosts extends HashMap<String, String> {
 
-    public Headers() {
-    }
+    public Hosts() {}
 
-    public Headers(Map<? extends String, ? extends String> m) {
+    public Hosts(Map<? extends String, ? extends String> m) {
         super(m);
     }
 }

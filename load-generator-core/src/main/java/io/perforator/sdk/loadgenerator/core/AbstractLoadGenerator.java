@@ -67,11 +67,13 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
         if(loadGeneratorConfig == null) {
             throw new RuntimeException("loadGeneratorConfig is required");
         }
-        
+
+        LoadGeneratorConfigValidator.validate(loadGeneratorConfig);
+
         if(suiteConfigs == null || suiteConfigs.isEmpty()) {
             throw new RuntimeException("suiteConfigs is required");
         }
-        
+
         if(loadGeneratorConfig.isPrioritizeSystemProperties()) {
             loadGeneratorConfig.applyDefaults();
             

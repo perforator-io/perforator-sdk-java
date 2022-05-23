@@ -26,7 +26,8 @@ public class LoadGeneratorConfigTest extends AbstractConfigTest<LoadGeneratorCon
                 LoadGeneratorConfig.Fields.apiClientId, UUID.randomUUID().toString(),
                 LoadGeneratorConfig.Fields.logWorkerID, !LoadGeneratorConfig.DEFAULT_LOG_WORKER_ID + "",
                 LoadGeneratorConfig.Fields.dataCapturingExcludes, "https://example.com/path/to/exclude, https://*.example.com/path/tracking.*",
-                LoadGeneratorConfig.Fields.browserCloudHttpHeaders, "Cache-Control=no-cache;Host=example.com:8080,example.com"
+                LoadGeneratorConfig.Fields.browserCloudHttpHeaders, "Cache-Control=no-cache;Host=example.com:8080,example.com",
+                LoadGeneratorConfig.Fields.browserCloudHosts, "example.com=1.2.3.4;localhost=127.0.0.1"
         );
     }
     

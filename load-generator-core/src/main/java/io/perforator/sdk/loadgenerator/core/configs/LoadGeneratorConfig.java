@@ -592,6 +592,17 @@ public class LoadGeneratorConfig implements Configurable {
     @Getter @Setter @FieldNameConstants.Include
     protected Headers browserCloudHttpHeaders;
 
+    /*
+     * Please set the ‘browserCloudHosts’ parameter if you would like
+     * to propagate additional /etc/hosts to remote browsers.
+     * It might be a case where a target website domain name is not resolvable via
+     * public DNS servers. So, to reach such domains from the browsers started in the cloud,
+     * you can supply a map of additional DNS records via 'browserCloudHosts' parameter,
+     * for example: example.com = 1.2.3.4
+     */
+    @Getter @Setter @FieldNameConstants.Include
+    protected Hosts browserCloudHosts;
+
     /**
      * Default constructor looking up property defaults via the following providers:
      * <ul>

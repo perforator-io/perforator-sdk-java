@@ -54,7 +54,6 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
     }
     
     private static List<CodelessSuiteConfig> preprocessConfigs(CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suites) {
-        CodelessLoadGeneratorConfigValidator.validate(loadGeneratorConfig);
         CodelessSuiteConfigValidator.validate(loadGeneratorConfig, suites);
         
         List<String> propsFiles = new ArrayList<>(suites.size());
@@ -68,7 +67,6 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
             suite.setPropsFile(null);
         }
 
-        CodelessLoadGeneratorConfigValidator.validate(loadGeneratorConfig);
         CodelessSuiteConfigValidator.validate(loadGeneratorConfig, suites);
         
         for (int i = 0; i < suites.size(); i++) {

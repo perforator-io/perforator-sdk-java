@@ -854,6 +854,7 @@ paths:
         - The platform automatically assigns random public IP addresses when creating a browser cloud, and such IPs are not known in advance. Please set `usePreAllocatedIPs` parameter to `true` if you would like all browsers to have preallocated IPs, for example, to establish network trust on your firewall side.
         - It might be a case when you need to exclude certain HTTP requests from capturing by cloud-based browsers so such requests don't affect analytics. Feel free to supply an optional parameter `dataCapturingExcludes` with the list of URLs to exclude from capturing.
         - You can supply an optional field 'httpHeaders', and as a result, all browsers from the cloud will include such headers in every HTTP request.
+        - Please set the ‘hosts’ parameter if you would like to propagate additional /etc/hosts to remote browsers. It might be a case where a target website domain name is not resolvable via public DNS servers. So, to reach such domains from the browsers started in the cloud, you can supply a map of additional DNS records via 'hosts' parameter, for example: example.com => 1.2.3.4
       operationId: createBrowserCloud
       parameters:
         - name: project_key
@@ -911,6 +912,13 @@ paths:
                   httpHeaders:
                     Authorization: Basic YOUR_AUTHORIZATION_TOKEN
                     Host: example.com:8080, example.com
+              Create browser cloud with additional hosts:
+                value:
+                  concurrency: 50
+                  duration: 2
+                  hosts:
+                    localhost: 127.0.0.1
+                    example.com: 1.2.3.4
         required: true
       responses:
         '200':
@@ -11680,6 +11688,10 @@ components:
           type: object
           additionalProperties:
             type: string
+        hosts:
+          type: object
+          additionalProperties:
+            type: string
     BrowserCloudDetails:
       type: object
       properties:
@@ -11716,6 +11728,10 @@ components:
           items:
             type: string
         httpHeaders:
+          type: object
+          additionalProperties:
+            type: string
+        hosts:
           type: object
           additionalProperties:
             type: string
