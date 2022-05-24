@@ -445,6 +445,23 @@ a look at the below docs describing available options for the config.yml
   #  Authorization: Basic YOUR_AUTHORIZATION_TOKEN
   #  Your-custom-header: your custom http headers value
 
+  ##############################################################################
+  # You can set the ‘browserCloudHosts’ parameter if you would like            #
+  # to propagate additional /etc/hosts to remote browsers.                     #
+  # It might be a case where a target website domain name is not resolvable via#
+  # public DNS servers. So, to reach such domains from the browsers started in #
+  # the cloud, you can supply a map of additional DNS records via              #
+  # 'browserCloudHosts' parameter, for example: example.com => 1.2.3.4         #
+  #                                                                            #
+  # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.browserCloudHosts                    #
+  # - Environment variable name: LOADGENERATOR_BROWSERCLOUDHOSTS               #
+  ##############################################################################
+  #browserCloudHosts:
+  #  localhost: 127.0.0.1
+  #  example.com: 1.2.3.4
+
 ################################################################################
 # Every load test has a set of one or more named suites.                       #
 # A suite configuration defines concurrency, and its related parameters, a list#
