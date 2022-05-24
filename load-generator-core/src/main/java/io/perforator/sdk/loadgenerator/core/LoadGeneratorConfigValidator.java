@@ -15,7 +15,7 @@ import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public final class LoadGeneratorConfigValidator {
+final class LoadGeneratorConfigValidator {
 
     private LoadGeneratorConfigValidator() {
     }
