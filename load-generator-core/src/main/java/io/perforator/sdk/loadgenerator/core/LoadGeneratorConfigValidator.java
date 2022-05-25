@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 final class LoadGeneratorConfigValidator {
+    
+    private static final Pattern HOST_NAME_PATTERN = Pattern.compile("^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$");
+    private static final Pattern IP_V4_PATTERN = Pattern.compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 
     private LoadGeneratorConfigValidator() {
     }
@@ -47,21 +50,17 @@ final class LoadGeneratorConfigValidator {
         }
 
         if (loadGeneratorConfig.getBrowserCloudHosts() != null && !loadGeneratorConfig.getBrowserCloudHosts().isEmpty()) {
-
-            Pattern hostPattern = Pattern.compile("^([/.:\\w]+)$");
-            Pattern ipPattern = Pattern.compile("^((\\.|^)(25[0-5]|2[0-4]\\d|1\\d\\d|\\d\\d?|0)){4}$");
-
             for (Map.Entry<String, String> entry : loadGeneratorConfig.getBrowserCloudHosts().entrySet()) {
                 String hostname = entry.getKey();
                 String ip = entry.getValue();
 
-                if (hostname == null || !hostPattern.matcher(hostname).find()) {
+                if (hostname == null || !HOST_NAME_PATTERN.matcher(hostname).matches()) {
                     throw new RuntimeException(
                             "Bad '" + LoadGeneratorConfig.Fields.browserCloudHosts + "' field format." +
                                     " The hostname '" + hostname + "' is invalid."
                     );
                 }
-                if (ip == null || !ipPattern.matcher(ip).find()) {
+                if (ip == null || !IP_V4_PATTERN.matcher(ip).matches()) {
                     throw new RuntimeException(
                             "Bad '" + LoadGeneratorConfig.Fields.browserCloudHosts + "' field format. " +
                                     "The IP address '" + ip + "' is invalid."

@@ -10,7 +10,7 @@
 ---
 loadGenerator:
   browserCloudHosts:
-    'valid-host:8080': 256.256.256.256 #fail
+    example.com: 1111.222.33.4
 suites:
   Suite One:
     steps:
