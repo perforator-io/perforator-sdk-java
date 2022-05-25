@@ -149,7 +149,7 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
 
             if(browserCloudHosts != null && !browserCloudHosts.isEmpty()) {
                 LOGGER.info(
-                        "Browser cloud will additional /etc/hosts to remote browsers: {}",
+                        "Browser cloud will expose additional /etc/hosts to remote browsers: {}",
                         browserCloudHosts
                 );
             }
