@@ -10,7 +10,7 @@
 ---
 loadGenerator:
   browserCloudHttpHeaders:
-    valid-name: not valid value; #fail
+    valid-name: null #fail
 suites:
   Suite One:
     steps:

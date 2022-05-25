@@ -12,8 +12,9 @@ loadGenerator:
   browserCloudHttpHeaders:
     Authorization: Basic your authorization token
     Host: 'localhost, localhost:8080'
-    Your-custom-http_headers_1: value, 1 - 2 , !@#$%^&*()_+.,
+    Your-custom-http_headers_1: value, 1 - 2 , !@#$%^&*()_+.,;asd
     Your-custom-http_headers_2: 'null'
+    Your-custom-http_headers_3: ''
 suites:
   Suite One:
     steps:
