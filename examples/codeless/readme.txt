@@ -146,7 +146,7 @@ a look at the below docs describing available options for the config.yml
   # - System property name: loadGenerator.browserCloudAwaitProvisioning        #
   # - Environment variable name: LOADGENERATOR_BROWSERCLOUDAWAITPROVISIONING   #
   ##############################################################################
-  #browserCloudAwaitProvisioning: 10m
+  #browserCloudAwaitProvisioning: 15m
 
   ##############################################################################
   # Time interval on how often to check browser cloud status.                  #
