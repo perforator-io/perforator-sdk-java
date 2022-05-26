@@ -7,6 +7,6 @@ java \
   -Dsuite.duration=5m \
   -Dsuite.rampUp=1m \
   -Dsuite.rampDown=1m \
-  $@ \
+  "$@" \
   -jar $(dirname "$0")/${CODELESS_LOAD_GENERATOR_JAR} \
   $(dirname "$0")/config.yml
