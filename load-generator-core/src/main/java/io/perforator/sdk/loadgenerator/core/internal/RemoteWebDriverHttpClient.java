@@ -10,7 +10,6 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-import io.perforator.sdk.api.okhttpgson.ApiClientBuilder;
 import io.perforator.sdk.loadgenerator.core.AbstractLoadGenerator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -46,7 +45,7 @@ final class RemoteWebDriverHttpClient implements HttpClient {
         this.suiteInstanceContext = suiteInstanceContext;
         this.client = suiteInstanceContext.getLoadGeneratorContext().getAsyncHttpClient();
         this.baseUrl = suiteInstanceContext.getLoadGeneratorContext().getBrowserCloudContext().getSeleniumHubURL();
-        this.userAgent = ApiClientBuilder.DEFAULT_USER_AGENT;
+        this.userAgent = suiteInstanceContext.getLoadGeneratorContext().getApiClientParams().getUserAgent();
         this.createSessionRetryTimeout = suiteInstanceContext.getSuiteConfigContext().getSuiteConfig().getWebDriverCreateSessionRetryTimeout().toMillis();
         this.deleteSessionRetryTimeout = suiteInstanceContext.getSuiteConfigContext().getSuiteConfig().getWebDriverDeleteSessionRetryTimeout().toMillis();
     }

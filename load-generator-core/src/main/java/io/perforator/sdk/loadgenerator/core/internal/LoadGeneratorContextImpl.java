@@ -10,6 +10,7 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
+import io.perforator.sdk.api.okhttpgson.ApiClientParams;
 import io.perforator.sdk.api.okhttpgson.model.AnalyticsEvent;
 import io.perforator.sdk.api.okhttpgson.operations.*;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
@@ -33,6 +34,7 @@ final class LoadGeneratorContextImpl {
     private final AtomicBoolean isLocalOnly = new AtomicBoolean(true);
 
     private AsyncHttpClient httpClient;
+    private ApiClientParams apiClientParams;
     private CreditsApi creditsApi;
     private LimitsApi limitsApi;
     private ProjectsApi projectsApi;
@@ -153,4 +155,13 @@ final class LoadGeneratorContextImpl {
     public void setFinished() {
         this.isFinished.set(true);
     }
+
+    public ApiClientParams getApiClientParams() {
+        return apiClientParams;
+    }
+
+    public void setApiClientParams(ApiClientParams apiClientParams) {
+        this.apiClientParams = apiClientParams;
+    }
+    
 }

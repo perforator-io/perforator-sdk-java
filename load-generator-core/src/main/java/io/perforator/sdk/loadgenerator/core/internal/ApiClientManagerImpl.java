@@ -57,6 +57,9 @@ final class ApiClientManagerImpl implements ApiClientManager {
         loadGeneratorContext.setBrowserCloudsApi(
                 apiClientBuilder.getApi(BrowserCloudsApi.class)
         );
+        loadGeneratorContext.setApiClientParams(
+                apiClientBuilder.getApiClientParams()
+        );
 
         try {
             loadGeneratorContext.getCreditsApi().getCreditsBalance();

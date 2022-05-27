@@ -12,24 +12,17 @@ package io.perforator.sdk.api.okhttpgson;
 
 import io.perforator.sdk.api.okhttpgson.invoker.ApiClient;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class ApiClientBuilder {
     
     public static String DEFAULT_API_BASE_URL = "https://api.perforator.io";
-    public static String DEFAULT_USER_AGENT = generateUserAgent(ApiClientBuilder.class.getClassLoader());
     public static Duration DEFAULT_HTTP_CONNECT_TIMEOUT = Duration.ofSeconds(10);
     public static Duration DEFAULT_HTTP_READ_TIMEOUT = Duration.ofSeconds(30);
     
-    private final String clientId;
-    private final String clientSecret;
-    private final String apiBaseUrl;
+    private final ApiClientParams apiClientParams;
     private final ApiClient apiClient;
     private final Map<Class, Object> instances = new HashMap<>();
 
@@ -42,82 +35,33 @@ public class ApiClientBuilder {
     }
     
     public ApiClientBuilder(String clientId, String clientSecret, String apiBaseUrl, Duration connectTimeout, Duration readTimeout) {
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.apiBaseUrl = apiBaseUrl;
+        this(
+                ApiClientParams.builder()
+                        .apiBaseUrl(apiBaseUrl)
+                        .apiClientID(clientId)
+                        .apiClientSecret(clientSecret)
+                        .connectTimeout(connectTimeout)
+                        .readTimeout(readTimeout)
+                        .build()
+        );
+    }
+    
+    public ApiClientBuilder(ApiClientParams apiClientParams) {
+        this.apiClientParams = apiClientParams;
         this.apiClient = new ApiClient(
-                apiBaseUrl,
-                clientId,
-                clientSecret,
+                apiClientParams.getApiBaseUrl(),
+                apiClientParams.getApiClientID(),
+                apiClientParams.getApiClientSecret(),
                 Collections.EMPTY_MAP
         );
         
-        if(connectTimeout != null) {
-            this.apiClient.setConnectTimeout((int)connectTimeout.toMillis());
+        if(apiClientParams.getApiClientToken() != null && !apiClientParams.getApiClientToken().isBlank()) {
+            this.apiClient.setAccessToken(apiClientParams.getApiClientToken());
         }
         
-        if(readTimeout != null) {
-            this.apiClient.setReadTimeout((int)readTimeout.toMillis());
-        }
-        
-        this.apiClient.setUserAgent(DEFAULT_USER_AGENT);
-    }
-    
-    private static String generateUserAgent(ClassLoader classLoader) {
-        LinkedHashSet<Artifact> artifactsSet = new LinkedHashSet<>();
-        
-        if (classLoader != null) {
-            for (Package definedPackage : classLoader.getDefinedPackages()) {
-                String vendor = definedPackage.getImplementationVendor();
-                if(vendor == null || vendor.isBlank() || !vendor.contains("Perforator")) {
-                    continue;
-                }
-                
-                String title = definedPackage.getImplementationTitle();
-                if(title == null || title.isBlank()) {
-                    continue;
-                }
-                
-                String version = definedPackage.getImplementationVersion();
-                if(version == null || version.isBlank()) {
-                    version = "unknown";
-                }
-
-                artifactsSet.add(new Artifact(title, version));
-            }
-        }
-        
-        if(artifactsSet.isEmpty()) {
-            return "perforator-sdk-api-okhttp-gson/unknown";
-        }
-        
-        List<Artifact> artifacts = new ArrayList<>(artifactsSet);
-        Collections.sort(
-                artifacts,
-                (a,b) -> a.getArtifactName().compareTo(b.getArtifactName())
-        );
-        
-        StringBuilder result = new StringBuilder();
-        result.append(artifacts.get(0).getArtifactName());
-        result.append("/");
-        result.append(artifacts.get(0).getArtifactVersion());
-        
-        result.append(" (");
-        result.append(System.getProperty("os.name", "unknown").trim());
-        result.append("; ").append(System.getProperty("os.version", "unknown").trim());
-        result.append("; ").append(System.getProperty("os.arch", "unknown").trim());
-        result.append(")");
-        
-        if(artifacts.size() > 1) {
-            for (int i = 1; i < artifacts.size(); i++) {
-                result.append(" ");
-                result.append(artifacts.get(i).getArtifactName());
-                result.append("/");
-                result.append(artifacts.get(i).getArtifactVersion());
-            }
-        }
-        
-        return result.toString();
+        this.apiClient.setConnectTimeout((int)apiClientParams.getConnectTimeout().toMillis());
+        this.apiClient.setReadTimeout((int)apiClientParams.getReadTimeout().toMillis());
+        this.apiClient.setUserAgent(apiClientParams.getUserAgent());
     }
     
     public <T> T getApi(Class<T> apiClass) {
@@ -141,68 +85,12 @@ public class ApiClientBuilder {
         );
     }
 
-    public String getClientId() {
-        return clientId;
-    }
-
-    public String getClientSecret() {
-        return clientSecret;
-    }
-
-    public String getApiBaseUrl() {
-        return apiBaseUrl;
-    }
-
     public ApiClient getApiClient() {
         return apiClient;
     }
-    
-    private static class Artifact {
-        
-        private final String artifactName;
-        private final String artifactVersion;
 
-        public Artifact(String artifactName, String artifactVersion) {
-            this.artifactName = artifactName;
-            this.artifactVersion = artifactVersion;
-        }
-
-        public String getArtifactName() {
-            return artifactName;
-        }
-
-        public String getArtifactVersion() {
-            return artifactVersion;
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 3;
-            hash = 47 * hash + Objects.hashCode(this.artifactName);
-            hash = 47 * hash + Objects.hashCode(this.artifactVersion);
-            return hash;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            final Artifact other = (Artifact) obj;
-            if (!Objects.equals(this.artifactName, other.artifactName)) {
-                return false;
-            }
-            if (!Objects.equals(this.artifactVersion, other.artifactVersion)) {
-                return false;
-            }
-            return true;
-        }
+    public ApiClientParams getApiClientParams() {
+        return apiClientParams;
     }
     
 }
