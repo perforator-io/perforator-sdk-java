@@ -114,6 +114,30 @@
                 <loadGenerator.apiClientSecret>${loadGenerator.apiClientSecret}</loadGenerator.apiClientSecret>
             </properties>
         </profile>
+        <profile>
+            <id>loadGenerator.apiToken.env</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>env.LOADGENERATOR_APITOKEN</name>
+                </property>
+            </activation>
+            <properties>
+                <loadGenerator.apiToken>${env.LOADGENERATOR_APITOKEN}</loadGenerator.apiToken>
+            </properties>
+        </profile>
+        <profile>
+            <id>loadGenerator.apiToken.sys</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>loadGenerator.apiToken</name>
+                </property>
+            </activation>
+            <properties>
+                <loadGenerator.apiToken>${loadGenerator.apiToken}</loadGenerator.apiToken>
+            </properties>
+        </profile>
         
         <profile>
             <id>loadGenerator.projectKey.invalid</id>

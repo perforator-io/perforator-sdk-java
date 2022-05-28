@@ -11,6 +11,7 @@
 package io.perforator.sdk.loadgenerator.core.internal;
 
 import io.perforator.sdk.api.okhttpgson.ApiClientBuilder;
+import io.perforator.sdk.api.okhttpgson.ApiClientParams;
 import io.perforator.sdk.api.okhttpgson.invoker.ApiException;
 import io.perforator.sdk.api.okhttpgson.operations.*;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
@@ -30,16 +31,20 @@ final class ApiClientManagerImpl implements ApiClientManager {
 
         String apiClientId = loadGeneratorConfig.getApiClientId();
         String apiClientSecret = loadGeneratorConfig.getApiClientSecret();
+        String apiToken = loadGeneratorConfig.getApiToken();
         String apiBaseUrl = loadGeneratorConfig.getApiBaseUrl();
         Duration httpConnectTimeout = loadGeneratorConfig.getHttpConnectTimeout();
         Duration httpReadTimeout = loadGeneratorConfig.getHttpReadTimeout();
 
         ApiClientBuilder apiClientBuilder = new ApiClientBuilder(
-                apiClientId,
-                apiClientSecret,
-                apiBaseUrl,
-                httpConnectTimeout,
-                httpReadTimeout
+                ApiClientParams.builder()
+                        .apiBaseUrl(apiBaseUrl)
+                        .apiClientID(apiClientId)
+                        .apiClientSecret(apiClientSecret)
+                        .apiClientToken(apiToken)
+                        .connectTimeout(httpConnectTimeout)
+                        .readTimeout(httpReadTimeout)
+                        .build()
         );
 
         loadGeneratorContext.setCreditsApi(
@@ -65,26 +70,26 @@ final class ApiClientManagerImpl implements ApiClientManager {
             loadGeneratorContext.getCreditsApi().getCreditsBalance();
         } catch (ApiException e) {
             OAuthProblemException oAuthProblemException = getOAuthProblemException(e);
-            
+
             if(oAuthProblemException != null) {
                 throw new RuntimeException(
                         generateAuthenticationErrorMessage(
-                                loadGeneratorConfig, 
+                                loadGeneratorConfig,
                                 oAuthProblemException
                         )
                 );
             } else {
                 throw new RuntimeException(
-                        "Problem authenticating API client", 
+                        "Problem authenticating API client",
                         e
                 );
             }
         }
     }
-    
+
     private String generateAuthenticationErrorMessage(LoadGeneratorConfig loadGeneratorConfig, OAuthProblemException oAuthProblemException) {
         StringBuilder result = new StringBuilder();
-        
+
         result.append("Unable to authenticate API client at ");
         result.append(loadGeneratorConfig.getApiBaseUrl());
         result.append("/oauth/token");
@@ -92,7 +97,7 @@ final class ApiClientManagerImpl implements ApiClientManager {
         result.append(LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX).append(".").append(LoadGeneratorConfig.Fields.apiClientId);
         result.append(" and ");
         result.append(LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX).append(".").append(LoadGeneratorConfig.Fields.apiClientSecret);
-        
+
         if(oAuthProblemException != null) {
             if(oAuthProblemException.getResponseStatus() > 0) {
                 result.append(
@@ -101,7 +106,7 @@ final class ApiClientManagerImpl implements ApiClientManager {
                         oAuthProblemException.getResponseStatus()
                 );
             }
-            
+
             if(oAuthProblemException.getError() != null && !oAuthProblemException.getError().isBlank()) {
                 result.append(
                         " ; Error = "
@@ -109,7 +114,7 @@ final class ApiClientManagerImpl implements ApiClientManager {
                         oAuthProblemException.getError()
                 );
             }
-            
+
             if(oAuthProblemException.getDescription()!= null && !oAuthProblemException.getDescription().isBlank()) {
                 result.append(
                         " ; Description = "
@@ -117,20 +122,20 @@ final class ApiClientManagerImpl implements ApiClientManager {
                         oAuthProblemException.getDescription()
                 );
             }
-        } 
-        
+        }
+
         return result.toString();
     }
-    
+
     private OAuthProblemException getOAuthProblemException(Throwable exception) {
         if(exception == null) {
             return null;
         }
-        
+
         if(exception instanceof OAuthProblemException) {
             return (OAuthProblemException)exception;
         }
-        
+
         return getOAuthProblemException(exception.getCause());
     }
 
@@ -175,22 +180,33 @@ final class ApiClientManagerImpl implements ApiClientManager {
             }
         }
 
-        if (loadGeneratorConfig.getApiClientId() == null || loadGeneratorConfig.getApiClientId().isBlank()) {
-            throw new IllegalArgumentException(
-                    LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX
-                            + "."
-                            + LoadGeneratorConfig.Fields.apiClientId
-                            + " should not be blank"
-            );
-        }
+        if (loadGeneratorConfig.getApiToken() != null) {
+            if(loadGeneratorConfig.getApiToken().isBlank()) {
+                throw new IllegalArgumentException(
+                        LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX
+                                + "."
+                                + LoadGeneratorConfig.Fields.apiToken
+                                + " should not be blank"
+                );
+            }
+        } else {
+            if (loadGeneratorConfig.getApiClientId() == null || loadGeneratorConfig.getApiClientId().isBlank()) {
+                throw new IllegalArgumentException(
+                        LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX
+                                + "."
+                                + LoadGeneratorConfig.Fields.apiClientId
+                                + " should not be blank"
+                );
+            }
 
-        if (loadGeneratorConfig.getApiClientSecret() == null || loadGeneratorConfig.getApiClientSecret().isBlank()) {
-            throw new IllegalArgumentException(
-                    LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX
-                            + "."
-                            + LoadGeneratorConfig.Fields.apiClientSecret
-                            + " should not be blank"
-            );
+            if (loadGeneratorConfig.getApiClientSecret() == null || loadGeneratorConfig.getApiClientSecret().isBlank()) {
+                throw new IllegalArgumentException(
+                        LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX
+                                + "."
+                                + LoadGeneratorConfig.Fields.apiClientSecret
+                                + " should not be blank"
+                );
+            }
         }
     }
 
