@@ -21,6 +21,7 @@ import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -219,17 +220,7 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
     }
 
     private String mergeExecutionNotes(String ... notes) {
-        StringBuilder newNotes = new StringBuilder();
-        boolean first = true;
-        for(String note: notes){
-            if(first){
-                first = false;
-                newNotes.append(note);
-            }else if(!newNotes.toString().contains(note)){
-                newNotes.append("<br/>").append(note);
-            }
-        }
-        return newNotes.toString();
+        return Stream.of(notes).collect(Collectors.joining("<br/>"));
     }
 
     @Override
