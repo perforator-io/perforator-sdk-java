@@ -381,6 +381,12 @@ public class LoadGeneratorConfig implements Configurable {
     protected String apiClientSecret;
 
     /**
+     * Generated OAuth 2.0 access token
+     */
+    @Getter @Setter @FieldNameConstants.Include
+    protected String apiToken;
+
+    /**
      * Key of the project where to create a new execution and a browser cloud.
      */
     @Getter @Setter @FieldNameConstants.Include
