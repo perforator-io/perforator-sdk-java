@@ -58,7 +58,7 @@ public class LoadGeneratorConfig implements Configurable {
 
     /**
      * String representation of default value for
-     * <b>{@link LoadGeneratorConfig#browserCloudAwaitQueued browserCloudAwaitQueued}</b>
+     * <b>{@link LoadGeneratorConfig#browserCloudAwaitProvisioning browserCloudAwaitProvisioning}</b>
      * property.
      */
     public static final String DEFAULT_BROWSER_CLOUD_AWAIT_PROVISIONING_S = "15m";
