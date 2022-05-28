@@ -97,14 +97,21 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
         String browserCloudKey;
         verifyProjectExists(loadGeneratorContext, projectKey);
 
+        String generatedExecutionNotes = generateExecutionNotes(loadGeneratorContext, suiteConfigs);
+
         if (executionKey != null && !executionKey.isBlank()) {
             verifyExecutionExists(loadGeneratorContext, projectKey, executionKey);
+            String executionNotes = getExecutionNotes(loadGeneratorContext, projectKey, executionKey);
+            String mergedNotes = mergeExecutionNotes(executionNotes, generatedExecutionNotes);
+            if(!mergedNotes.equals(executionNotes)){
+                updateExecutionNotes(loadGeneratorContext, projectKey, executionKey, mergedNotes);
+            }
         } else {
             try {
                 Execution execution = createExecution(
                         loadGeneratorContext,
                         projectKey,
-                        generateExecutionNotes(loadGeneratorContext, suiteConfigs)
+                        generatedExecutionNotes
                 );
                 executionKey = execution.getUuid();
             } catch (ApiException e) {
@@ -191,6 +198,38 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
                 statusCheckInterval.toMillis()
         );
 
+    }
+
+    private String getExecutionNotes(LoadGeneratorContextImpl context, String projectKey, String executionKey) {
+        try {
+            return context.getExecutionsApi().getExecution(projectKey, executionKey).getNotes();
+        } catch (ApiException e) {
+            throw new RuntimeException("Failed to get execution notes", e);
+        }
+    }
+
+    private void updateExecutionNotes(LoadGeneratorContextImpl context, String projectKey, String executionKey, String notes) {
+        try {
+            Execution execution = new Execution();
+            execution.setNotes(notes);
+            context.getExecutionsApi().patchExecution(projectKey, executionKey, execution);
+        } catch (ApiException e) {
+            throw new RuntimeException("Failed to update execution notes", e);
+        }
+    }
+
+    private String mergeExecutionNotes(String ... notes) {
+        StringBuilder newNotes = new StringBuilder();
+        boolean first = true;
+        for(String note: notes){
+            if(first){
+                first = false;
+                newNotes.append(note);
+            }else if(!newNotes.toString().contains(note)){
+                newNotes.append("<br/>").append(note);
+            }
+        }
+        return newNotes.toString();
     }
 
     @Override
