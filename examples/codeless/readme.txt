@@ -97,6 +97,21 @@ a look at the below docs describing available options for the config.yml
   #apiClientSecret: YOUR_API_CLIENT_SECRET
 
   ##############################################################################
+  # OAuth 2.0 access token for Perforator API calls.                           #
+  # You can generate an access token outside the load generator and bypass such#
+  # token without specifying apiClientId and apiClientSecret.                  #
+  #                                                                            #
+  # Note: Please keep in mind that the access token has a limited validity     #
+  # period and usually expires 8 hours after authentication.                   #
+  #                                                                            #
+  # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.apiToken                             #
+  # - Environment variable name: LOADGENERATOR_APITOKEN                        #
+  ##############################################################################
+  #apiToken: YOUR_PREAUTHENTICATED_TOKEN_VALUE
+
+  ##############################################################################
   # Key of the project where to create a new execution and a browser cloud.    #
   # You can get it at https://app.perforator.io/dashboard                      #
   # Also, you can get it on the specific project page accessible from the      #

@@ -104,6 +104,27 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
             property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.apiClientSecret
     )
     protected String apiClientSecret;
+    
+    /**
+     * OAuth 2.0 access token for Perforator API calls.
+     * You can generate an access token outside the load generator and bypass 
+     * such token without specifying 
+     * apiClientId and apiClientSecret.
+     * <b>Note:</b> Please keep in mind that the access token has a limited 
+     * validity period and usually expires 8 hours after authentication.<br/>
+     * It might be a case when sensitive variables should not be stored in source 
+     * code according to security requirements.<br/>
+     * For such cases, you can propagate this value via system properties:<br/>
+     * <b>... -DloadGenerator.apiToken=...</b><br/>
+     * Also, you can propagate this property via environment variable 
+     * <b>LOADGENERATOR_APITOKEN</b>
+     */
+    @Parameter(
+            required = false,
+            alias = LoadGeneratorConfig.Fields.apiToken,
+            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.apiToken
+    )
+    protected String apiToken;
 
     /**
      * Key of the project where to create a new execution and a browser cloud.<br/>

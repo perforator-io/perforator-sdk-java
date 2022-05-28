@@ -381,7 +381,13 @@ public class LoadGeneratorConfig implements Configurable {
     protected String apiClientSecret;
 
     /**
-     * Generated OAuth 2.0 access token
+     * OAuth 2.0 access token for Perforator API calls.
+     * You can generate an access token outside the load generator and bypass 
+     * such token without specifying 
+     * {@link LoadGeneratorConfig#apiClientId} and 
+     * {@link LoadGeneratorConfig#apiClientSecret}.
+     * <b>Note:</b> Please keep in mind that the access token has a limited 
+     * validity period and usually expires 8 hours after authentication.
      */
     @Getter @Setter @FieldNameConstants.Include
     protected String apiToken;
