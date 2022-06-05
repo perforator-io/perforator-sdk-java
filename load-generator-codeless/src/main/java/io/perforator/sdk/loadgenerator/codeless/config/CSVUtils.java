@@ -20,10 +20,7 @@ import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CSVUtils {
 
@@ -74,17 +71,17 @@ public class CSVUtils {
                 headerCells = strings;
                 return;
             }
-
+            Map<String, String> formattingMapSrc = new HashMap<>();
             for (int i = 0; i < headerCells.length; i++) {
                 String key = headerCells[i];
                 String value = strings[i];
                 if (value == null || value.isBlank()) {
                     continue;
                 }
-                FormattingMap map = new FormattingMap(
-                        Map.of(key, value)
-                );
-                this.props.add(map);
+                formattingMapSrc.put(key, value);
+            }
+            if(!formattingMapSrc.isEmpty()){
+                this.props.add(new FormattingMap(formattingMapSrc));
             }
         }
     }

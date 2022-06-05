@@ -35,18 +35,7 @@ public final class CodelessSuiteConfigValidator {
         return suiteConfigs;
     }
 
-    public static CodelessSuiteConfig validate(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig) {
-        String suiteName = suiteConfig.getName();
-
-        if (suiteName == null || suiteName.isBlank()) {
-            throw new RuntimeException(
-                    SuiteConfig.DEFAULTS_FIELD_PREFIX
-                            + "."
-                            + SuiteConfig.Fields.name
-                            + " is required"
-            );
-        }
-
+    public static CodelessSuiteConfig validateSuiteProps(CodelessSuiteConfig suiteConfig) {
         if(suiteConfig.getProps() != null && !suiteConfig.getProps().isEmpty() && suiteConfig.getPropsFile() != null && !suiteConfig.getPropsFile().isBlank()){
             throw new RuntimeException(
                     "Either " + SuiteConfig.DEFAULTS_FIELD_PREFIX
@@ -57,6 +46,20 @@ public final class CodelessSuiteConfigValidator {
                             + "."
                             + CodelessSuiteConfig.Fields.propsFile
                             + " is allowed - please use only one option."
+            );
+        }
+        return suiteConfig;
+    }
+
+    public static CodelessSuiteConfig validate(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig) {
+        String suiteName = suiteConfig.getName();
+
+        if (suiteName == null || suiteName.isBlank()) {
+            throw new RuntimeException(
+                    SuiteConfig.DEFAULTS_FIELD_PREFIX
+                            + "."
+                            + SuiteConfig.Fields.name
+                            + " is required"
             );
         }
 
