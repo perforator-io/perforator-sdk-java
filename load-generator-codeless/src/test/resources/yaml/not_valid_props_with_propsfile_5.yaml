@@ -14,6 +14,4 @@ suites:
     steps:
       Open and upload file successfully:
         - sleep: 10s
-        - open: https://verifications.perforator.io/
-        - sleep: 10s
-        - open: ${page-2}
+        - open: ${invalid}
