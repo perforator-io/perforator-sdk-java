@@ -116,6 +116,24 @@ tags:
     externalDocs:
       description: Guide
       url: 'https://app.perforator.io/guide/browser_clouds'
+  - name: Cloud runners
+    description: |
+      In certain cases, you might not have enough hardware capacity or 
+      network bandwidth to launch a load-generator locally. 
+      For example, starting a load-generator orchestrating 5k remote browsers 
+      requires at least 20 CPU cores and 20 GB memory.  
+      To cover such a big load test, you can spin up a cloud runner within 
+      the Perforator platform and access it via SSH protocol.  
+      Currently, all cloud runners are launched in **AWS US-EAST-1** region only to be 
+      located as close as possible to the Perforator platform infrastructure.  
+      ***
+      Perforator supports the following cloud runner types:  
+      - `C2` - 2 CPU cores and 4GB memory  
+      - `C4` - 4 CPU cores and 8GB memory  
+      - `C8` - 8 CPU cores and 16GB memory  
+      - `C16` - 16 CPU cores and 32GB memory  
+      - `C36` - 36 CPU cores and 72GB memory  
+      - `C72` - 72 CPU cores and 144GB memory  
   - name: Analytics
     description: |
       Executing a load test is just a first step in understanding the overall performance of the target system.
@@ -775,6 +793,332 @@ paths:
           $ref: '#/components/responses/404'
         '422':
           $ref: '#/components/responses/422'
+  '/v1/projects/{project_key}/executions/{execution_key}/cloud_runners':
+    get:
+      tags:
+        - Cloud runners
+      summary: List cloud runners of the given execution
+      description: Call this operation if you want to get a list of cloud runners started as a part of the given execution.
+      operationId: listCloudRunners
+      parameters:
+        - name: project_key
+          in: path
+          description: Unique identifier of the project
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: e44db33b-17f4-4b65-ba0d-6b190ff39125
+        - name: execution_key
+          in: path
+          description: Unique identifier of the execution
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 18d1e46d-e352-44b8-a435-226f016e03ec
+      responses:
+        '200':
+          description: Returns a list of cloud runners created within specific execution.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CloudRunner'
+              example:
+                - uuid: b553dc6c-4fef-4a9f-bc16-ee2c88664dd0
+                  hardwareType: C2
+                  hardwareCpu: 2
+                  hardwareMemory: 4
+                  status: QUEUED
+                  createdAt: 1608012000000
+                  updatedAt: 1608015600000
+                  requestedAt: 1608012000000
+                - uuid: 1af84de8-f9b6-4964-9b24-b9dee489529e
+                  hardwareType: C2
+                  hardwareCpu: 2
+                  hardwareMemory: 4
+                  status: PROVISIONING
+                  createdAt: 1608012000000
+                  updatedAt: 1608015600000
+                  requestedAt: 1608012000000
+                  startingAt: 1608012010000
+                - uuid: bb04d3e4-e9b4-47d6-ae8f-371bd0d68fc0
+                  hardwareType: C2
+                  hardwareCpu: 2
+                  hardwareMemory: 4
+                  status: OPERATIONAL
+                  createdAt: 1608012000000
+                  updatedAt: 1608015600000
+                  requestedAt: 1608012000000
+                  startingAt: 1608012010000
+                  readyAt: 1608012060000
+                - uuid: 23c39165-89c1-4afb-80b6-e994cb96a482
+                  status: TERMINATED
+                  hardwareType: C2
+                  hardwareCpu: 2
+                  hardwareMemory: 4
+                  sshUser: perforator
+                  sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILhKzVzL8RYBFDZblagiF1fPKLiI9JRYw8CrU2lrCwVN user@example.com
+                  sshHostName: 23c39165-89c1-4afb-80b6-e994cb96a482.runners.perforator.io
+                  sshHostIP: 1.2.3.4
+                  sshPort: 22
+                  createdAt: 1608012000000
+                  updatedAt: 1608015600000
+                  requestedAt: 1608012000000
+                  startingAt: 1608012010000
+                  readyAt: 1608012060000
+                  terminatingAt: 1608012360000
+                  terminatedAt: 1608012460000
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    post:
+      tags:
+        - Cloud runners
+      summary: Start a new cloud runner for the given execution
+      description: |
+        Call this operation if you want to start a new cloud runner within the given execution.
+        ***
+        **Special Notes**:
+        - `uuid` is a system-level field, so it will be ignored even if you try to submit it.
+        - `createdAt` is a system-level field, so it will be ignored even if you try to submit it.
+        - `updatedAt` is a system-level field, so it will be ignored even if you try to submit it.
+        - `status` is a system-level field, so it will be ignored even if you try to submit it.
+      operationId: startCloudRunner
+      parameters:
+        - name: project_key
+          in: path
+          description: Unique identifier of the project
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: e44db33b-17f4-4b65-ba0d-6b190ff39125
+        - name: execution_key
+          in: path
+          description: Unique identifier of the execution
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 18d1e46d-e352-44b8-a435-226f016e03ec
+      requestBody:
+        description: Payload to start a new cloud runner
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloudRunner'
+            examples:
+              Start cloud runner:
+                value:
+                  hardwareType: C2
+                  sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILhKzVzL8RYBFDZblagiF1fPKLiI9JRYw8CrU2lrCwVN user@example.com
+        required: true
+      responses:
+        '200':
+          description: Returns full payload of the started cloud runner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudRunner'
+              example:
+                uuid: b553dc6c-4fef-4a9f-bc16-ee2c88664dd0
+                hardwareType: C2
+                hardwareCpu: 2
+                hardwareMemory: 4
+                status: QUEUED
+                createdAt: 1608012000000
+                updatedAt: 1608015600000
+                requestedAt: 1608012000000
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '422':
+          $ref: '#/components/responses/422'
+  '/v1/projects/{project_key}/executions/{execution_key}/cloud_runners/{cloud_runner_key}':
+    get:
+      tags:
+        - Cloud runners
+      summary: Get information about existing cloud runner
+      description: |
+        Call this operation if you want to get information about the existing cloud runner.
+      operationId: getCloudRunner
+      parameters:
+        - name: project_key
+          in: path
+          description: Unique identifier of the project
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: e44db33b-17f4-4b65-ba0d-6b190ff39125
+        - name: execution_key
+          in: path
+          description: Unique identifier of the execution
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 18d1e46d-e352-44b8-a435-226f016e03ec
+        - name: cloud_runner_key
+          in: path
+          description: Unique identifier of the cloud runner
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: b553dc6c-4fef-4a9f-bc16-ee2c88664dd0
+      responses:
+        '200':
+          description: Returns full payload of the cloud runner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudRunner'
+              example:
+                uuid: 23c39165-89c1-4afb-80b6-e994cb96a482
+                status: TERMINATED
+                hardwareType: C2
+                hardwareCpu: 2
+                hardwareMemory: 4
+                sshUser: perforator
+                sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILhKzVzL8RYBFDZblagiF1fPKLiI9JRYw8CrU2lrCwVN user@example.com
+                sshHostName: 23c39165-89c1-4afb-80b6-e994cb96a482.runners.perforator.io
+                sshHostIP: 1.2.3.4
+                sshPort: 22
+                createdAt: 1608012000000
+                updatedAt: 1608015600000
+                requestedAt: 1608012000000
+                startingAt: 1608012010000
+                readyAt: 1608012060000
+                terminatingAt: 1608012360000
+                terminatedAt: 1608012460000
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+    head:
+      tags:
+        - Cloud runners
+      summary: Check if the cloud runner exists
+      description: Call this operation if you want to check if a specific cloud runner exists in the system.
+      operationId: checkIfCloudRunnerExists
+      parameters:
+        - name: project_key
+          in: path
+          description: Unique identifier of the project
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: e44db33b-17f4-4b65-ba0d-6b190ff39125
+        - name: execution_key
+          in: path
+          description: Unique identifier of the execution
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 18d1e46d-e352-44b8-a435-226f016e03ec
+        - name: cloud_runner_key
+          in: path
+          description: Unique identifier of the cloud runner
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: b553dc6c-4fef-4a9f-bc16-ee2c88664dd0
+      responses:
+        '200':
+          description: |
+            Returns response code 200 if the cloud runner exists.  
+            The body of the response is empty according to [HTTP HEAD spec](https://datatracker.ietf.org/doc/html/rfc2616#section-9.4)
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+  '/v1/projects/{project_key}/executions/{execution_key}/cloud_runners/{cloud_runner_key}/terminate':
+    post:
+      tags:
+        - Cloud runners
+      summary: Terminate cloud runner
+      description: |
+        Call this operation if you want to terminate the existing cloud runner.
+        ***
+        **Special Notes**:
+        - Terminating cloud runner is only allowed if it is in `QUEUED`, `PROVISIONING`, and `OPERATIONAL` states.
+        - Call to terminate cloud runner in state `TERMINATING` or `TERMINATED` will be rejected with an error.
+        - Terminating the cloud runner in `QUEUED` state will automatically refund credits charged for creating such a cloud runner.
+      operationId: terminateCloudRunner
+      parameters:
+        - name: project_key
+          in: path
+          description: Unique identifier of the project
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: e44db33b-17f4-4b65-ba0d-6b190ff39125
+        - name: execution_key
+          in: path
+          description: Unique identifier of the execution
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 18d1e46d-e352-44b8-a435-226f016e03ec
+        - name: cloud_runner_key
+          in: path
+          description: Unique identifier of the cloud runner
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: b553dc6c-4fef-4a9f-bc16-ee2c88664dd0
+      responses:
+        '200':
+          description: Returns full payload of the terminated cloud runner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudRunner'
+              example:
+                uuid: 23c39165-89c1-4afb-80b6-e994cb96a482
+                status: TERMINATING
+                hardwareType: C2
+                hardwareCpu: 2
+                hardwareMemory: 4
+                sshUser: perforator
+                sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILhKzVzL8RYBFDZblagiF1fPKLiI9JRYw8CrU2lrCwVN user@example.com
+                sshHostName: 23c39165-89c1-4afb-80b6-e994cb96a482.runners.perforator.io
+                sshHostIP: 1.2.3.4
+                sshPort: 22
+                createdAt: 1608012000000
+                updatedAt: 1608015600000
+                requestedAt: 1608012000000
+                startingAt: 1608012010000
+                readyAt: 1608012060000
+                terminatingAt: 1608012360000
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '422':
+          $ref: '#/components/responses/422'
   '/v1/projects/{project_key}/executions/{execution_key}/browser_clouds':
     get:
       tags:
@@ -854,7 +1198,7 @@ paths:
         - The platform automatically assigns random public IP addresses when creating a browser cloud, and such IPs are not known in advance. Please set `usePreAllocatedIPs` parameter to `true` if you would like all browsers to have preallocated IPs, for example, to establish network trust on your firewall side.
         - It might be a case when you need to exclude certain HTTP requests from capturing by cloud-based browsers so such requests don't affect analytics. Feel free to supply an optional parameter `dataCapturingExcludes` with the list of URLs to exclude from capturing.
         - You can supply an optional field 'httpHeaders', and as a result, all browsers from the cloud will include such headers in every HTTP request.
-        - Please set the ‘hosts’ parameter if you would like to propagate additional /etc/hosts to remote browsers. It might be a case where a target website domain name is not resolvable via public DNS servers. So, to reach such domains from the browsers started in the cloud, you can supply a map of additional DNS records via 'hosts' parameter, for example: example.com => 1.2.3.4
+        - Please set 'hosts' parameter if you would like to propagate additional /etc/hosts to remote browsers. It might be a case where a target website domain name is not resolvable via public DNS servers. So, to reach such domains from the browsers started in the cloud, you can supply a map of additional DNS records via 'hosts' parameter, for example: example.com => 1.2.3.4
       operationId: createBrowserCloud
       parameters:
         - name: project_key
@@ -911,7 +1255,7 @@ paths:
                   duration: 2
                   httpHeaders:
                     Authorization: Basic YOUR_AUTHORIZATION_TOKEN
-                    Host: example.com:8080, example.com
+                    Host: 'example.com:8080, example.com'
               Create browser cloud with additional hosts:
                 value:
                   concurrency: 50
@@ -1037,7 +1381,8 @@ paths:
           $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
-    delete:
+  '/v1/projects/{project_key}/executions/{execution_key}/browser_clouds/{browser_cloud_key}/terminate':
+    post:
       tags:
         - Browser clouds
       summary: Terminate browser cloud
@@ -1167,7 +1512,7 @@ paths:
     post:
       tags:
         - Browser clouds
-      summary: Send transaction events for analytics
+      summary: Send events for analytics
       description: |
         Call this operation if you want to submit analytics events from the load-generator side.
         ***
@@ -1199,10 +1544,10 @@ paths:
         ***
         **Validations**:
         - `timestamp` - required, its value can't be in the future and can't be more than 24h back in the past.
-        - `eventType` - required, should be once of 'transaction_heartbeat', 'transaction_completed' or 'concurrency'.
+        - `eventType` - required, should be one of 'transaction_heartbeat', 'transaction_completed' or 'concurrency'.
         - `failureMessage` - optional, but if present, it should have less than 65K symbols.
         - `failed` - should be provided for `transaction_completed` events.
-        - `suiteName` - required only if eventType == 'transaction_heartbeat' or eventType == 'transaction_completed', should be less than 256 symbols.
+        - `suiteName` - required only if eventType == 'transaction_heartbeat' or eventType == 'transaction_completed'
         - `transactionID` - required only if eventType == 'transaction_heartbeat' or eventType == 'transaction_completed', should be in [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) format.
         - `transactionName` - required only if eventType == 'transaction_heartbeat' or eventType == 'transaction_completed', should be less than 1024 symbols.
         - `parentTransactionID` - optional, but if present, it should be in [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) format.
@@ -11659,6 +12004,62 @@ components:
         updatedAt:
           type: integer
           format: int64
+    CloudRunner:
+      type: object
+      properties:
+        uuid:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        hardwareType:
+          type: string
+        hardwareCpu:
+          type: integer
+          format: int32
+        hardwareMemory:
+          type: integer
+          format: int32
+        status:
+          type: string
+        sshUser:
+          type: string
+        sshPublicKey:
+          type: string
+        sshHostName:
+          type: string
+        sshHostIP:
+          type: string
+        sshPort:
+          type: integer
+          format: int32
+        requestedAt:
+          type: integer
+          format: int64
+        startingAt:
+          type: integer
+          format: int64
+        readyAt:
+          type: integer
+          format: int64
+        terminatingAt:
+          type: integer
+          format: int64
+        terminatedAt:
+          type: integer
+          format: int64
+    CloudRunnerHardwareType:
+      type: string
+      enum:
+        - C2
+        - C4
+        - C8
+        - C16
+        - C36
+        - C72
     BrowserCloud:
       type: object
       properties:
@@ -11744,7 +12145,6 @@ components:
         - duration
         - expirationAt
         - readyAt
-        - publicIPs
         - seleniumHubURL
         - publicIPs
         - status
