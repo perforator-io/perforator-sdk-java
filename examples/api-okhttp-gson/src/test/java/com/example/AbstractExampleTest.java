@@ -3,6 +3,7 @@ package com.example;
 import io.perforator.sdk.api.okhttpgson.ApiClientBuilder;
 import io.perforator.sdk.api.okhttpgson.model.*;
 import io.perforator.sdk.api.okhttpgson.operations.BrowserCloudsApi;
+import io.perforator.sdk.api.okhttpgson.operations.CloudRunnersApi;
 import io.perforator.sdk.api.okhttpgson.operations.ExecutionsApi;
 import io.perforator.sdk.api.okhttpgson.operations.ProjectsApi;
 import java.lang.reflect.Constructor;
@@ -32,6 +33,7 @@ public abstract class AbstractExampleTest<T> {
     protected static final String PROJECT_KEY_FIELD = "projectKey";
     protected static final String EXECUTION_KEY_FIELD = "executionKey";
     protected static final String BROWSER_CLOUD_KEY = "browserCloudKey";
+    protected static final String CLOUD_RUNNER_KEY = "cloudRunnerKey";
     
     protected final String apiBaseUrl;
     protected final String apiClientId;
@@ -44,6 +46,7 @@ public abstract class AbstractExampleTest<T> {
     protected final ProjectsApi projectsApi;
     protected final ExecutionsApi executionsApi;
     protected final BrowserCloudsApi browserCloudsApi;
+    protected final CloudRunnersApi cloudRunnersApi;
 
     public AbstractExampleTest() {
         assumeTrue(hasRequiredVariable(API_BASE_URL_ENV_VARIABLE));
@@ -75,6 +78,7 @@ public abstract class AbstractExampleTest<T> {
         this.projectsApi = apiClientBuilder.getApi(ProjectsApi.class);
         this.executionsApi = apiClientBuilder.getApi(ExecutionsApi.class);
         this.browserCloudsApi = apiClientBuilder.getApi(BrowserCloudsApi.class);
+        this.cloudRunnersApi = apiClientBuilder.getApi(CloudRunnersApi.class);
     }
     
     protected abstract Map<String, Object> getAdditionalFields() throws Exception;
