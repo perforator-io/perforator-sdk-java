@@ -15,6 +15,7 @@ import io.perforator.sdk.api.okhttpgson.model.BrowserCloud;
 import io.perforator.sdk.api.okhttpgson.model.BrowserCloudDetails;
 import io.perforator.sdk.api.okhttpgson.model.CreditsBalance;
 import io.perforator.sdk.api.okhttpgson.model.Execution;
+import io.perforator.sdk.api.okhttpgson.model.PlatformLimit;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
@@ -382,26 +383,26 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
             throw new RuntimeException("Can't get current limits", e);
         }
 
-        if (limits.containsKey(PlatformLimits.CONCURRENT_BROWSER_CLOUDS.name())) {
-            verify(PlatformLimits.CONCURRENT_BROWSER_CLOUDS + " limit", () -> {
+        if (limits.containsKey(PlatformLimit.CONCURRENT_BROWSER_CLOUDS.getValue())) {
+            verify(PlatformLimit.CONCURRENT_BROWSER_CLOUDS + " limit", () -> {
                 loadGeneratorContext.getLimitsApi().verifyLimits(
-                        Map.of(PlatformLimits.CONCURRENT_BROWSER_CLOUDS.name(), 1)
+                        Map.of(PlatformLimit.CONCURRENT_BROWSER_CLOUDS.getValue(), 1)
                 );
             });
         }
 
-        if (limits.containsKey(PlatformLimits.CONCURRENT_BROWSERS.name())) {
-            verify(PlatformLimits.CONCURRENT_BROWSERS + " limit", () -> {
+        if (limits.containsKey(PlatformLimit.CONCURRENT_BROWSERS.getValue())) {
+            verify(PlatformLimit.CONCURRENT_BROWSERS + " limit", () -> {
                 loadGeneratorContext.getLimitsApi().verifyLimits(
-                        Map.of(PlatformLimits.CONCURRENT_BROWSERS.name(), concurrency)
+                        Map.of(PlatformLimit.CONCURRENT_BROWSERS.getValue(), concurrency)
                 );
             });
         }
 
-        if (limits.containsKey(PlatformLimits.BROWSER_CLOUD_DURATION_HOURS.name())) {
-            verify(PlatformLimits.BROWSER_CLOUD_DURATION_HOURS + " limit", () -> {
+        if (limits.containsKey(PlatformLimit.BROWSER_CLOUD_DURATION_HOURS.getValue())) {
+            verify(PlatformLimit.BROWSER_CLOUD_DURATION_HOURS + " limit", () -> {
                 loadGeneratorContext.getLimitsApi().verifyLimits(
-                        Map.of(PlatformLimits.BROWSER_CLOUD_DURATION_HOURS.name(), duration)
+                        Map.of(PlatformLimit.BROWSER_CLOUD_DURATION_HOURS.getValue(), duration)
                 );
             });
         }
@@ -420,9 +421,9 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
 
         verify("overall limits and balance all together", () -> {
             loadGeneratorContext.getLimitsApi().verifyLimits(Map.of(
-                    PlatformLimits.CONCURRENT_BROWSER_CLOUDS.name(), 1,
-                    PlatformLimits.CONCURRENT_BROWSERS.name(), concurrency,
-                    PlatformLimits.BROWSER_CLOUD_DURATION_HOURS.name(), duration
+                    PlatformLimit.CONCURRENT_BROWSER_CLOUDS.getValue(), 1,
+                    PlatformLimit.CONCURRENT_BROWSERS.getValue(), concurrency,
+                    PlatformLimit.BROWSER_CLOUD_DURATION_HOURS.getValue(), duration
             ));
         });
     }

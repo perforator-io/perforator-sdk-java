@@ -2,6 +2,7 @@ package com.example.limits;
 
 import io.perforator.sdk.api.okhttpgson.ApiClientBuilder;
 import io.perforator.sdk.api.okhttpgson.invoker.ApiException;
+import io.perforator.sdk.api.okhttpgson.model.PlatformLimit;
 import io.perforator.sdk.api.okhttpgson.operations.LimitsApi;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -37,9 +38,9 @@ public class VerifyLimitsExample {
 
         try {
             limitsApi.verifyLimits(Map.of(
-                    "CONCURRENT_BROWSER_CLOUDS", 1,
-                    "CONCURRENT_BROWSERS", desiredBrowsersConcurrency,
-                    "BROWSER_CLOUD_DURATION_HOURS", desiredBrowserCloudDuration
+                    PlatformLimit.CONCURRENT_BROWSER_CLOUDS.getValue(), 1,
+                    PlatformLimit.CONCURRENT_BROWSERS.getValue(), desiredBrowsersConcurrency,
+                    PlatformLimit.BROWSER_CLOUD_DURATION_HOURS.getValue(), desiredBrowserCloudDuration
             ));
             logger.info(
                     "It is allowed to launch a new browser cloud with "

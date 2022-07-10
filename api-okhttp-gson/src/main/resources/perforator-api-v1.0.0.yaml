@@ -11904,6 +11904,8 @@ paths:
         - `CONCURRENT_BROWSER_CLOUDS` - how many concurrent browser clouds you can launch at any given moment. Only active browser clouds are counted as a part of this limit verification. The default limit is **one** browser cloud.
         - `CONCURRENT_BROWSERS` - how many concurrent browsers you can requests across all active browser clouds at any given moment. The default limit is **500** browsers.
         - `BROWSER_CLOUD_DURATION_HOURS` - what is the maximum duration(in hours) for any requested browser cloud. The default limit is **4** hours.
+        - `CONCURRENT_CLOUD_RUNNERS` - how many concurrent cloud runners you can launch at any given moment. Only active cloud runners are counted as a part of this limit verification. The default limit is **one** cloud runner.
+        - `CONCURRENT_CLOUD_RUNNER_CPU_CORES` - how many concurrent CPU cores you can requests across all active cloud runners at any given moment. The default limit is **8** CPU cores.
         ***
         Please keep in mind that all the limits are adjustable, so if your current limits are not enough for your performance test requirements - please request limits increase via sending an email to support@perforator.io
       operationId: getLimits
@@ -11922,6 +11924,8 @@ paths:
                 CONCURRENT_BROWSER_CLOUDS: 1
                 CONCURRENT_BROWSERS: 500
                 BROWSER_CLOUD_DURATION_HOURS: 4
+                CONCURRENT_CLOUD_RUNNERS: 1
+                CONCURRENT_CLOUD_RUNNER_CPU_CORES: 8
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -11932,9 +11936,9 @@ paths:
     post:
       tags:
         - Limits
-      summary: Verify limits violations before creating a new browser cloud.
+      summary: Verify limits violations before creating a new browser cloud or cloud runner.
       description: |
-        Call this operation if you would like to verify limits violations before creating a new browser cloud.
+        Call this operation if you would like to verify limits violations before creating a new browser cloud or cloud runner.
       operationId: verifyLimits
       parameters: []
       requestBody:
@@ -11949,10 +11953,12 @@ paths:
               CONCURRENT_BROWSER_CLOUDS: 1
               CONCURRENT_BROWSERS: 250
               BROWSER_CLOUD_DURATION_HOURS: 2
+              CONCURRENT_CLOUD_RUNNERS: 1
+              CONCURRENT_CLOUD_RUNNER_CPU_CORES: 8
         required: true
       responses:
         '200':
-          description: Returns successful response with the empty body if there are no limits violations to launch a new browser cloud.
+          description: Returns successful response with the empty body if there are no limits violations to launch a new browser cloud or cloud runner.
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -14379,6 +14385,14 @@ components:
           type: string
         message:
           type: string
+    PlatformLimit:
+      type: string
+      enum:
+        - CONCURRENT_BROWSER_CLOUDS
+        - CONCURRENT_BROWSERS
+        - BROWSER_CLOUD_DURATION_HOURS
+        - CONCURRENT_CLOUD_RUNNERS
+        - CONCURRENT_CLOUD_RUNNER_CPU_CORES
   responses:
     '401':
       description: Error if the call is not authorized
