@@ -18,11 +18,13 @@ interface IntegrationListener {
 
     default void onSuiteInstanceStarted(long timestamp, SuiteInstanceContextImpl context) {}
 
-    default void onSuiteInstanceFinished(long timestamp, SuiteInstanceContextImpl contextImpl, Throwable error) {}
+    default void onSuiteInstanceFinished(long timestamp, SuiteInstanceContextImpl context, Throwable error) {}
+    
+    default void onSuiteInstanceKeepAlive(long timestamp, SuiteInstanceContextImpl context) {}
 
     default void onTransactionStarted(long timestamp, TransactionContextImpl context) {}
 
-    default void onTransactionFinished(long timestamp, TransactionContextImpl contextImpl, Throwable error) {}
+    default void onTransactionFinished(long timestamp, TransactionContextImpl context, Throwable error) {}
 
     default void onRemoteWebDriverStarted(long timestamp, RemoteWebDriverContextImpl context) {}
 

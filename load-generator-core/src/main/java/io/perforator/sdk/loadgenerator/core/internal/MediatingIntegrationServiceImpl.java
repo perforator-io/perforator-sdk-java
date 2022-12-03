@@ -28,6 +28,7 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
     private final BrowserCloudManager browserCloudManager;
     private final RemoteWebDriverManager remoteWebDriverManager;
     private final HeartbeatManager heartbeatManager;
+    private final SleepManager sleepManager;
     private final TransactionsManager transactionsManager;
     private final TransactionEventsAggregator transactionEventsAggregator;
     private final ConcurrencyEventsAggregatorImpl concurrencyEventsAggregator;
@@ -53,6 +54,7 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
         this.browserCloudManager = new BrowserCloudManagerImpl(timeProvider, shutdownHook);
         this.remoteWebDriverManager = new RemoteWebDriverManagerImpl(timeProvider, eventsRouter);
         this.heartbeatManager = new HeartbeatManagerImpl(timeProvider, eventsRouter);
+        this.sleepManager = new SleepManagerImpl(timeProvider, eventsRouter);
         this.transactionsManager = new TransactionsManagerImpl(timeProvider, eventsRouter);
         this.transactionEventsAggregator = new TransactionEventsAggregatorImpl();
         this.analyticsEventsFlusher = new AnalyticsEventsFlusherImpl();
@@ -111,6 +113,10 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
                 remoteWebDriverManager,
                 transactionsManager,
                 loggingContextManager
+        ));
+        
+        eventsRouter.setSuiteInstanceKeepAliveListeners(Arrays.asList(
+                remoteWebDriverManager
         ));
 
         eventsRouter.setTransactionStartedListeners(Arrays.asList(
@@ -256,6 +262,11 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
     @Override
     public int getDesiredConcurrency(SuiteConfigContextImpl suiteConfigContext) {
         return concurrencyManager.getDesiredConcurrency(suiteConfigContext);
+    }
+    
+    @Override
+    public void sleep(SuiteInstanceContextImpl context, long duration) {
+        sleepManager.sleep(context, duration);
     }
 
     private long getCurrentTime() {

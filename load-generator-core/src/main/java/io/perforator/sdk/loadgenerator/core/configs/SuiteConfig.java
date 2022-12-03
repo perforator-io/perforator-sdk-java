@@ -227,6 +227,21 @@ public class SuiteConfig implements Configurable {
      * property.
      */
     public static final Duration DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT = Configurable.parseDuration(DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT_S);
+    
+    /**
+     * String representation of default value for 
+     * <b>{@link SuiteConfig#webDriverSessionKeepAlive}</b>
+     * property.
+     */
+    public static final String DEFAULT_WEB_DRIVER_SESSION_KEEP_ALIVE_S = "true";
+    
+    /**
+     * Default value(<b>{@value SuiteConfig#DEFAULT_WEB_DRIVER_SESSION_KEEP_ALIVE_S}</b>) 
+     * for 
+     * <b>{@link SuiteConfig#webDriverSessionKeepAlive}</b>
+     * property.
+     */
+    public static final boolean DEFAULT_WEB_DRIVER_SESSION_KEEP_ALIVE = Boolean.parseBoolean(DEFAULT_WEB_DRIVER_SESSION_KEEP_ALIVE_S);
 
     /**
      * String representation of default value for 
@@ -408,6 +423,12 @@ public class SuiteConfig implements Configurable {
      */
     @Getter @Setter @FieldNameConstants.Include
     protected Duration webDriverSessionPageLoadTimeout = DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT;
+    
+    /**
+     * Keep alive RemoteWebDriver during sleep actions.
+     */
+    @Getter @Setter @FieldNameConstants.Include
+    protected boolean webDriverSessionKeepAlive = DEFAULT_WEB_DRIVER_SESSION_KEEP_ALIVE;
 
     /**
      * The flag allowing file uploads functionality while working with browsers 

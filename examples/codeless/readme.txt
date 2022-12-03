@@ -678,7 +678,7 @@ a look at the below docs describing available options for the config.yml
     # - Environment variable name: SUITE_WEBDRIVERSESSIONSCRIPTTIMEOUT         #
     ############################################################################
     #webDriverSessionScriptTimeout: 30s
-    
+
     ############################################################################
     # Selenium timeout to wait for a page load to complete before throwing     #
     # an error.                                                                #
@@ -689,6 +689,16 @@ a look at the below docs describing available options for the config.yml
     # - Environment variable name: SUITE_WEBDRIVERSESSIONPAGELOADTIMEOUT       #
     ############################################################################
     #webDriverSessionPageLoadTimeout: 30s
+
+    ############################################################################
+    # Keep alive remote browser during sleep actions.                          #
+    #                                                                          #
+    # This is an optional property.                                            #
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverSessionKeepAlive                  #
+    # - Environment variable name: SUITE_WEBDRIVERSESSIONKEEPALIVE             #
+    ############################################################################
+    #webDriverSessionKeepAlive: true
     
     ############################################################################
     # The flag allowing file uploads functionality while working with browsers #

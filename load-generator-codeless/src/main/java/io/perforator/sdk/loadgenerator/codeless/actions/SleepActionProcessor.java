@@ -15,7 +15,7 @@ import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.codeless.RandomDuration;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
-import io.perforator.sdk.loadgenerator.core.Threaded;
+import io.perforator.sdk.loadgenerator.core.Perforator;
 import java.util.List;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -109,6 +109,6 @@ public class SleepActionProcessor extends AbstractActionProcessor<SleepActionCon
 
     @Override
     public void processActionInstance(RemoteWebDriver driver, SleepActionInstance actionInstance) {
-        Threaded.sleep(actionInstance.getTimeout().toMillis());
+        Perforator.sleep(actionInstance.getTimeout().toMillis());
     }
 }

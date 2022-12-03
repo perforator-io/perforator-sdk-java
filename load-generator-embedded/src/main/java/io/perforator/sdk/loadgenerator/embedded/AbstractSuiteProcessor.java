@@ -303,4 +303,16 @@ public abstract class AbstractSuiteProcessor implements EmbeddedSuiteProcessor {
         return Perforator.transactionally(transactionName, arg, function);
     }
     
+    /**
+     * Intellectually put current thread into a sleep mode.
+     * 
+     * All {@link org.openqa.selenium.remote.RemoteWebDriver RemoteWebDrivers} 
+     * attached to the current thread are kept alive automatically.
+     * 
+     * @param duration duration to sleep.
+     */
+    protected final void sleep(long duration) {
+        Perforator.sleep(duration);
+    }
+    
 }

@@ -797,6 +797,18 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
             property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverSessionPageLoadTimeout
     )
     protected String webDriverSessionPageLoadTimeout;
+    
+    
+    /**
+     * Keep alive RemoteWebDriver during sleep actions.
+     */
+    @Parameter(
+            required = false,
+            defaultValue = SuiteConfig.DEFAULT_WEB_DRIVER_SESSION_KEEP_ALIVE_S,
+            alias = SuiteConfig.Fields.webDriverSessionKeepAlive,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverSessionKeepAlive
+    )
+    protected String webDriverSessionKeepAlive;
 
     /**
      * The flag allowing file uploads functionality while working with browsers 

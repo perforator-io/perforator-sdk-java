@@ -18,6 +18,7 @@ final class EventsRouterImpl implements EventsRouter {
     private List<IntegrationListener> loadGeneratorFinishedListeners;
     private List<IntegrationListener> suiteInstanceStartedListeners;
     private List<IntegrationListener> suiteInstanceFinishedListeners;
+    private List<IntegrationListener> suiteInstanceKeepAliveListeners;
     private List<IntegrationListener> transactionStartedListeners;
     private List<IntegrationListener> transactionFinishedListeners;
     private List<IntegrationListener> remoteWebDriverStartedListeners;
@@ -49,6 +50,13 @@ final class EventsRouterImpl implements EventsRouter {
     public void onSuiteInstanceFinished(long timestamp, SuiteInstanceContextImpl context, Throwable error) {
         suiteInstanceFinishedListeners.forEach(
                 listener -> listener.onSuiteInstanceFinished(timestamp, context, error)
+        );
+    }
+
+    @Override
+    public void onSuiteInstanceKeepAlive(long timestamp, SuiteInstanceContextImpl context) {
+        suiteInstanceKeepAliveListeners.forEach(
+                listener -> listener.onSuiteInstanceKeepAlive(timestamp, context)
         );
     }
 
@@ -101,6 +109,10 @@ final class EventsRouterImpl implements EventsRouter {
 
     public void setSuiteInstanceFinishedListeners(List<IntegrationListener> suiteInstanceFinishedListeners) {
         this.suiteInstanceFinishedListeners = suiteInstanceFinishedListeners;
+    }
+
+    public void setSuiteInstanceKeepAliveListeners(List<IntegrationListener> suiteInstanceKeepAliveListeners) {
+        this.suiteInstanceKeepAliveListeners = suiteInstanceKeepAliveListeners;
     }
 
     public void setTransactionStartedListeners(List<IntegrationListener> transactionStartedListeners) {

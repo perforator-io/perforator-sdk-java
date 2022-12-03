@@ -282,6 +282,7 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
     private void propagateConsumerContext(SuiteInstanceContext suiteInstanceContext) {
         Perforator.SUITE_INSTANCE_CONTEXT.set(suiteInstanceContext);
         Perforator.REMOTE_WEBDRIVER_SERVICE.set(mediator);
+        Perforator.SLEEP_SERVICE.set(mediator);
         Perforator.TRANSACTIONS_SERVICE.set(mediator);
         Perforator.TRANSACTIONS.set(new HashMap<>());
     }
@@ -289,6 +290,7 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
     private void cleanupConsumerContext() {
         Perforator.SUITE_INSTANCE_CONTEXT.remove();
         Perforator.REMOTE_WEBDRIVER_SERVICE.remove();
+        Perforator.SLEEP_SERVICE.remove();
         Perforator.TRANSACTIONS_SERVICE.remove();
         Perforator.TRANSACTIONS.remove();
     }

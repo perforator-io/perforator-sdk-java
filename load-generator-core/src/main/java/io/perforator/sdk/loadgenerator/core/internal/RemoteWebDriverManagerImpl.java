@@ -107,4 +107,25 @@ final class RemoteWebDriverManagerImpl implements RemoteWebDriverManager {
         return result;
     }
 
+    @Override
+    public void onSuiteInstanceKeepAlive(long timestamp, SuiteInstanceContextImpl context) {
+        if(!context.getSuiteConfigContext().getSuiteConfig().isWebDriverSessionKeepAlive()) {
+            return;
+        }
+        
+        for (RemoteWebDriverContextImpl driverContext : context.getDrivers().values()) {
+            RemoteWebDriver driver = driverContext.getRemoteWebDriver();
+            
+            if(driver == null || driver.getSessionId() == null) {
+                continue;
+            }
+            
+            LOGGER.debug(
+                    "Remote browser {} is alive => {}",
+                    driver.getSessionId(),
+                    driver.getCurrentUrl()
+            );
+        }
+    }
+
 }

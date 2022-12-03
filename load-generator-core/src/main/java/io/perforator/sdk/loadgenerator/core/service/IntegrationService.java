@@ -17,9 +17,11 @@ import io.perforator.sdk.loadgenerator.core.context.SuiteInstanceContext;
 import io.perforator.sdk.loadgenerator.core.context.TransactionContext;
 
 //TODO: add javadoc
-public interface IntegrationService
-        <C extends SuiteConfigContext,S extends SuiteInstanceContext, T extends TransactionContext, R extends RemoteWebDriverContext>
-        extends TransactionsService<S, T>, RemoteWebDriverService<S, R>, StatisticsService {
+public interface IntegrationService<C extends SuiteConfigContext, S extends SuiteInstanceContext, T extends TransactionContext, R extends RemoteWebDriverContext>
+        extends TransactionsService<S, T>,
+        RemoteWebDriverService<S, R>,
+        SleepService<S>,
+        StatisticsService {
 
     void onLoadGeneratorStarted();
 
@@ -28,9 +30,9 @@ public interface IntegrationService
     S onSuiteInstanceStarted(int workerID, C suiteConfigContext);
 
     long onSuiteInstanceFinished(S suiteContext, Throwable suiteError);
-    
+
     int getCurrentConcurrency(C suiteConfigContext);
-    
+
     int getDesiredConcurrency(C suiteConfigContext);
 
     C onSuiteConfigCreated(SuiteConfig suiteConfig);

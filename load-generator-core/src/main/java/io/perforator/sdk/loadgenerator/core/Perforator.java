@@ -13,6 +13,7 @@ package io.perforator.sdk.loadgenerator.core;
 import io.perforator.sdk.loadgenerator.core.context.SuiteInstanceContext;
 import io.perforator.sdk.loadgenerator.core.context.TransactionContext;
 import io.perforator.sdk.loadgenerator.core.service.RemoteWebDriverService;
+import io.perforator.sdk.loadgenerator.core.service.SleepService;
 import io.perforator.sdk.loadgenerator.core.service.TransactionsService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -44,6 +45,8 @@ public final class Perforator {
     public static final String CLOSE_WEB_DRIVER_TRANSACTION_NAME = "Close browser session";
     
     static final ThreadLocal<SuiteInstanceContext> SUITE_INSTANCE_CONTEXT = new InheritableThreadLocal<>();
+    
+    static final ThreadLocal<SleepService> SLEEP_SERVICE = new InheritableThreadLocal<>();
 
     static final ThreadLocal<RemoteWebDriverService> REMOTE_WEBDRIVER_SERVICE = new InheritableThreadLocal<>();
 
@@ -360,6 +363,26 @@ public final class Perforator {
             finishTransaction(transactionID, e);
             throw e;
         }
+    }
+
+    /**
+     * Intellectually put current thread into a sleep mode.
+     * 
+     * All {@link org.openqa.selenium.remote.RemoteWebDriver RemoteWebDrivers} 
+     * attached to the current thread are kept alive automatically.
+     * 
+     * @param duration duration to sleep.
+     */
+    public static final void sleep(long duration) {
+        SuiteInstanceContext context = SUITE_INSTANCE_CONTEXT.get();
+        SleepService sleepService = SLEEP_SERVICE.get();
+        
+        if(context == null || sleepService == null) {
+            Threaded.sleep(duration);
+            return;
+        }
+        
+        sleepService.sleep(context, duration);
     }
 
 }

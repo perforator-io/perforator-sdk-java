@@ -11,6 +11,7 @@
 package io.perforator.sdk.loadgenerator.core.mock;
 
 import io.perforator.sdk.loadgenerator.core.RemoteWebDriverHelper;
+import io.perforator.sdk.loadgenerator.core.Threaded;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.service.IntegrationService;
 import java.util.Collection;
@@ -219,6 +220,11 @@ public class IntegrationServiceMock implements IntegrationService<SuiteConfigCon
     @Override
     public int getDesiredConcurrency(SuiteConfigContextMock suiteConfigContext) {
         return suiteConfigContext.getSuiteConfig().getConcurrency();
+    }
+
+    @Override
+    public void sleep(SuiteInstanceContextMock context, long duration) {
+        Threaded.sleep(duration);
     }
 
 }
