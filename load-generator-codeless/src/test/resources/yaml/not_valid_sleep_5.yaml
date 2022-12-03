@@ -13,4 +13,4 @@ suites:
     steps:
       Open and upload file successfully:
         - sleep:
-            timeout: 60s
+            timeout: 6o0s

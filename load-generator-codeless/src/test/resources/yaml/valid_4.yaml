@@ -17,8 +17,8 @@ suites:
         - awaitElementToBeInvisible: '#uploading-span'
         - awaitElementToBeEnabled: '#uploading-span'
         - awaitElementToBeDisabled: '#uploading-span'
-        - awaitAlertToBePresent: '30s'
-        - awaitPageLoad: '30s'
+        - awaitAlertToBePresent: '61s'
+        - awaitPageLoad: '61s'
         - awaitElementToBeClickable:
             cssSelector: '#upload-success-span'
         - awaitElementToBeVisible:
@@ -30,21 +30,21 @@ suites:
         - awaitElementToBeDisabled:
             cssSelector: '#upload-btn'
         - awaitAlertToBePresent:
-            timeout: '30s'
+            timeout: '61s'
         - awaitPageLoad:
-            timeout: '30s'
+            timeout: '61s'
         - awaitElementToBeClickable:
             cssSelector: '#upload-success-span'
-            timeout: '30s'
+            timeout: '61s'
         - awaitElementToBeVisible:
             cssSelector: '#upload-btn'
-            timeout: '30s'
+            timeout: '61s'
         - awaitElementToBeInvisible:
             cssSelector: '#upload-btn'
-            timeout: '30s'
+            timeout: '61s'
         - awaitElementToBeEnabled:
             cssSelector: '#upload-btn'
-            timeout: '30s'
+            timeout: '61s'
         - awaitElementToBeDisabled:
             cssSelector: '#upload-btn'
-            timeout: '30s'
+            timeout: '61s'

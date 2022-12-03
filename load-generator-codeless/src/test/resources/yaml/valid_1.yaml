@@ -40,7 +40,7 @@ suites:
     steps:
       Open ${landing-page} and upload file successfully:
         - open: '${landing-page}'
-        - sleep: 1s-5s
+        - sleep: 1s-65s
         - scroll: '#file-input'
         - focus: '#file-input'
         - input:
@@ -49,11 +49,11 @@ suites:
               /local_path/file.json
         - awaitElementToBeClickable:
             cssSelector: '#upload-success-span'
-            timeout: '30s'
+            timeout: '90s'
         - awaitAlertToBePresent:
-            timeout: '30s'
+            timeout: '90s'
         - awaitPageLoad:
-            timeout: '30s'
+            timeout: '90s'
       Open ${landing-page} and upload file with error:
         - open: 'https://verifications.perforator.io/?delay=1000ms'
         - scroll: '#file-input'
@@ -67,9 +67,9 @@ suites:
         - awaitElementToBeInvisible: '#uploading-span'
         - awaitElementToBeEnabled: '#uploading-span'
         - awaitElementToBeDisabled: '#uploading-span'
-        - awaitAlertToBePresent: '30s'
-        - awaitPageLoad: '30s'
+        - awaitAlertToBePresent: '90s'
+        - awaitPageLoad: '90s'
         - closeAlert:
             action: ok
             text: some text
-            timeout: 60s
+            timeout: 90s

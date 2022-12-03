@@ -87,21 +87,9 @@ public class SleepActionProcessor extends AbstractActionProcessor<SleepActionCon
                 );
             }
 
-            if (randomDuration.getFrom() != null && randomDuration.getFrom().toMillis() >= 60000) {
-                throw new RuntimeException(
-                        "Action '" + actionConfig.getActionName() + "' should have a duration < 60s"
-                );
-            }
-
             if (randomDuration.getTo() != null && randomDuration.getTo().toMillis() < 0) {
                 throw new RuntimeException(
                         "Action '" + actionConfig.getActionName() + "' should have a positive duration"
-                );
-            }
-
-            if (randomDuration.getTo() != null && randomDuration.getTo().toMillis() >= 60000) {
-                throw new RuntimeException(
-                        "Action '" + actionConfig.getActionName() + "' should have a duration < 60s"
                 );
             }
         }

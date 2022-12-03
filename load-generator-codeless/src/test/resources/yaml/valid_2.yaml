@@ -12,5 +12,5 @@ suites:
   Suite One:
     steps:
       Open and upload file successfully:
-        - sleep: 10s
+        - sleep: 61s
         - open: https://verifications.perforator.io/

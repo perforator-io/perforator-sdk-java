@@ -13,7 +13,7 @@ suites:
     propsFile: 'src/test/resources/csv/valid_props.csv'
     steps:
       Open and upload file successfully:
-        - sleep: 10s
+        - sleep: 61s
         - open: https://verifications.perforator.io/
-        - sleep: 10s
+        - sleep: 61s
         - open: ${page-2}
