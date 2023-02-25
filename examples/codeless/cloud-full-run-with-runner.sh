@@ -217,12 +217,18 @@ function executeLoadGeneratorRemotely () {
     local ssh_host="${3}"
     local ssh_key="${4}"
     local ssh_dir="~/load_generator"
-    local ssh_script="source ~/.profile; TZ=${current_timezone} ${ssh_dir}/cloud-full-run.sh"
+    local ssh_script="source ~/.profile; cd $ssh_dir; TZ=${current_timezone} ./cloud-full-run.sh"
     local ssh_options="-oStrictHostKeyChecking=no"
+    local scp_options="-O"
+    local ssh_client_major_version=`ssh -V 2>&1 | awk -F'[_,]' '{print $2+0}'|cut -d '.' -f 1`
+
+    if [ "$ssh_client_major_version" -lt 9 ]; then
+      scp_options=""
+    fi
     
     log "Uploading files from ${project_absolute_path} to ${ssh_user}@${ssh_host}:${ssh_dir}"
     ssh -i "${ssh_key}" "$ssh_options" "${ssh_user}@${ssh_host}" mkdir ${ssh_dir}
-    scp -i "${ssh_key}" "$ssh_options" -r -O ${project_absolute_path}/* "${ssh_user}@${ssh_host}:${ssh_dir}"
+    scp -i "${ssh_key}" "$ssh_options" -r "$scp_options" ${project_absolute_path}/* "${ssh_user}@${ssh_host}:${ssh_dir}"
 
     log "Starting remote load generator via ${ssh_user}@${ssh_host}"
     ssh -i "${ssh_key}" -t "$ssh_options" "${ssh_user}@${ssh_host}" "${ssh_script}"
