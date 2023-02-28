@@ -21,7 +21,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>perforator-gitlab-maven</id>
-            <url>https://gitlab.com/api/v4/projects/perforator-labs%2Fperforator-sdk-java/packages/maven</url>
+            <url>https://gitlab.com/api/v4/projects/32457860/packages/maven</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -34,7 +34,7 @@
     <repositories>
         <repository>
             <id>perforator-gitlab-maven</id>
-            <url>https://gitlab.com/api/v4/projects/perforator-labs%2Fperforator-sdk-java/packages/maven</url>
+            <url>https://gitlab.com/api/v4/projects/32457860/packages/maven</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
