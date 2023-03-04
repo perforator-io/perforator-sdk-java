@@ -15,7 +15,7 @@ function log () {
 
 function getConfigProperty () {
   if [ ! -z "${!1}" ]; then echo "${!1}";
-  elif [ ! -z "${2}" ] && [ -f "${2}" ] && [ ! -z "${3}" ]; then cat "$2" | yq "$3";
+  elif [ ! -z "${2}" ] && [ -f "${2}" ] && [ ! -z "${3}" ]; then cat "$2" | yq -p xml "$3";
   else return 1; fi
 }
 
@@ -238,7 +238,7 @@ function executeLoadGeneratorRemotely () {
 }
 
 project_path=`dirname -- "$0"`
-config_path="$project_path/config.yml"
+config_path="$project_path/pom.xml"
 default_ssh_key_type="ed25519"
 default_ssh_dir="$project_path/.ssh"
 default_ssh_key_location="$project_path/.ssh/id_$default_ssh_key_type"
@@ -246,19 +246,19 @@ default_ssh_key_location="$project_path/.ssh/id_$default_ssh_key_type"
 ssh_public_key=`getSshPublicKey $default_ssh_key_type $default_ssh_dir`
 if [ -z "${ssh_public_key}" ] || [ "${ssh_public_key}" = 'null' ]; then echo >&2 "Can't determine ssh_public_key"; exit 1; fi
 
-api_base_path=`getConfigProperty 'LOADGENERATOR_APIBASEURL' $config_path '.loadGenerator.apiBaseUrl'`
+api_base_path=`getConfigProperty 'LOADGENERATOR_APIBASEURL' $config_path '.project.build.plugins.plugin[]|select(.artifactId == "perforator-maven-plugin")|.configuration.apiBaseUrl'`
 if [ -z "${api_base_path}" ] || [ "${api_base_path}" = 'null' ]; then api_base_path="https://api.perforator.io"; fi
 
-api_client_id=`getConfigProperty 'LOADGENERATOR_APICLIENTID' $config_path '.loadGenerator.apiClientId'`
+api_client_id=`getConfigProperty 'LOADGENERATOR_APICLIENTID' $config_path '.project.build.plugins.plugin[]|select(.artifactId == "perforator-maven-plugin")|.configuration.apiClientId'`
 if [ -z "${api_client_id}" ] || [ "${api_client_id}" = 'null' ]; then echo >&2 "Can't determine api_client_id"; exit 1; fi
 
-api_client_secret=`getConfigProperty 'LOADGENERATOR_APICLIENTSECRET' $config_path '.loadGenerator.apiClientSecret'`
+api_client_secret=`getConfigProperty 'LOADGENERATOR_APICLIENTSECRET' $config_path '.project.build.plugins.plugin[]|select(.artifactId == "perforator-maven-plugin")|.configuration.apiClientSecret'`
 if [ -z "${api_client_secret}" ] || [ "${api_client_secret}" = 'null' ]; then echo >&2 "Can't determine api_client_secret"; exit 1; fi
 
-project_key=`getConfigProperty 'LOADGENERATOR_PROJECTKEY' $config_path '.loadGenerator.projectKey'`
+project_key=`getConfigProperty 'LOADGENERATOR_PROJECTKEY' $config_path '.project.build.plugins.plugin[]|select(.artifactId == "perforator-maven-plugin")|.configuration.projectKey'`
 if [ -z "${project_key}" ] || [ "${project_key}" = 'null' ]; then echo >&2 "Can't determine project_key"; exit 1; fi
 
-full_concurrency=`cat $config_path| yq '.suites.*.concurrency'| awk '{ sum += $1 } END { print sum }'`
+full_concurrency=`cat $config_path| yq -p xml '.project.build.plugins.plugin[]|select(.artifactId == "perforator-maven-plugin")|.configuration.concurrency'| awk '{ sum += $1 } END { print sum }'`
 if [ -z "${full_concurrency}" ] || [ "${full_concurrency}" = '0' ]; then echo >&2 "Can't determine full_concurrency"; exit 1; fi
 
 cloud_runner_type=`getCloudRunnerType "$full_concurrency"`
