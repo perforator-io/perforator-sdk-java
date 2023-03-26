@@ -10,6 +10,7 @@
  */
 package io.perforator.sdk.loadgenerator.codeless;
 
+import io.perforator.sdk.loadgenerator.codeless.actions.AwaitElementToBeVisibleActionConfig;
 import io.perforator.sdk.loadgenerator.codeless.actions.OpenActionConfig;
 import io.perforator.sdk.loadgenerator.codeless.actions.SleepActionConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
@@ -40,9 +41,17 @@ public class CodelessLoadGeneratorTest extends AbstractLoadGeneratorTest<Codeles
                         .timeout(OpenActionConfig.DEFAULT_TIMEOUT)
                         .url(verificationsBaseUrl)
                         .build(),
+                AwaitElementToBeVisibleActionConfig.builder()
+                        .cssSelector("#async-content")
+                        .timeout(AwaitElementToBeVisibleActionConfig.DEFAULT_TIMEOUT)
+                        .build(),
                 OpenActionConfig.builder()
                         .timeout(OpenActionConfig.DEFAULT_TIMEOUT)
                         .url(verificationsBaseUrl + "/satisne")
+                        .build(),
+                AwaitElementToBeVisibleActionConfig.builder()
+                        .cssSelector("#async-content")
+                        .timeout(AwaitElementToBeVisibleActionConfig.DEFAULT_TIMEOUT)
                         .build(),
                 SleepActionConfig.builder()
                         .timeout("1s-2s")
