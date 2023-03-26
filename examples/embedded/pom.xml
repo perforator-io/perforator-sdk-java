@@ -11,7 +11,7 @@
         <java.version>11</java.version>
         <maven.minimal.version>3.6.3</maven.minimal.version>
         <maven.enforcer.plugin.version>3.0.0</maven.enforcer.plugin.version>
-        <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         
         <!-- dependency versions -->
         <perforator.version>1.2.3-SNAPSHOT</perforator.version>
