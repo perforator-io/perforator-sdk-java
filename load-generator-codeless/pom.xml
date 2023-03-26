@@ -106,10 +106,14 @@
                 <configuration>
                     <failIfNoTests>true</failIfNoTests>
                     <trimStackTrace>false</trimStackTrace>
+                    <runOrder>alphabetical</runOrder>
                     <includes>
                         <include>**/*Spec.java</include>
                         <include>**/*Test.java</include>
                     </includes>
+                    <systemPropertyVariables>
+                        <junit.jupiter.testmethod.order.default>org.junit.jupiter.api.MethodOrderer$MethodName</junit.jupiter.testmethod.order.default>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>
