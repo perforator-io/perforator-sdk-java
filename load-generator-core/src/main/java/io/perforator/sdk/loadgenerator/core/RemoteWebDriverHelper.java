@@ -58,7 +58,7 @@ public class RemoteWebDriverHelper {
         if (suiteConfig.getChromeMode() == ChromeMode.headless) {
             chromeOptions.setHeadless(false);
             chromeOptions.addArguments(
-                    "--headless=chrome",
+                    "--headless=new",
                     "--no-sandbox",
                     "--disable-gpu",
                     "--disable-dev-shm-usage"
