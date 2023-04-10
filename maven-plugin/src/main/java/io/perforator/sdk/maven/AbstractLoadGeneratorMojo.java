@@ -920,6 +920,17 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
     )
     protected String webDriverWindowHeight;
     
+    /**
+     * Allow browsers connecting to web-sites with insecure HTTPS certificates.
+     */
+    @Parameter(
+            required = false,
+            defaultValue = SuiteConfig.DEFAULT_WEB_DRIVER_ACCEPT_INSECURE_CERTS_S,
+            alias = SuiteConfig.Fields.webDriverAcceptInsecureCerts,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverAcceptInsecureCerts
+    )
+    protected String webDriverAcceptInsecureCerts;
+    
     protected abstract List<SUITE_PARAMS_TYPE> getSuitesParams() throws MojoFailureException;
 
     protected abstract Class buildLoadGeneratorClass(ClassLoader classLoader) throws MojoFailureException;

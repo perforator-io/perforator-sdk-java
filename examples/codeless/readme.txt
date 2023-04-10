@@ -804,6 +804,16 @@ a look at the below docs describing available options for the config.yml
     # - Environment variable name: SUITE_WEBDRIVERWINDOWHEIGHT                 #
     ############################################################################
     #webDriverWindowHeight: 1080
+
+    ############################################################################
+    # Allow browsers connecting to web-sites with insecure HTTPS certificates. #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverAcceptInsecureCerts               #
+    # - Environment variable name: SUITE_WEBDRIVERACCEPTINSECURECERTS          #
+    ############################################################################
+    #webDriverAcceptInsecureCerts: false
     
     ############################################################################
     # Props is an array of key-value pairs which can be referenced in the      #

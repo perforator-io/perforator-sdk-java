@@ -64,6 +64,10 @@ public class RemoteWebDriverHelper {
                     "--disable-dev-shm-usage"
             );
         }
+        
+        chromeOptions.setAcceptInsecureCerts(
+                suiteConfig.isWebDriverAcceptInsecureCerts()
+        );
 
         return applyDefaults(
                 new ChromeDriver(

@@ -70,6 +70,10 @@ final class RemoteWebDriverManagerImpl implements RemoteWebDriverManager {
             if(suiteConfig.getChromeMode() == ChromeMode.headless) {
                 chromeOptions.addArguments("--headless=new");
             }
+            
+            chromeOptions.setAcceptInsecureCerts(
+                    suiteConfig.isWebDriverAcceptInsecureCerts()
+            );
 
             remoteWebDriver = new RemoteWebDriver(
                     commandExecutor,
