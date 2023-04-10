@@ -482,6 +482,81 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
             property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.usePreAllocatedIPs
     )
     protected String usePreAllocatedIPs;
+    
+    /**
+     * It may be a case when you need precise control over capturing HTTP request 
+     * headers by browsers running in the cloud and persisting it for analytics 
+     * purposes. 
+     * 
+     * For example, your security team doesn't want sensitive information from 
+     * any HTTP request headers to be preserved by external platforms.
+     * 
+     * The dataCapturingIncludeRequestHeaders property allows you to control 
+     * capturing of any HTTP request headers.
+     */
+    @Parameter(
+            required = false,
+            defaultValue = LoadGeneratorConfig.DEFAULT_DATA_CAPTURING_INCLUDE_REQUEST_HEADERS_S,
+            alias = LoadGeneratorConfig.Fields.dataCapturingIncludeRequestHeaders,
+            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.dataCapturingIncludeRequestHeaders
+    )
+    protected String dataCapturingIncludeRequestHeaders;
+    
+    /**
+     * It may be a case when you need precise control over capturing HTTP requests 
+     * body by browsers running in the cloud and persisting it for analytics 
+     * purposes.
+     * 
+     * For example, your security team doesn't want sensitive information from 
+     * any HTTP request body to be preserved by external platforms.
+     * 
+     * The dataCapturingIncludeRequestBody property allows you to control capturing 
+     * of any HTTP request body.
+     */
+    @Parameter(
+            required = false,
+            defaultValue = LoadGeneratorConfig.DEFAULT_DATA_CAPTURING_INCLUDE_REQUEST_BODY_S,
+            alias = LoadGeneratorConfig.Fields.dataCapturingIncludeRequestBody,
+            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.dataCapturingIncludeRequestBody
+    )
+    protected String dataCapturingIncludeRequestBody;
+    
+    /**
+     * It may be a case when you need precise control over capturing HTTP response 
+     * headers by browsers running in the cloud and persisting it for analytics 
+     * purposes.
+     * 
+     * For example, your security team doesn't want sensitive information from any 
+     * HTTP response headers to be preserved by external platforms.
+     * 
+     * The dataCapturingIncludeResponseHeaders property allows you to control capturing 
+     * of any HTTP response headers.
+     */
+    @Parameter(
+            required = false,
+            defaultValue = LoadGeneratorConfig.DEFAULT_DATA_CAPTURING_INCLUDE_RESPONSE_HEADERS_S,
+            alias = LoadGeneratorConfig.Fields.dataCapturingIncludeResponseHeaders,
+            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.dataCapturingIncludeResponseHeaders
+    )
+    protected String dataCapturingIncludeResponseHeaders;
+    
+    /**
+     * It may be a case when you need precise control over capturing HTTP responses 
+     * body by browsers running in the cloud and persisting it for analytics purposes. 
+     * 
+     * For example, your security team doesn't want sensitive information from 
+     * any HTTP response body to be preserved by external platforms.
+     * 
+     * The 'dataCapturingIncludeResponseBody' property allows you to control capturing 
+     * of any HTTP response body.
+     */
+    @Parameter(
+            required = false,
+            defaultValue = LoadGeneratorConfig.DEFAULT_DATA_CAPTURING_INCLUDE_RESPONSE_BODY_S,
+            alias = LoadGeneratorConfig.Fields.dataCapturingIncludeResponseBody,
+            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.dataCapturingIncludeResponseBody
+    )
+    protected String dataCapturingIncludeResponseBody;
 
     /**
      * It might be a case when you would like to exclude specific HTTP requests

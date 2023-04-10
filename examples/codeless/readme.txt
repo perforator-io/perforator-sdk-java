@@ -423,6 +423,78 @@ a look at the below docs describing available options for the config.yml
   #usePreAllocatedIPs: false
 
   ##############################################################################
+  # It may be a case when you need precise control over capturing HTTP request #
+  # headers by browsers running in the cloud and persisting it for analytics   #
+  # purposes.                                                                  #
+  #                                                                            #
+  # For example, your security team doesn't want sensitive information from any#
+  # HTTP request headers to be preserved by external platforms.                #
+  #                                                                            #
+  # The 'dataCapturingIncludeRequestHeaders' property allows you to control    #
+  # capturing of any HTTP request headers.                                     #
+  #                                                                            #
+  # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.dataCapturingIncludeRequestHeaders   #
+  # - Env variable name: LOADGENERATOR_DATACAPTURINGINCLUDEREQUESTHEADERS      #
+  ##############################################################################
+  #dataCapturingIncludeRequestHeaders: true
+
+  ##############################################################################
+  # It may be a case when you need precise control over capturing HTTP requests#
+  # body by browsers running in the cloud and persisting it for analytics      #
+  # purposes.                                                                  #
+  #                                                                            #
+  # For example, your security team doesn't want sensitive information from any#
+  # HTTP request body to be preserved by external platforms.                   #
+  #                                                                            #
+  # The 'dataCapturingIncludeRequestBody' property allows you to control       #
+  # capturing of any HTTP request body.                                        #
+  #                                                                            #
+  # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.dataCapturingIncludeRequestBody      #
+  # - Env variable name: LOADGENERATOR_DATACAPTURINGINCLUDEREQUESTBODY         #
+  ##############################################################################
+  #dataCapturingIncludeRequestBody: true
+
+  ##############################################################################
+  # It may be a case when you need precise control over capturing HTTP response#
+  # headers by browsers running in the cloud and persisting it for analytics   #
+  # purposes.                                                                  #
+  #                                                                            #
+  # For example, your security team doesn't want sensitive information from any#
+  # HTTP response headers to be preserved by external platforms.               #
+  #                                                                            #
+  # The 'dataCapturingIncludeResponseHeaders' property allows you to control   #
+  # capturing of any HTTP response headers.                                    #
+  #                                                                            #
+  # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.dataCapturingIncludeResponseHeaders  #
+  # - Env variable name: LOADGENERATOR_DATACAPTURINGINCLUDERESPONSEHEADERS     #
+  ##############################################################################
+  #dataCapturingIncludeResponseHeaders: true
+
+  ##############################################################################
+  # It may be a case when you need precise control over capturing HTTP         #
+  # responses body by browsers running in the cloud and persisting it for      #
+  # analytics purposes.                                                        #
+  #                                                                            #
+  # For example, your security team doesn't want sensitive information from any#
+  # HTTP response body to be preserved by external platforms.                  #
+  #                                                                            #
+  # The 'dataCapturingIncludeResponseBody' property allows you to control      #
+  # capturing of any HTTP response body.                                       #
+  #                                                                            #
+  # This is an optional property.                                              #
+  # Overrides:                                                                 #
+  # - System property name: loadGenerator.dataCapturingIncludeResponseBody     #
+  # - Env variable name: LOADGENERATOR_DATACAPTURINGINCLUDERESPONSEBODY        #
+  ##############################################################################
+  #dataCapturingIncludeResponseBody: true
+
+  ##############################################################################
   # It might be a case when you would like to exclude specific HTTP requests   #
   # from capturing by browsers running in the cloud and avoid storing such     #
   # requests in the analytical system.                                         #

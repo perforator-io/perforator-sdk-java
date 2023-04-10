@@ -149,6 +149,30 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
                 );
             }
             
+            if(!loadGeneratorConfig.isDataCapturingIncludeRequestBody()) {
+                LOGGER.warn(
+                        "Browser cloud will avoid capturing HTTP requests body"
+                );
+            }
+            
+            if(!loadGeneratorConfig.isDataCapturingIncludeRequestHeaders()) {
+                LOGGER.warn(
+                        "Browser cloud will avoid capturing HTTP requests headers"
+                );
+            }
+            
+            if(!loadGeneratorConfig.isDataCapturingIncludeResponseBody()) {
+                LOGGER.warn(
+                        "Browser cloud will avoid capturing HTTP responses body"
+                );
+            }
+            
+            if(!loadGeneratorConfig.isDataCapturingIncludeResponseHeaders()) {
+                LOGGER.warn(
+                        "Browser cloud will avoid capturing HTTP responses headers"
+                );
+            }
+            
             if(browserCloudHttpHeaders != null && !browserCloudHttpHeaders.isEmpty()) {
                 LOGGER.info(
                         "Browser cloud will expose additional headers for all outgoing HTTP requests: {}",
@@ -465,6 +489,19 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
         payload.setDataCapturingExcludes(dataCapturingExcludes);
         payload.setHttpHeaders(browserCloudHttpHeaders);
         payload.setHosts(browserCloudHosts);
+        
+        payload.setDataCapturingIncludeRequestHeaders(
+                loadGeneratorContext.getLoadGeneratorConfig().isDataCapturingIncludeRequestHeaders()
+        );
+        payload.setDataCapturingIncludeRequestBody(
+                loadGeneratorContext.getLoadGeneratorConfig().isDataCapturingIncludeRequestBody()
+        );
+        payload.setDataCapturingIncludeResponseHeaders(
+                loadGeneratorContext.getLoadGeneratorConfig().isDataCapturingIncludeResponseHeaders()
+        );
+        payload.setDataCapturingIncludeResponseBody(
+                loadGeneratorContext.getLoadGeneratorConfig().isDataCapturingIncludeResponseBody()
+        );
 
         return loadGeneratorContext.getBrowserCloudsApi().createBrowserCloud(
                 projectKey,
