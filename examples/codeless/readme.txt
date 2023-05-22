@@ -533,7 +533,7 @@ a look at the below docs describing available options for the config.yml
   #  Your-custom-header: your custom http headers value
 
   ##############################################################################
-  # You can set the ‘browserCloudHosts’ parameter if you would like            #
+  # You can set the 'browserCloudHosts' parameter if you would like            #
   # to propagate additional /etc/hosts to remote browsers.                     #
   # It might be a case where a target website domain name is not resolvable via#
   # public DNS servers. So, to reach such domains from the browsers started in #
@@ -548,6 +548,22 @@ a look at the below docs describing available options for the config.yml
   #browserCloudHosts:
   #  localhost: 127.0.0.1
   #  example.com: 1.2.3.4
+
+  ##############################################################################
+  # You can set the 'constants' key-value map to allow common values reuse     #
+  # across different suites and actions.                                       #
+  #                                                                            #
+  # Suite actions can refer to a value from a constants map using the following#
+  # syntax: ${key_name}                                                        #
+  #                                                                            #
+  # This is an optional property.                                              #
+  ##############################################################################
+  #constants:
+  #  suite.webDriverFluentWaitTimeout: 30s
+  #  baseUrl: 'https://example.com'
+  #  dashboardUrl: '${baseUrl}/dashboard'
+  #  pom.nav: 'nav#main'
+  #  pom.nav.home: '${pom.nav} ul li:nth-child(1)'
 
 ################################################################################
 # Every load test has a set of one or more named suites.                       #

@@ -71,7 +71,7 @@ public class CSVUtils {
                 headerCells = strings;
                 return;
             }
-            Map<String, String> formattingMapSrc = new HashMap<>();
+            Map<String, String> formattingMapSrc = new LinkedHashMap<>();
             for (int i = 0; i < headerCells.length; i++) {
                 String key = headerCells[i];
                 String value = strings[i];

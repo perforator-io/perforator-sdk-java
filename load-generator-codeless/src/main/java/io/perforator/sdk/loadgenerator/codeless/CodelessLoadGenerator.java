@@ -54,7 +54,9 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
     }
     
     private static List<CodelessSuiteConfig> preprocessConfigs(CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suites) {
+        FormattingMap constants = loadGeneratorConfig.getConstants();
         List<String> propsFiles = new ArrayList<>(suites.size());
+        
         for (CodelessSuiteConfig suiteConfig : suites) {
             CodelessSuiteConfig suite = CodelessSuiteConfigValidator.validateSuiteProps(suiteConfig);
 
@@ -63,6 +65,23 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
 
             propsFiles.add(propsFile);
             suite.getProps().addAll(propsFromCSV);
+            
+            if (constants != null && !constants.isEmpty()) {
+                List<FormattingMap> adjustedProps = new ArrayList<>();
+
+                if (suite.getProps().isEmpty()) {
+                    adjustedProps.add(constants);
+                } else {
+                    for (FormattingMap props : suite.getProps()) {
+                        adjustedProps.add(
+                                new FormattingMap(constants, props)
+                        );
+                    }
+                }
+
+                suite.setProps(adjustedProps);
+            }
+            
             suite.setPropsFile(null);
         }
 

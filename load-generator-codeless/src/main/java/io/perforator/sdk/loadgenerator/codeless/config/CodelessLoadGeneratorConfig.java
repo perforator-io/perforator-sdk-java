@@ -11,13 +11,23 @@
 package io.perforator.sdk.loadgenerator.codeless.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.function.Function;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
-
-import java.util.function.Function;
 
 @ToString
 @FieldNameConstants
@@ -43,10 +53,16 @@ public class CodelessLoadGeneratorConfig extends LoadGeneratorConfig {
     @FieldNameConstants.Include
     private boolean logActions = DEFAULT_LOG_ACTIONS;
 
+    @JsonDeserialize(using = ConstantsDeserializer.class)
     @Getter
     @Setter
     @FieldNameConstants.Include
-    protected SelectorType defaultSelectorType = DEFAULT_SELECTOR_TYPE;
+    private FormattingMap constants = FormattingMap.EMPTY;
+
+    @Getter
+    @Setter
+    @FieldNameConstants.Include
+    private SelectorType defaultSelectorType = DEFAULT_SELECTOR_TYPE;
 
     public CodelessLoadGeneratorConfig() {
         applyDefaults();
@@ -54,6 +70,33 @@ public class CodelessLoadGeneratorConfig extends LoadGeneratorConfig {
 
     public CodelessLoadGeneratorConfig(Function<String, String>... defaultsProviders) {
         applyDefaults(defaultsProviders);
+    }
+
+    public static class ConstantsDeserializer extends JsonDeserializer<FormattingMap> {
+
+        @Override
+        public FormattingMap deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
+            ObjectCodec oc = jp.getCodec();
+
+            if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
+                LinkedHashMap<String, String> item = oc.readValue(
+                        jp,
+                        new TypeReference<LinkedHashMap<String, String>>() {}
+                );
+
+                if (item == null || item.isEmpty()) {
+                    return FormattingMap.EMPTY;
+                }
+
+                return new FormattingMap(item);
+            }
+
+            throw JsonMappingException.from(
+                    dc,
+                    "'constants' should be an object"
+            );
+        }
+
     }
 
 }

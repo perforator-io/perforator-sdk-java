@@ -18,7 +18,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -124,15 +123,18 @@ public class ConfigFactoryTest {
         return getYamlConfigs(false);
     }
 
-    private List<Path> getYamlConfigs(Boolean valid) {
+    private List<Path> getYamlConfigs(boolean isValid) {
         File folder = getFileFromResource("yaml");
-        FilenameFilter fileFilter = null;
-        if (valid != null) {
-            fileFilter = (dir, name) -> valid != name.contains("not_valid");
-        }
-        return Arrays.stream(folder.listFiles(fileFilter))
-                .map(File::toPath)
-                .collect(Collectors.toList());
+        
+        return Arrays.stream(
+                folder.listFiles(
+                    (dir, name) -> isValid != name.contains("not_valid")
+                )
+        ).map(
+                File::toPath
+        ).collect(
+                Collectors.toList()
+        );
     }
 
     private File getFileFromResource(String fileName) {

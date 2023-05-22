@@ -23,15 +23,17 @@ public class FormattingMap implements Map<String, String> {
     private final String availablePlaceholders;
     private final int hashCode;
 
-    public FormattingMap(Map<String, String> src) {
-        this.map = new HashMap<>();
-
-        if (src != null && !src.isEmpty()) {
-            for (Entry<String, String> entry : src.entrySet()) {
-                map.put(
-                        entry.getKey().trim().intern(),
-                        entry.getValue() != null ? entry.getValue().trim().intern() : null
-                );
+    public FormattingMap(Map<String, String>... srcMaps) {
+        this.map = new LinkedHashMap<>();
+        
+        if (srcMaps != null && srcMaps.length > 0) {
+            for (Map<String, String> src : srcMaps) {
+                for (Entry<String, String> entry : src.entrySet()) {
+                    map.put(
+                            entry.getKey().trim().intern(),
+                            entry.getValue() != null ? entry.getValue().trim().intern() : null
+                    );
+                }
             }
         }
 
@@ -158,5 +160,12 @@ public class FormattingMap implements Map<String, String> {
     public Set<Entry<String, String>> entrySet() {
         return Collections.unmodifiableSet(map.entrySet());
     }
+
+    @Override
+    public String toString() {
+        return map.toString();
+    }
+    
+    
 
 }

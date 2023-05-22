@@ -48,9 +48,13 @@ public final class CodelessConfigFactory {
             result.getLoadGeneratorConfig().applyDefaults();
 
             if (result.getSuiteConfigs() != null && !result.getSuiteConfigs().isEmpty()) {
-                result.getSuiteConfigs().forEach(
-                        CodelessSuiteConfig::applyDefaults
-                );
+                for (CodelessSuiteConfig suiteConfig : result.getSuiteConfigs()) {
+                    suiteConfig.applyDefaults(
+                            System::getProperty, 
+                            System::getenv,
+                            result.getLoadGeneratorConfig().getConstants()::get
+                    );
+                }
             }
         }
 

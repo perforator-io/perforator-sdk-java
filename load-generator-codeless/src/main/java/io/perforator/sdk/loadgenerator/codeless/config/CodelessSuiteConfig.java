@@ -81,9 +81,9 @@ public class CodelessSuiteConfig extends SuiteConfig {
             ObjectCodec oc = jp.getCodec();
 
             if (jp.getCurrentToken() == JsonToken.START_ARRAY) {
-                List<Map<String, String>> items = oc.readValue(
+                List<LinkedHashMap<String, String>> items = oc.readValue(
                         jp,
-                        new TypeReference<List<Map<String, String>>>() {
+                        new TypeReference<List<LinkedHashMap<String, String>>>() {
                         }
                 );
 
@@ -97,9 +97,9 @@ public class CodelessSuiteConfig extends SuiteConfig {
             }
 
             if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
-                Map<String, String> item = oc.readValue(
+                LinkedHashMap<String, String> item = oc.readValue(
                         jp,
-                        new TypeReference<Map<String, String>>() {
+                        new TypeReference<LinkedHashMap<String, String>>() {
                         }
                 );
 
