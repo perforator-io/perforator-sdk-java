@@ -55,16 +55,18 @@ public class CloseAlertActionProcessor extends AbstractActionProcessor<CloseAler
                                 actionValue
                         )
                 )
-                .text(getOptionalNestedField(
-                        CloseAlertActionConfig.Fields.text,
-                        actionValue,
-                        null
-                ))
+                .text(
+                        getOptionalNestedField(
+                                CloseAlertActionConfig.Fields.text,
+                                actionValue,
+                                null
+                        )
+                )
                 .timeout(
                         getOptionalNestedField(
                                 CloseAlertActionConfig.Fields.timeout,
                                 actionValue,
-                                CloseAlertActionConfig.DEFAULT_TIMEOUT
+                                null
                         )
                 )
                 .build();
@@ -97,6 +99,7 @@ public class CloseAlertActionProcessor extends AbstractActionProcessor<CloseAler
                         buildDurationForActionInstance(
                                 CloseAlertActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
+                                suiteConfig.getWebDriverFluentWaitTimeout(),
                                 formatter
                         )
                 )

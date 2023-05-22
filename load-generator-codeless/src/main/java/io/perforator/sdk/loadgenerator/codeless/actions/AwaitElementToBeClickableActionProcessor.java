@@ -50,7 +50,7 @@ public class AwaitElementToBeClickableActionProcessor extends AbstractSelectorAc
                         getOptionalNestedField(
                                 AwaitElementToBeClickableActionConfig.Fields.timeout,
                                 actionValue,
-                                AwaitElementToBeClickableActionConfig.DEFAULT_TIMEOUT
+                                null
                         )
                 )
                 .build();
@@ -81,6 +81,7 @@ public class AwaitElementToBeClickableActionProcessor extends AbstractSelectorAc
                         buildDurationForActionInstance(
                                 AwaitElementToBeClickableActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
+                                suiteConfig.getWebDriverFluentWaitTimeout(),
                                 formatter
                         )
                 )

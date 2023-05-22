@@ -20,14 +20,19 @@ suites:
         - awaitAlertToBePresent: '61s'
         - awaitPageLoad: '61s'
         - awaitElementToBeClickable:
+            timeout: ~
             cssSelector: '#upload-success-span'
         - awaitElementToBeVisible:
+            timeout: 20s
             cssSelector: '#upload-btn'
         - awaitElementToBeInvisible:
+            timeout: null
             cssSelector: '#upload-btn'
         - awaitElementToBeEnabled:
+            timeout:
             cssSelector: '#upload-btn'
         - awaitElementToBeDisabled:
+            timeout: # null - should be default to suite.webDriverFluentWaitTimeout
             cssSelector: '#upload-btn'
         - awaitAlertToBePresent:
             timeout: '61s'

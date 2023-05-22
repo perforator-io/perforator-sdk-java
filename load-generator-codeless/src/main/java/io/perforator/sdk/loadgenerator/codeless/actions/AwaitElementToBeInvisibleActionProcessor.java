@@ -51,7 +51,7 @@ public class AwaitElementToBeInvisibleActionProcessor extends AbstractSelectorAc
                         getOptionalNestedField(
                                 AwaitElementToBeInvisibleActionConfig.Fields.timeout,
                                 actionValue,
-                                AwaitElementToBeInvisibleActionConfig.DEFAULT_TIMEOUT
+                                null
                         )
                 )
                 .build();
@@ -77,6 +77,7 @@ public class AwaitElementToBeInvisibleActionProcessor extends AbstractSelectorAc
                         buildDurationForActionInstance(
                                 AwaitElementToBeInvisibleActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
+                                suiteConfig.getWebDriverFluentWaitTimeout(),
                                 formatter
                         )
                 )

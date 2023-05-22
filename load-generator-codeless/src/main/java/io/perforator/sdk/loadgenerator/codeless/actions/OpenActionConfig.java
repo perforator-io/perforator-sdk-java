@@ -10,8 +10,6 @@
  */
 package io.perforator.sdk.loadgenerator.codeless.actions;
 
-import io.perforator.sdk.loadgenerator.core.configs.Configurable;
-import java.time.Duration;
 import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.FieldNameConstants;
@@ -22,8 +20,6 @@ import lombok.experimental.FieldNameConstants;
 public class OpenActionConfig implements ActionConfig {
 
     public static final String DEFAULT_ACTION_NAME = "open";
-    public static final String DEFAULT_TIMEOUT = "30s";
-    public static final Duration DEFAULT_TIMEOUT_AS_DURATION = Configurable.parseDuration(DEFAULT_TIMEOUT);
 
     @FieldNameConstants.Include
     private final String actionName = DEFAULT_ACTION_NAME;

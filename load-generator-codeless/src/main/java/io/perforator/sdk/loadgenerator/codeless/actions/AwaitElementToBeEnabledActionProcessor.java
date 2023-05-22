@@ -78,7 +78,7 @@ public class AwaitElementToBeEnabledActionProcessor extends AbstractSelectorActi
                         getOptionalNestedField(
                                 AwaitElementToBeEnabledActionConfig.Fields.timeout,
                                 actionValue,
-                                AwaitElementToBeEnabledActionConfig.DEFAULT_TIMEOUT
+                                null
                         )
                 )
                 .build();
@@ -104,6 +104,7 @@ public class AwaitElementToBeEnabledActionProcessor extends AbstractSelectorActi
                         buildDurationForActionInstance(
                                 AwaitElementToBeEnabledActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
+                                suiteConfig.getWebDriverFluentWaitTimeout(),
                                 formatter
                         )
                 )

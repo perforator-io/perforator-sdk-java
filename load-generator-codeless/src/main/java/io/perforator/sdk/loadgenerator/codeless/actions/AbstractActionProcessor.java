@@ -228,37 +228,24 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
         return formattedValue;
     }
 
-    protected Duration buildDurationForActionInstance(String fieldName, String configDuration, FormattingMap formatter) {
-        return buildDurationForActionInstance(fieldName, configDuration, formatter, true);
+    protected Duration buildDurationForActionInstance(String fieldName, String configDuration, Duration defaultDuration, FormattingMap formatter) {
+        return buildDurationForActionInstance(fieldName, configDuration, defaultDuration, formatter, true);
     }
 
-    protected Duration buildDurationForActionInstance(String fieldName, String configDuration, FormattingMap formatter, boolean required) {
-        String formattedTimeout = formatter.format(configDuration);
+    protected Duration buildDurationForActionInstance(String fieldName, String configDuration, Duration defaultDuration, FormattingMap formatter, boolean required) {
+        Duration result = defaultDuration;
+        
+        if (configDuration != null && !configDuration.isBlank()) {
+            String formattedTimeout = formatter.format(configDuration);
 
-        if (required && (formattedTimeout == null || formattedTimeout.isEmpty())) {
-            throw new RuntimeException(
-                    actionName
-                            + "."
-                            + fieldName
-                            + " = "
-                            + configDuration
-                            + " => "
-                            + formattedTimeout
-                            + " should be present"
-            );
-        }
-
-        if (!required && (formattedTimeout == null || formattedTimeout.isEmpty())) {
-            return null;
-        }
-
-        try {
-            return Configurable.parseDuration(
-                    formattedTimeout
-            );
-        } catch (RuntimeException e) {
-            throw new RuntimeException(
-                    actionName
+            if (formattedTimeout != null && !formattedTimeout.isBlank()) {
+                try {
+                    result = Configurable.parseDuration(
+                            formattedTimeout
+                    );
+                } catch (RuntimeException e) {
+                    throw new RuntimeException(
+                            actionName
                             + "."
                             + fieldName
                             + " = "
@@ -266,9 +253,22 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
                             + " => "
                             + formattedTimeout
                             + " is invalid",
-                    e
+                            e
+                    );
+                }
+            }
+        }
+        
+        if (required && result == null) {
+            throw new RuntimeException(
+                    actionName
+                    + "."
+                    + fieldName
+                    + " is required"
             );
         }
+        
+        return result;
     }
 
     protected RandomDuration buildRandomDurationForActionInstance(String fieldName, String configDuration, FormattingMap formatter) {
@@ -281,8 +281,8 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
         if (formattedTimeout.contains("-")) {
             String[] minmax = formattedTimeout.split("-");
 
-            Duration from = buildDurationForActionInstance(fieldName, minmax[0], formatter, required);
-            Duration to = buildDurationForActionInstance(fieldName, minmax[1], formatter, required);
+            Duration from = buildDurationForActionInstance(fieldName, minmax[0], null, formatter, required);
+            Duration to = buildDurationForActionInstance(fieldName, minmax[1], null, formatter, required);
 
             return new RandomDuration(
                     from,
@@ -290,7 +290,7 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
             );
         } else {
             return new RandomDuration(
-                    buildDurationForActionInstance(fieldName, configDuration, formatter, required)
+                    buildDurationForActionInstance(fieldName, configDuration, null, formatter, required)
             );
         }
     }

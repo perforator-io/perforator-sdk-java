@@ -24,6 +24,7 @@ import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.codeless.actions.ActionConfig;
 import io.perforator.sdk.loadgenerator.codeless.actions.ActionProcessor;
 import io.perforator.sdk.loadgenerator.codeless.actions.ActionProcessorsRegistry;
+import io.perforator.sdk.loadgenerator.core.configs.Configurable;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +32,7 @@ import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
 
@@ -38,6 +40,14 @@ import java.util.function.Function;
 @FieldNameConstants
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CodelessSuiteConfig extends SuiteConfig {
+    
+    public static final String DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT_S = "30s";
+    public static final Duration DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT = Configurable.parseDuration(DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT_S);
+    
+    @Getter
+    @Setter
+    @FieldNameConstants.Include
+    private Duration webDriverFluentWaitTimeout = DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT;
 
     @JsonDeserialize(using = PropsDeserializer.class)
     @Getter

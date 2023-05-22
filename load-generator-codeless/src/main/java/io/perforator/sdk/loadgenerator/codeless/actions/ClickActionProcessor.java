@@ -52,7 +52,7 @@ public class ClickActionProcessor extends AbstractSelectorActionProcessor<ClickA
                         getOptionalNestedField(
                                 ClickActionConfig.Fields.timeout,
                                 actionValue,
-                                ClickActionConfig.DEFAULT_TIMEOUT
+                                null
                         )
                 )
                 .build();
@@ -78,6 +78,7 @@ public class ClickActionProcessor extends AbstractSelectorActionProcessor<ClickA
                         buildDurationForActionInstance(
                                 ClickActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
+                                suiteConfig.getWebDriverFluentWaitTimeout(),
                                 formatter
                         )
                 )

@@ -52,7 +52,7 @@ public class FocusActionProcessor extends AbstractSelectorActionProcessor<FocusA
                         getOptionalNestedField(
                                 FocusActionConfig.Fields.timeout,
                                 actionValue,
-                                FocusActionConfig.DEFAULT_TIMEOUT
+                                null
                         )
                 )
                 .build();
@@ -78,6 +78,7 @@ public class FocusActionProcessor extends AbstractSelectorActionProcessor<FocusA
                         buildDurationForActionInstance(
                                 FocusActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
+                                suiteConfig.getWebDriverFluentWaitTimeout(),
                                 formatter
                         )
                 )

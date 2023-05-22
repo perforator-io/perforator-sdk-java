@@ -20,7 +20,6 @@ import lombok.experimental.FieldNameConstants;
 public class CloseAlertActionConfig implements ActionConfig {
 
     public static final String DEFAULT_ACTION_NAME = "closeAlert";
-    public static final String DEFAULT_TIMEOUT = "30s";
 
     @FieldNameConstants.Include
     private final String actionName = DEFAULT_ACTION_NAME;

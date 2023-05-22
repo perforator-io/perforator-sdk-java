@@ -58,7 +58,7 @@ public class InputActionProcessor extends AbstractSelectorActionProcessor<InputA
                         getOptionalNestedField(
                                 InputActionConfig.Fields.timeout,
                                 actionValue,
-                                InputActionConfig.DEFAULT_TIMEOUT
+                                null
                         )
                 )
                 .build();
@@ -91,6 +91,7 @@ public class InputActionProcessor extends AbstractSelectorActionProcessor<InputA
                         buildDurationForActionInstance(
                                 InputActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
+                                suiteConfig.getWebDriverFluentWaitTimeout(),
                                 formatter
                         )
                 )

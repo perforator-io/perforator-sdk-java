@@ -45,6 +45,7 @@ suites:
         - focus: '#file-input'
         - input:
             cssSelector: '#file-input'
+            timeout: ~
             value: >-
               /local_path/file.json
         - awaitElementToBeClickable:

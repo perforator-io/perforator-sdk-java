@@ -20,7 +20,6 @@ import lombok.experimental.FieldNameConstants;
 public class ScrollActionConfig implements SelectorActionConfig {
 
     public static final String DEFAULT_ACTION_NAME = "scroll";
-    public static final String DEFAULT_TIMEOUT = "30s";
 
     @FieldNameConstants.Include
     private final String actionName = DEFAULT_ACTION_NAME;

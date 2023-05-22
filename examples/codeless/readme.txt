@@ -763,6 +763,17 @@ a look at the below docs describing available options for the config.yml
     #webDriverSessionPageLoadTimeout: 30s
 
     ############################################################################
+    # Selenium timeout to poll for action to be completed.                     #
+    # This is an equivalent of WebDriverWait / FluentWait.                     #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverFluentWaitTimeout                 #
+    # - Environment variable name: SUITE_WEBDRIVERFLUENTWAITTIMEOUT            #
+    ############################################################################
+    #webDriverFluentWaitTimeout: 30s
+
+    ############################################################################
     # Keep alive remote browser during sleep actions.                          #
     #                                                                          #
     # This is an optional property.                                            #
@@ -916,7 +927,9 @@ a look at the below docs describing available options for the config.yml
         ########################################################################
         # Action to open specified URL in the current browser window.          #
         #                                                                      #
-        # Default timeout to open the page is 30s.                             #
+        # Default timeout to open the page is inherited from                   #
+        # suite.webDriverSessionPageLoadTimeout, which is 30s by default.      #
+        #                                                                      #
         # An action fails if such a timeout is reached, but a page is still    #
         # loading.                                                             #
         #                                                                      #
@@ -958,7 +971,9 @@ a look at the below docs describing available options for the config.yml
         # it is visible. Visibility means that the element is not only         #
         # displayed but also has a height and width that is greater than 0.    #
         #                                                                      #
-        # Default timeout to await element to be visible is 30s.               #
+        # Default timeout to await element to be visible is inherited from     #
+        # suite.webDriverFluentWaitTimeout, which is 30s by default.           #
+        #                                                                      #
         # An action fails if such a timeout is reached, but specified element  #
         # is not visible yet.                                                  #
         #                                                                      #
@@ -991,7 +1006,9 @@ a look at the below docs describing available options for the config.yml
         # Element is clickable when it is visible on the page, it is enabled,  #
         # and you can click on it.                                             #
         #                                                                      #
-        # Default timeout to await element to be clickable is 30s.             #
+        # Default timeout to await element to be clickable is inherited from   #
+        # suite.webDriverFluentWaitTimeout, which is 30s by default.           #
+        #                                                                      #
         # An action fails if such a timeout is reached, but specified element  #
         # is not clickable yet.                                                #
         #                                                                      #
@@ -1025,7 +1042,9 @@ a look at the below docs describing available options for the config.yml
         # it is visible, and it has a *disabled* attribute turned on.          #
         # Typically this is html input element.                                #
         #                                                                      #
-        # Default timeout to await element to be disabled is 30s.              #
+        # Default timeout to await element to be disabled is inherited from    #
+        # suite.webDriverFluentWaitTimeout, which is 30s by default.           #
+        #                                                                      #
         # An action fails if such a timeout is reached, but specified element  #
         # is not disabled yet.                                                 #
         #                                                                      #
@@ -1058,7 +1077,9 @@ a look at the below docs describing available options for the config.yml
         # Element is enabled when it is present in the DOM tree,               #
         # it is visible, and it has no *disabled* attribute.                   #
         #                                                                      #
-        # Default timeout to await element to be enabled is 30s.               #
+        # Default timeout to await element to be enabled is inherited from     #
+        # suite.webDriverFluentWaitTimeout, which is 30s by default.           #
+        #                                                                      #
         # An action fails if such a timeout is reached, but specified element  #
         # is not enabled yet.                                                  #
         #                                                                      #
@@ -1091,7 +1112,9 @@ a look at the below docs describing available options for the config.yml
         # Element is invisible when it is either invisible or not present      #
         # in the DOM tree.                                                     #
         #                                                                      #
-        # Default timeout to await element to be invisible is 30s.             #
+        # Default timeout to await element to be invisible is inherited from   #
+        # suite.webDriverFluentWaitTimeout, which is 30s by default.           #
+        #                                                                      #
         # An action fails if such a timeout is reached, but specified element  #
         # is not invisible yet.                                                #
         #                                                                      #
@@ -1132,7 +1155,9 @@ a look at the below docs describing available options for the config.yml
         # prerequisite, an action waits till element is present in the DOM     #
         # tree, it is visible and enabled.                                     #
         #                                                                      #
-        # Default timeout to await element to be clickable is 30s.             #
+        # Default timeout to await element to be clickable is inherited from   #
+        # suite.webDriverFluentWaitTimeout, which is 30s by default.           #
+        #                                                                      #
         # An action fails if such a timeout is reached, but specified element  #
         # is not clickable yet.                                                #
         #                                                                      #
@@ -1153,7 +1178,9 @@ a look at the below docs describing available options for the config.yml
         # Close alert action can be performed only when an alert is shown, so  #
         # as a prerequisite, an action waits till alert is present.            #
         #                                                                      #
-        # Default timeout to await alert to be shown is 30s.                   #
+        # Default timeout to await alert to be shown is inherited from         #
+        # suite.webDriverFluentWaitTimeout, which is 30s by default.           #
+        #                                                                      #
         # An action fails if such a timeout is reached, but an alert is not    #
         # present yet.                                                         #
         #                                                                      #
@@ -1194,7 +1221,9 @@ a look at the below docs describing available options for the config.yml
         # prerequisite, an action waits till element is present in the DOM     #
         # tree and it is visible.                                              #
         #                                                                      #
-        # Default timeout to await element to be visible is 30s.               #
+        # Default timeout to await element to be visible is inherited from     #
+        # suite.webDriverFluentWaitTimeout, which is 30s by default.           #
+        #                                                                      #
         # An action fails if such a timeout is reached, but specified element  #
         # is not visible yet.                                                  #
         #                                                                      #
@@ -1223,7 +1252,9 @@ a look at the below docs describing available options for the config.yml
         # prerequisite, an action waits till element is present in the DOM     #
         # tree ,it is visible and enabled.                                     #
         #                                                                      #
-        # Default timeout to await element to be clickable is 30s.             #
+        # Default timeout to await element to be clickable is inherited from   #
+        # suite.webDriverFluentWaitTimeout, which is 30s by default.           #
+        #                                                                      #
         # An action fails if such a timeout is reached, but specified element  #
         # is not clickable yet.                                                #
         #                                                                      #
@@ -1259,7 +1290,9 @@ a look at the below docs describing available options for the config.yml
         # prerequisite, an action waits till element is present in the DOM     #
         # tree and it is visible.                                              #
         #                                                                      #
-        # Default timeout to await element to be visible is 30s.               #
+        # Default timeout to await element to be visible is inherited from     #
+        # suite.webDriverFluentWaitTimeout, which is 30s by default.           #
+        #                                                                      #
         # An action fails if such a timeout is reached, but specified element  #
         # is not visible yet.                                                  #
         #                                                                      #

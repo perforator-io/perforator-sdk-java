@@ -23,8 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CloseAlertActionProcessorTest extends AbstractActionProcessorTest<CloseAlertActionConfig, CloseAlertActionInstance, CloseAlertActionProcessor> {
 
-    public static final String SHOW_ALERT_BTN_CSS_SELECTOR = "#show-prompt-btn";
-
     @Override
     protected List<Map<String, String>> buildInvalidSuiteProps() throws Exception {
         return List.of(
@@ -96,14 +94,6 @@ public class CloseAlertActionProcessorTest extends AbstractActionProcessorTest<C
     protected void onBeforeActionInstanceProcessing(RemoteWebDriver driver, CloseAlertActionProcessor actionProcessor, CloseAlertActionInstance actionInstance) throws Exception {
         driver.navigate().to(VERIFICATIONS_APP_URL);
         if (!isAlertPresent(driver)) {
-            //ToDo need to add a button to test.verification
-//            WebElement button = new WebDriverWait(
-//                    driver,
-//                    actionInstance.getTimeout().toSeconds()
-//            ).until(
-//                    ExpectedConditions.elementToBeClickable(By.cssSelector(SHOW_ALERT_BTN_CSS_SELECTOR))
-//            );
-//            button.click();
             driver.executeScript("window.prompt('Prompt Alert','Hello Perforator')");
         }
         assertTrue(isAlertPresent(driver));
