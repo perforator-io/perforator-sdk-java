@@ -55,6 +55,11 @@ public class GetRequestChartsExample {
                         RequestsField.DYNAMIC.getValue(), 
                         AnalyticsBooleanFieldCondition.EQUALS.getValue(), 
                         "true"
+                ),
+                filter(
+                        RequestsField.CLOUD_REGION.getValue(), 
+                        AnalyticsStringFieldCondition.CONTAINS.getValue(), 
+                        "aws-us-"
                 )
         ));
         

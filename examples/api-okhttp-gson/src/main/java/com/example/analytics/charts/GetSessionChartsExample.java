@@ -51,6 +51,11 @@ public class GetSessionChartsExample {
                         SessionsField.REQUESTS_COUNT.getValue(), 
                         AnalyticsLongFieldCondition.GREATER_THAN_OR_EQUALS.getValue(), 
                         "1"
+                ),
+                filter(
+                        SessionsField.CLOUD_REGION.getValue(), 
+                        AnalyticsStringFieldCondition.CONTAINS.getValue(), 
+                        "aws-us-"
                 )
         ));
         

@@ -53,6 +53,11 @@ public class GetRequestsGroupedStatisticsExample {
                         RequestsField.REQUEST_URL.getValue(), 
                         AnalyticsStringFieldCondition.CONTAINS.getValue(), 
                         "https"
+                ),
+                filter(
+                        RequestsField.CLOUD_REGION.getValue(), 
+                        AnalyticsStringFieldCondition.CONTAINS.getValue(), 
+                        "aws-us-"
                 )
         ));
         statsRequest.setGroupBy(List.of(

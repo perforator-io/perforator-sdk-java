@@ -1921,6 +1921,39 @@ paths:
                         - starts_with
                         - not_starts_with
                         - not_contains
+                    - name: server_id
+                      type: string
+                      filters:
+                        - '!='
+                        - '='
+                        - ends_with
+                        - contains
+                        - not_ends_with
+                        - starts_with
+                        - not_starts_with
+                        - not_contains
+                    - name: cloud_provider
+                      type: string
+                      filters:
+                        - '!='
+                        - '='
+                        - ends_with
+                        - contains
+                        - not_ends_with
+                        - starts_with
+                        - not_starts_with
+                        - not_contains
+                    - name: cloud_region
+                      type: string
+                      filters:
+                        - '!='
+                        - '='
+                        - ends_with
+                        - contains
+                        - not_ends_with
+                        - starts_with
+                        - not_starts_with
+                        - not_contains
                     - name: page_url
                       type: string
                       filters:
@@ -3572,6 +3605,39 @@ paths:
                       type: boolean
                       filters:
                         - '='
+                    - name: server_id
+                      type: string
+                      filters:
+                        - '!='
+                        - '='
+                        - ends_with
+                        - contains
+                        - not_ends_with
+                        - starts_with
+                        - not_starts_with
+                        - not_contains
+                    - name: cloud_provider
+                      type: string
+                      filters:
+                        - '!='
+                        - '='
+                        - ends_with
+                        - contains
+                        - not_ends_with
+                        - starts_with
+                        - not_starts_with
+                        - not_contains
+                    - name: cloud_region
+                      type: string
+                      filters:
+                        - '!='
+                        - '='
+                        - ends_with
+                        - contains
+                        - not_ends_with
+                        - starts_with
+                        - not_starts_with
+                        - not_contains
                     - name: page_id
                       type: string
                       filters:
@@ -5061,6 +5127,39 @@ paths:
                   description: |
                     **Important:** This is just an example response. Please make an API call to get actual fields listing for `sessions` namespace.
                   value:
+                    - name: server_id
+                      type: string
+                      filters:
+                        - '!='
+                        - '='
+                        - ends_with
+                        - contains
+                        - not_ends_with
+                        - starts_with
+                        - not_starts_with
+                        - not_contains
+                    - name: cloud_provider
+                      type: string
+                      filters:
+                        - '!='
+                        - '='
+                        - ends_with
+                        - contains
+                        - not_ends_with
+                        - starts_with
+                        - not_starts_with
+                        - not_contains
+                    - name: cloud_region
+                      type: string
+                      filters:
+                        - '!='
+                        - '='
+                        - ends_with
+                        - contains
+                        - not_ends_with
+                        - starts_with
+                        - not_starts_with
+                        - not_contains
                     - name: browser_name
                       type: string
                       filters:
@@ -11235,6 +11334,9 @@ paths:
                     - session_id
                     - browser_name
                     - browser_version
+                    - server_id
+                    - cloud_provider
+                    - cloud_region
                     - page_id
                     - page_url
                     - protocol
@@ -11275,6 +11377,9 @@ paths:
                     - session_id
                     - browser_name
                     - browser_version
+                    - server_id
+                    - cloud_provider
+                    - cloud_region
                     - start_time
                     - finish_time
                     - duration
@@ -11397,6 +11502,9 @@ paths:
                     - session_id
                     - browser_name
                     - browser_version
+                    - server_id
+                    - cloud_provider
+                    - cloud_region
                     - start_time
                     - finish_time
                     - duration
@@ -12835,6 +12943,9 @@ components:
         - page_id
         - page_load
         - page_url
+        - server_id
+        - cloud_provider
+        - cloud_region
         - problematic_requests_count
         - problematic_requests_duration_avg
         - problematic_requests_duration_max
@@ -13369,6 +13480,9 @@ components:
         - id
         - page_id
         - page_url
+        - server_id
+        - cloud_provider
+        - cloud_region
         - problematic
         - protocol
         - proxy_duration
@@ -13686,6 +13800,9 @@ components:
       enum:
         - browser_name
         - browser_version
+        - server_id
+        - cloud_provider
+        - cloud_region
         - contains_dynamic_errored_requests
         - contains_dynamic_failed_requests
         - contains_dynamic_problematic_requests

@@ -53,6 +53,11 @@ public class GetPagesGroupedStatisticsExample {
                         PagesField.PAGE_URL.getValue(), 
                         AnalyticsStringFieldCondition.CONTAINS.getValue(), 
                         "https"
+                ),
+                filter(
+                        PagesField.CLOUD_REGION.getValue(), 
+                        AnalyticsStringFieldCondition.CONTAINS.getValue(), 
+                        "aws-us-"
                 )
         ));
         statsRequest.setGroupBy(List.of(

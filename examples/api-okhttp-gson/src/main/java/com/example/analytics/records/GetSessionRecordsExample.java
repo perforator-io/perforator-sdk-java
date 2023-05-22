@@ -53,6 +53,11 @@ public class GetSessionRecordsExample {
                         SessionsField.PROBLEMATIC_REQUESTS_COUNT.getValue(), 
                         AnalyticsLongFieldCondition.GREATER_THAN_OR_EQUALS.getValue(), 
                         "1"
+                ),
+                filter(
+                        SessionsField.CLOUD_REGION.getValue(), 
+                        AnalyticsStringFieldCondition.CONTAINS.getValue(), 
+                        "aws-us-"
                 )
         ));
         

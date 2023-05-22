@@ -55,6 +55,11 @@ public class GetPageChartsExample {
                         PagesField.PAGE_LOAD.getValue(), 
                         AnalyticsLongFieldCondition.GREATER_THAN_OR_EQUALS.getValue(), 
                         "1000"
+                ),
+                filter(
+                        PagesField.CLOUD_REGION.getValue(), 
+                        AnalyticsStringFieldCondition.CONTAINS.getValue(), 
+                        "aws-us-"
                 )
         ));
         
