@@ -40,6 +40,13 @@ public class OpenActionProcessor extends AbstractActionProcessor<OpenActionConfi
                                 null
                         )
                 )
+                .enabled(
+                        getOptionalNestedField(
+                                OpenActionConfig.Fields.enabled,
+                                actionValue,
+                                "true"
+                        )
+                )
                 .build();
     }
 
@@ -61,6 +68,13 @@ public class OpenActionProcessor extends AbstractActionProcessor<OpenActionConfi
                                 OpenActionConfig.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverSessionPageLoadTimeout(),
+                                formatter
+                        )
+                )
+                .enabled(
+                        buildEnabledForActionInstance(
+                                OpenActionConfig.Fields.enabled, 
+                                actionConfig.getEnabled(), 
                                 formatter
                         )
                 )

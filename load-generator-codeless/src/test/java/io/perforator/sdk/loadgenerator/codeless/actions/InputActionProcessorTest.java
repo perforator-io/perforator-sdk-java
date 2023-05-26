@@ -43,7 +43,8 @@ public class InputActionProcessorTest extends AbstractActionProcessorTest<InputA
                 Map.of(InputActionConfig.Fields.selector, ""),
                 Map.of(InputActionConfig.Fields.cssSelector, ""),
                 Map.of(InputActionConfig.Fields.xpathSelector, ""),
-                Map.of(InputActionConfig.Fields.timeout, "invalid-timeout")
+                Map.of(InputActionConfig.Fields.timeout, "invalid-timeout"),
+                Map.of(InputActionConfig.Fields.enabled, "invalid-enabled")
 
         );
     }
@@ -56,7 +57,8 @@ public class InputActionProcessorTest extends AbstractActionProcessorTest<InputA
                         InputActionConfig.Fields.selector, VERIFICATION_CSS_SELECTOR,
                         InputActionConfig.Fields.cssSelector, VERIFICATION_CSS_SELECTOR,
                         InputActionConfig.Fields.xpathSelector, VERIFICATION_XPATH_SELECTOR,
-                        InputActionConfig.Fields.timeout, "10.5s"
+                        InputActionConfig.Fields.timeout, "10.5s",
+                        InputActionConfig.Fields.enabled, "true"
                 )
         );
     }
@@ -136,6 +138,11 @@ public class InputActionProcessorTest extends AbstractActionProcessorTest<InputA
                 newObjectNode(Map.of(
                         InputActionConfig.Fields.value, new TextNode(VERIFICATION_INPUT_VALUE),
                         InputActionConfig.Fields.xpathSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        InputActionConfig.Fields.value, new TextNode(VERIFICATION_INPUT_VALUE),
+                        InputActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_CSS_SELECTOR),
+                        InputActionConfig.Fields.enabled, new TextNode("invalid")
                 ))
         );
     }
@@ -146,6 +153,11 @@ public class InputActionProcessorTest extends AbstractActionProcessorTest<InputA
                 newObjectNode(Map.of(
                         InputActionConfig.Fields.value, new TextNode("${" + InputActionConfig.Fields.value + "}"),
                         InputActionConfig.Fields.cssSelector, new TextNode("${" + InputActionConfig.Fields.cssSelector + "}")
+                )),
+                newObjectNode(Map.of(
+                        InputActionConfig.Fields.value, new TextNode("${" + InputActionConfig.Fields.value + "}"),
+                        InputActionConfig.Fields.cssSelector, new TextNode("${" + InputActionConfig.Fields.cssSelector + "}"),
+                        InputActionConfig.Fields.enabled, new TextNode("${" + InputActionConfig.Fields.enabled + "}")
                 )),
                 newObjectNode(Map.of(
                         InputActionConfig.Fields.value, new TextNode("${" + InputActionConfig.Fields.value + "}"),

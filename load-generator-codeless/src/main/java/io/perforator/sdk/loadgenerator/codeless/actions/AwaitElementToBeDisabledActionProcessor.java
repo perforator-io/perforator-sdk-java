@@ -59,6 +59,13 @@ public class AwaitElementToBeDisabledActionProcessor extends AbstractSelectorAct
                                 null
                         )
                 )
+                .enabled(
+                        getOptionalNestedField(
+                                AwaitElementToBeDisabledActionConfig.Fields.enabled,
+                                actionValue,
+                                "true"
+                        )
+                )
                 .build();
     }
 
@@ -83,6 +90,13 @@ public class AwaitElementToBeDisabledActionProcessor extends AbstractSelectorAct
                                 AwaitElementToBeDisabledActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
+                                formatter
+                        )
+                )
+                .enabled(
+                        buildEnabledForActionInstance(
+                                AwaitElementToBeDisabledActionInstance.Fields.enabled, 
+                                actionConfig.getEnabled(), 
                                 formatter
                         )
                 )

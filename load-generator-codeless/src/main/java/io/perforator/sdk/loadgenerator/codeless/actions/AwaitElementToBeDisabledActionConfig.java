@@ -35,4 +35,8 @@ public class AwaitElementToBeDisabledActionConfig implements SelectorActionConfi
 
     @FieldNameConstants.Include
     private final String timeout;
+    
+    @FieldNameConstants.Include
+    private final String enabled;
+    
 }

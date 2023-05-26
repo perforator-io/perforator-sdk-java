@@ -33,6 +33,9 @@ public class ClickActionInstance implements SelectorActionInstance<ClickActionCo
 
     @FieldNameConstants.Include
     private final Duration timeout;
+    
+    @FieldNameConstants.Include
+    private final boolean enabled;
 
     @Override
     public String toLoggingDetails() {

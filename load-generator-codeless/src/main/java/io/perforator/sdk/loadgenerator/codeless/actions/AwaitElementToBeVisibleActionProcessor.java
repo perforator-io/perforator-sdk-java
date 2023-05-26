@@ -54,6 +54,13 @@ public class AwaitElementToBeVisibleActionProcessor extends AbstractSelectorActi
                                 null
                         )
                 )
+                .enabled(
+                        getOptionalNestedField(
+                                AwaitElementToBeVisibleActionConfig.Fields.enabled,
+                                actionValue,
+                                "true"
+                        )
+                )
                 .build();
     }
 
@@ -78,6 +85,13 @@ public class AwaitElementToBeVisibleActionProcessor extends AbstractSelectorActi
                                 AwaitElementToBeVisibleActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
+                                formatter
+                        )
+                )
+                .enabled(
+                        buildEnabledForActionInstance(
+                                AwaitElementToBeVisibleActionInstance.Fields.enabled, 
+                                actionConfig.getEnabled(), 
                                 formatter
                         )
                 )

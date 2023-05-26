@@ -187,6 +187,11 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
                 formatter,
                 actionConfig
         );
+        
+        if(!actionInstance.isEnabled()) {
+            return;
+        }
+        
         logActionStarted(stepName, actionInstance);
 
         try {

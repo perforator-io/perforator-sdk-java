@@ -33,6 +33,13 @@ public class AwaitAlertToBePresentActionProcessor extends AbstractActionProcesso
                                 actionValue
                         )
                 )
+                .enabled(
+                        getOptionalNestedField(
+                                AwaitAlertToBePresentActionConfig.Fields.enabled,
+                                actionValue,
+                                "true"
+                        )
+                )
                 .build();
     }
 
@@ -47,6 +54,13 @@ public class AwaitAlertToBePresentActionProcessor extends AbstractActionProcesso
                                 AwaitAlertToBePresentActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
+                                formatter
+                        )
+                )
+                .enabled(
+                        buildEnabledForActionInstance(
+                                AwaitAlertToBePresentActionInstance.Fields.enabled, 
+                                actionConfig.getEnabled(), 
                                 formatter
                         )
                 )

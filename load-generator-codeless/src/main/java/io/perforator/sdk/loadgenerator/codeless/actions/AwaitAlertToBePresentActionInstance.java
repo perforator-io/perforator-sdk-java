@@ -26,6 +26,9 @@ public class AwaitAlertToBePresentActionInstance implements ActionInstance<Await
 
     @FieldNameConstants.Include
     private final Duration timeout;
+    
+    @FieldNameConstants.Include
+    private final boolean enabled;
 
     @Override
     public String toLoggingDetails() {

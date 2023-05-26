@@ -32,4 +32,8 @@ public class CloseAlertActionConfig implements ActionConfig {
 
     @FieldNameConstants.Include
     private final String text;
+    
+    @FieldNameConstants.Include
+    private final String enabled;
+    
 }

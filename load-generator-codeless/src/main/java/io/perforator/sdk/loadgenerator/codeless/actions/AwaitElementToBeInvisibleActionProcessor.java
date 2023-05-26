@@ -54,6 +54,13 @@ public class AwaitElementToBeInvisibleActionProcessor extends AbstractSelectorAc
                                 null
                         )
                 )
+                .enabled(
+                        getOptionalNestedField(
+                                AwaitElementToBeInvisibleActionConfig.Fields.enabled,
+                                actionValue,
+                                "true"
+                        )
+                )
                 .build();
     }
 
@@ -78,6 +85,13 @@ public class AwaitElementToBeInvisibleActionProcessor extends AbstractSelectorAc
                                 AwaitElementToBeInvisibleActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
+                                formatter
+                        )
+                )
+                .enabled(
+                        buildEnabledForActionInstance(
+                                AwaitElementToBeInvisibleActionInstance.Fields.enabled, 
+                                actionConfig.getEnabled(), 
                                 formatter
                         )
                 )

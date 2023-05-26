@@ -27,7 +27,8 @@ public class CloseAlertActionProcessorTest extends AbstractActionProcessorTest<C
     protected List<Map<String, String>> buildInvalidSuiteProps() throws Exception {
         return List.of(
                 Map.of(CloseAlertActionConfig.Fields.action, "invalid-action"),
-                Map.of(CloseAlertActionConfig.Fields.timeout, "invalid-timeout")
+                Map.of(CloseAlertActionConfig.Fields.timeout, "invalid-timeout"),
+                Map.of(CloseAlertActionConfig.Fields.enabled, "invalid-enabled")
         );
     }
 
@@ -37,12 +38,14 @@ public class CloseAlertActionProcessorTest extends AbstractActionProcessorTest<C
                 Map.of(
                         CloseAlertActionConfig.Fields.action, CloseAlertActionInstance.Action.ok.name(),
                         CloseAlertActionConfig.Fields.timeout, "10.5s",
-                        CloseAlertActionConfig.Fields.text, "some text"
+                        CloseAlertActionConfig.Fields.text, "some text",
+                        CloseAlertActionConfig.Fields.enabled, "true"
                 ),
                 Map.of(
                         CloseAlertActionConfig.Fields.action, CloseAlertActionInstance.Action.cancel.name(),
                         CloseAlertActionConfig.Fields.timeout, "10.5s",
-                        CloseAlertActionConfig.Fields.text, "some text"
+                        CloseAlertActionConfig.Fields.text, "some text",
+                        CloseAlertActionConfig.Fields.enabled, "true"
                 )
         );
     }
@@ -66,6 +69,10 @@ public class CloseAlertActionProcessorTest extends AbstractActionProcessorTest<C
                 )),
                 newObjectNode(Map.of(
                         CloseAlertActionConfig.Fields.timeout, new TextNode("invalid-timeout")
+                )),
+                newObjectNode(Map.of(
+                        CloseAlertActionConfig.Fields.timeout, new TextNode("3s"),
+                        CloseAlertActionConfig.Fields.enabled, new TextNode("invalid")
                 ))
         );
     }
@@ -76,6 +83,10 @@ public class CloseAlertActionProcessorTest extends AbstractActionProcessorTest<C
                 new TextNode("${" + CloseAlertActionConfig.Fields.action + "}"),
                 newObjectNode(Map.of(
                         CloseAlertActionConfig.Fields.action, new TextNode("${" + CloseAlertActionConfig.Fields.action + "}")
+                )),
+                newObjectNode(Map.of(
+                        CloseAlertActionConfig.Fields.action, new TextNode("${" + CloseAlertActionConfig.Fields.action + "}"),
+                        CloseAlertActionConfig.Fields.enabled, new TextNode("${" + CloseAlertActionConfig.Fields.enabled + "}")
                 )),
                 newObjectNode(Map.of(
                         CloseAlertActionConfig.Fields.action, new TextNode("${" + CloseAlertActionConfig.Fields.action + "}"),

@@ -34,6 +34,13 @@ public class SleepActionProcessor extends AbstractActionProcessor<SleepActionCon
                                 actionValue
                         )
                 )
+                .enabled(
+                        getOptionalNestedField(
+                                SleepActionConfig.Fields.enabled,
+                                actionValue,
+                                "true"
+                        )
+                )
                 .build();
     }
 
@@ -49,6 +56,13 @@ public class SleepActionProcessor extends AbstractActionProcessor<SleepActionCon
                                 actionConfig.getTimeout(),
                                 formatter
                         ).random()
+                )
+                .enabled(
+                        buildEnabledForActionInstance(
+                                SleepActionConfig.Fields.enabled, 
+                                actionConfig.getEnabled(), 
+                                formatter
+                        )
                 )
                 .build();
     }

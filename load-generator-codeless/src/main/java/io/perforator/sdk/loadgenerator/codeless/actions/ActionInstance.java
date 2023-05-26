@@ -15,5 +15,7 @@ public interface ActionInstance<T extends ActionConfig> {
     T getConfig();
 
     String toLoggingDetails();
+    
+    boolean isEnabled();
 
 }

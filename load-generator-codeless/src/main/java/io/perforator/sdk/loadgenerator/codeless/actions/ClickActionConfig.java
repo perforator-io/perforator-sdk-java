@@ -35,5 +35,8 @@ public class ClickActionConfig implements SelectorActionConfig {
 
     @FieldNameConstants.Include
     private final String timeout;
+    
+    @FieldNameConstants.Include
+    private final String enabled;
 
 }

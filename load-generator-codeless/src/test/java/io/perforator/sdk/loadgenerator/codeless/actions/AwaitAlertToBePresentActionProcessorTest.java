@@ -33,7 +33,14 @@ public class AwaitAlertToBePresentActionProcessorTest extends AbstractActionProc
     @Override
     protected List<Map<String, String>> buildInvalidSuiteProps() throws Exception {
         return List.of(
-                Map.of(AwaitAlertToBePresentActionConfig.Fields.timeout, "invalid-timeout")
+                Map.of(
+                        AwaitAlertToBePresentActionConfig.Fields.timeout, "invalid-timeout",
+                        AwaitAlertToBePresentActionConfig.Fields.enabled, "true"
+                ),
+                Map.of(
+                        AwaitAlertToBePresentActionConfig.Fields.timeout, "5s",
+                        AwaitAlertToBePresentActionConfig.Fields.enabled, "invalid"
+                )
         );
     }
 
@@ -41,7 +48,8 @@ public class AwaitAlertToBePresentActionProcessorTest extends AbstractActionProc
     protected List<Map<String, String>> buildValidSuiteProps() throws Exception {
         return List.of(
                 Map.of(
-                        AwaitAlertToBePresentActionConfig.Fields.timeout, "10.5s"
+                        AwaitAlertToBePresentActionConfig.Fields.timeout, "10.5s",
+                        AwaitAlertToBePresentActionConfig.Fields.enabled, "true"
                 )
         );
     }
@@ -54,6 +62,14 @@ public class AwaitAlertToBePresentActionProcessorTest extends AbstractActionProc
                 newObjectNode(),
                 newObjectNode(Map.of(
                         AwaitAlertToBePresentActionConfig.Fields.timeout, new TextNode("${invalid-timeout}")
+                )),
+                newObjectNode(Map.of(
+                        AwaitAlertToBePresentActionConfig.Fields.timeout, new TextNode("5s"),
+                        AwaitAlertToBePresentActionConfig.Fields.enabled, new TextNode("invalid")
+                )),
+                newObjectNode(Map.of(
+                        AwaitAlertToBePresentActionConfig.Fields.timeout, new TextNode("5s"),
+                        AwaitAlertToBePresentActionConfig.Fields.enabled, new TextNode("${invalid-placeholder}")
                 ))
         );
     }
@@ -63,7 +79,8 @@ public class AwaitAlertToBePresentActionProcessorTest extends AbstractActionProc
         return List.of(
                 new TextNode("${" + AwaitAlertToBePresentActionConfig.Fields.timeout + "}"),
                 newObjectNode(Map.of(
-                        AwaitAlertToBePresentActionConfig.Fields.timeout, new TextNode("${" + AwaitAlertToBePresentActionConfig.Fields.timeout + "}")
+                        AwaitAlertToBePresentActionConfig.Fields.timeout, new TextNode("${" + AwaitAlertToBePresentActionConfig.Fields.timeout + "}"),
+                        AwaitAlertToBePresentActionConfig.Fields.enabled, new TextNode("${" + AwaitAlertToBePresentActionConfig.Fields.enabled + "}")
                 ))
         );
     }

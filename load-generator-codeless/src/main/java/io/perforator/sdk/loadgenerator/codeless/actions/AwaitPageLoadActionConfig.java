@@ -26,4 +26,8 @@ public class AwaitPageLoadActionConfig implements ActionConfig {
 
     @FieldNameConstants.Include
     private final String timeout;
+
+    @FieldNameConstants.Include
+    private final String enabled;
+
 }

@@ -33,7 +33,8 @@ public class ScrollActionProcessorTest extends AbstractActionProcessorTest<Scrol
                 Map.of(ScrollActionConfig.Fields.selector, ""),
                 Map.of(ScrollActionConfig.Fields.cssSelector, ""),
                 Map.of(ScrollActionConfig.Fields.xpathSelector, ""),
-                Map.of(ScrollActionConfig.Fields.timeout, "invalid-timeout")
+                Map.of(ScrollActionConfig.Fields.timeout, "invalid-timeout"),
+                Map.of(ScrollActionConfig.Fields.enabled, "invalid-enabled")
         );
     }
 
@@ -44,7 +45,8 @@ public class ScrollActionProcessorTest extends AbstractActionProcessorTest<Scrol
                         ScrollActionConfig.Fields.selector, VERIFICATION_CSS_SELECTOR,
                         ScrollActionConfig.Fields.cssSelector, VERIFICATION_CSS_SELECTOR,
                         ScrollActionConfig.Fields.xpathSelector, VERIFICATION_XPATH_SELECTOR,
-                        ScrollActionConfig.Fields.timeout, "10.5s"
+                        ScrollActionConfig.Fields.timeout, "10.5s",
+                        ScrollActionConfig.Fields.enabled, "true"
                 )
         );
     }
@@ -86,6 +88,10 @@ public class ScrollActionProcessorTest extends AbstractActionProcessorTest<Scrol
                 )),
                 newObjectNode(Map.of(
                         ScrollActionConfig.Fields.cssSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        ScrollActionConfig.Fields.cssSelector, new TextNode(VERIFICATION_CSS_SELECTOR),
+                        ScrollActionConfig.Fields.enabled, new TextNode("invalid")
                 ))
         );
     }
@@ -96,6 +102,10 @@ public class ScrollActionProcessorTest extends AbstractActionProcessorTest<Scrol
                 new TextNode("${" + ScrollActionConfig.Fields.cssSelector + "}"),
                 newObjectNode(Map.of(
                         ScrollActionConfig.Fields.cssSelector, new TextNode("${" + ScrollActionConfig.Fields.cssSelector + "}")
+                )),
+                newObjectNode(Map.of(
+                        ScrollActionConfig.Fields.cssSelector, new TextNode("${" + ScrollActionConfig.Fields.cssSelector + "}"),
+                        ScrollActionConfig.Fields.enabled, new TextNode("${" + ScrollActionConfig.Fields.enabled + "}")
                 )),
                 newObjectNode(Map.of(
                         ScrollActionConfig.Fields.cssSelector, new TextNode("${" + ScrollActionConfig.Fields.cssSelector + "}"),

@@ -37,7 +37,8 @@ public class AwaitElementToBeInvisibleActionProcessorTest extends AbstractAction
                 Map.of(AwaitElementToBeInvisibleActionConfig.Fields.timeout, "invalid-timeout"),
                 Map.of(AwaitElementToBeInvisibleActionConfig.Fields.selector, ""),
                 Map.of(AwaitElementToBeInvisibleActionConfig.Fields.cssSelector, ""),
-                Map.of(AwaitElementToBeInvisibleActionConfig.Fields.xpathSelector, "")
+                Map.of(AwaitElementToBeInvisibleActionConfig.Fields.xpathSelector, ""),
+                Map.of(AwaitElementToBeInvisibleActionConfig.Fields.enabled, "invalid")
         );
     }
 
@@ -48,7 +49,8 @@ public class AwaitElementToBeInvisibleActionProcessorTest extends AbstractAction
                         AwaitElementToBeInvisibleActionConfig.Fields.selector, CHECKED_BTN_CSS_SELECTOR,
                         AwaitElementToBeInvisibleActionConfig.Fields.cssSelector, CHECKED_BTN_CSS_SELECTOR,
                         AwaitElementToBeInvisibleActionConfig.Fields.xpathSelector, CHECKED_BTN_XPATH_SELECTOR,
-                        AwaitElementToBeInvisibleActionConfig.Fields.timeout, "10.5s"
+                        AwaitElementToBeInvisibleActionConfig.Fields.timeout, "10.5s",
+                        AwaitElementToBeInvisibleActionConfig.Fields.enabled, "true"
                 )
         );
     }
@@ -87,6 +89,10 @@ public class AwaitElementToBeInvisibleActionProcessorTest extends AbstractAction
                 )),
                 newObjectNode(Map.of(
                         AwaitElementToBeInvisibleActionConfig.Fields.xpathSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeInvisibleActionConfig.Fields.cssSelector, new TextNode("#valid"),
+                        AwaitElementToBeInvisibleActionConfig.Fields.enabled, new TextNode("invalid")
                 ))
         );
     }
@@ -97,6 +103,10 @@ public class AwaitElementToBeInvisibleActionProcessorTest extends AbstractAction
                 new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.cssSelector + "}"),
                 newObjectNode(Map.of(
                         AwaitElementToBeInvisibleActionConfig.Fields.cssSelector, new TextNode("${" + AwaitElementToBeInvisibleActionConfig.Fields.cssSelector + "}")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeInvisibleActionConfig.Fields.cssSelector, new TextNode("${" + AwaitElementToBeInvisibleActionConfig.Fields.cssSelector + "}"),
+                        AwaitElementToBeInvisibleActionConfig.Fields.enabled, new TextNode("${" + AwaitElementToBeInvisibleActionConfig.Fields.enabled + "}")
                 )),
                 newObjectNode(Map.of(
                         AwaitElementToBeInvisibleActionConfig.Fields.cssSelector, new TextNode("${" + AwaitElementToBeInvisibleActionConfig.Fields.cssSelector + "}"),

@@ -26,7 +26,8 @@ public class OpenActionProcessorTest extends AbstractActionProcessorTest<OpenAct
         return List.of(
                 Map.of(OpenActionConfig.Fields.url, ""),
                 Map.of(OpenActionConfig.Fields.url, "invalid-url"),
-                Map.of(OpenActionConfig.Fields.timeout, "invalid-timeout")
+                Map.of(OpenActionConfig.Fields.timeout, "invalid-timeout"),
+                Map.of(OpenActionConfig.Fields.enabled, "invalid-enabled")
         );
     }
 
@@ -35,7 +36,8 @@ public class OpenActionProcessorTest extends AbstractActionProcessorTest<OpenAct
         return List.of(
                 Map.of(
                         OpenActionConfig.Fields.url, VERIFICATIONS_APP_URL + "/", 
-                        OpenActionConfig.Fields.timeout, "17.5s"
+                        OpenActionConfig.Fields.timeout, "17.5s",
+                        OpenActionConfig.Fields.enabled, "true"
                 )
         );
     }
@@ -59,6 +61,10 @@ public class OpenActionProcessorTest extends AbstractActionProcessorTest<OpenAct
                 newObjectNode(Map.of(
                         OpenActionConfig.Fields.url, new TextNode(VERIFICATIONS_APP_URL),
                         OpenActionConfig.Fields.timeout, new TextNode("invalid-timeout")
+                )),
+                newObjectNode(Map.of(
+                        OpenActionConfig.Fields.url, new TextNode(VERIFICATIONS_APP_URL),
+                        OpenActionConfig.Fields.enabled, new TextNode("invalid")
                 ))
         );
     }
@@ -69,6 +75,10 @@ public class OpenActionProcessorTest extends AbstractActionProcessorTest<OpenAct
                 new TextNode("${" + OpenActionConfig.Fields.url + "}"),
                 newObjectNode(Map.of(
                         OpenActionConfig.Fields.url, new TextNode("${" + OpenActionConfig.Fields.url + "}")
+                )),
+                newObjectNode(Map.of(
+                        OpenActionConfig.Fields.url, new TextNode("${" + OpenActionConfig.Fields.url + "}"),
+                        OpenActionConfig.Fields.enabled, new TextNode("${" + OpenActionConfig.Fields.enabled + "}")
                 )),
                 newObjectNode(Map.of(
                         OpenActionConfig.Fields.url, new TextNode("${" + OpenActionConfig.Fields.url + "}"),

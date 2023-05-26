@@ -29,6 +29,9 @@ public class OpenActionInstance implements ActionInstance<OpenActionConfig> {
 
     @FieldNameConstants.Include
     private final Duration timeout;
+    
+    @FieldNameConstants.Include
+    private final boolean enabled;
 
     @Override
     public String toLoggingDetails() {

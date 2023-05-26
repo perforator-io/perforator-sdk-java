@@ -28,7 +28,8 @@ public class AwaitPageLoadActionProcessorTest extends AbstractActionProcessorTes
     @Override
     protected List<Map<String, String>> buildInvalidSuiteProps() throws Exception {
         return List.of(
-                Map.of(AwaitPageLoadActionConfig.Fields.timeout, "invalid-timeout")
+                Map.of(AwaitPageLoadActionConfig.Fields.timeout, "invalid-timeout"),
+                Map.of(AwaitPageLoadActionConfig.Fields.enabled, "invalid")
         );
     }
 
@@ -36,7 +37,8 @@ public class AwaitPageLoadActionProcessorTest extends AbstractActionProcessorTes
     protected List<Map<String, String>> buildValidSuiteProps() throws Exception {
         return List.of(
                 Map.of(
-                        AwaitPageLoadActionConfig.Fields.timeout, "10.5s"
+                        AwaitPageLoadActionConfig.Fields.timeout, "10.5s",
+                        AwaitPageLoadActionConfig.Fields.enabled, "true"
                 )
         );
     }
@@ -49,6 +51,10 @@ public class AwaitPageLoadActionProcessorTest extends AbstractActionProcessorTes
                 newObjectNode(),
                 newObjectNode(Map.of(
                         AwaitPageLoadActionConfig.Fields.timeout, new TextNode("${invalid-timeout}")
+                )),
+                newObjectNode(Map.of(
+                        AwaitPageLoadActionConfig.Fields.timeout, new TextNode("10.5s"),
+                        AwaitPageLoadActionConfig.Fields.enabled, new TextNode("invalid")
                 ))
         );
     }
@@ -59,6 +65,10 @@ public class AwaitPageLoadActionProcessorTest extends AbstractActionProcessorTes
                 new TextNode("${" + AwaitPageLoadActionConfig.Fields.timeout + "}"),
                 newObjectNode(Map.of(
                         AwaitPageLoadActionConfig.Fields.timeout, new TextNode("${" + AwaitPageLoadActionConfig.Fields.timeout + "}")
+                )),
+                newObjectNode(Map.of(
+                        AwaitPageLoadActionConfig.Fields.timeout, new TextNode("${" + AwaitPageLoadActionConfig.Fields.timeout + "}"),
+                        AwaitPageLoadActionConfig.Fields.enabled, new TextNode("${" + AwaitPageLoadActionConfig.Fields.enabled + "}")
                 ))
         );
     }

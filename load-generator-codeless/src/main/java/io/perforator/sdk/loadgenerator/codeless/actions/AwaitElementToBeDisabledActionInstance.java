@@ -33,6 +33,9 @@ public class AwaitElementToBeDisabledActionInstance implements SelectorActionIns
 
     @FieldNameConstants.Include
     private final Duration timeout;
+    
+    @FieldNameConstants.Include
+    private final boolean enabled;
 
     @Override
     public String toLoggingDetails() {

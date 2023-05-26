@@ -35,7 +35,8 @@ public class ClickActionProcessorTest extends AbstractActionProcessorTest<ClickA
                 Map.of(ClickActionConfig.Fields.timeout, "invalid-timeout"),
                 Map.of(ClickActionConfig.Fields.selector, ""),
                 Map.of(ClickActionConfig.Fields.cssSelector, ""),
-                Map.of(ClickActionConfig.Fields.xpathSelector, "")
+                Map.of(ClickActionConfig.Fields.xpathSelector, ""),
+                Map.of(ClickActionConfig.Fields.enabled, "invalid")
         );
     }
 
@@ -46,7 +47,8 @@ public class ClickActionProcessorTest extends AbstractActionProcessorTest<ClickA
                         ClickActionConfig.Fields.selector, VERIFICATION_CSS_SELECTOR,
                         ClickActionConfig.Fields.cssSelector, VERIFICATION_CSS_SELECTOR,
                         ClickActionConfig.Fields.xpathSelector, VERIFICATION_XPATH_SELECTOR,
-                        ClickActionConfig.Fields.timeout, "10.5s"
+                        ClickActionConfig.Fields.timeout, "10.5s",
+                        ClickActionConfig.Fields.enabled, "true"
                 )
         );
     }
@@ -82,6 +84,10 @@ public class ClickActionProcessorTest extends AbstractActionProcessorTest<ClickA
                 )),
                 newObjectNode(Map.of(
                         ClickActionConfig.Fields.xpathSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        ClickActionConfig.Fields.cssSelector, new TextNode("#valid"),
+                        ClickActionConfig.Fields.enabled, new TextNode("invalid")
                 ))
         );
     }
@@ -92,6 +98,10 @@ public class ClickActionProcessorTest extends AbstractActionProcessorTest<ClickA
                 new TextNode("${" + ClickActionConfig.Fields.cssSelector + "}"),
                 newObjectNode(Map.of(
                         ClickActionConfig.Fields.cssSelector, new TextNode("${" + ClickActionConfig.Fields.cssSelector + "}")
+                )),
+                newObjectNode(Map.of(
+                        ClickActionConfig.Fields.cssSelector, new TextNode("${" + ClickActionConfig.Fields.cssSelector + "}"),
+                        ClickActionConfig.Fields.enabled, new TextNode("${" + ClickActionConfig.Fields.enabled + "}")
                 )),
                 newObjectNode(Map.of(
                         ClickActionConfig.Fields.cssSelector, new TextNode("${" + ClickActionConfig.Fields.cssSelector + "}"),

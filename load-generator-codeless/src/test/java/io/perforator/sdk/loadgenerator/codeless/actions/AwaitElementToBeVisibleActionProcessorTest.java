@@ -37,7 +37,8 @@ public class AwaitElementToBeVisibleActionProcessorTest extends AbstractActionPr
                 Map.of(AwaitElementToBeVisibleActionConfig.Fields.timeout, "invalid-timeout"),
                 Map.of(AwaitElementToBeVisibleActionConfig.Fields.selector, ""),
                 Map.of(AwaitElementToBeVisibleActionConfig.Fields.cssSelector, ""),
-                Map.of(AwaitElementToBeVisibleActionConfig.Fields.xpathSelector, "")
+                Map.of(AwaitElementToBeVisibleActionConfig.Fields.xpathSelector, ""),
+                Map.of(AwaitElementToBeVisibleActionConfig.Fields.enabled, "invalid")
         );
     }
 
@@ -48,7 +49,8 @@ public class AwaitElementToBeVisibleActionProcessorTest extends AbstractActionPr
                         AwaitElementToBeVisibleActionConfig.Fields.selector, CHECKED_BTN_CSS_SELECTOR,
                         AwaitElementToBeVisibleActionConfig.Fields.cssSelector, CHECKED_BTN_CSS_SELECTOR,
                         AwaitElementToBeVisibleActionConfig.Fields.xpathSelector, CHECKED_BTN_XPATH_SELECTOR,
-                        AwaitElementToBeVisibleActionConfig.Fields.timeout, "10.5s"
+                        AwaitElementToBeVisibleActionConfig.Fields.timeout, "10.5s",
+                        AwaitElementToBeVisibleActionConfig.Fields.enabled, "true"
                 )
         );
     }
@@ -87,6 +89,10 @@ public class AwaitElementToBeVisibleActionProcessorTest extends AbstractActionPr
                 )),
                 newObjectNode(Map.of(
                         AwaitElementToBeVisibleActionConfig.Fields.xpathSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeVisibleActionConfig.Fields.cssSelector, new TextNode("#valid"),
+                        AwaitElementToBeVisibleActionConfig.Fields.enabled, new TextNode("invalid")
                 ))
         );
     }
@@ -97,6 +103,10 @@ public class AwaitElementToBeVisibleActionProcessorTest extends AbstractActionPr
                 new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.cssSelector + "}"),
                 newObjectNode(Map.of(
                         AwaitElementToBeVisibleActionConfig.Fields.cssSelector, new TextNode("${" + AwaitElementToBeVisibleActionConfig.Fields.cssSelector + "}")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeVisibleActionConfig.Fields.cssSelector, new TextNode("${" + AwaitElementToBeVisibleActionConfig.Fields.cssSelector + "}"),
+                        AwaitElementToBeVisibleActionConfig.Fields.enabled, new TextNode("${" + AwaitElementToBeVisibleActionConfig.Fields.enabled + "}")
                 )),
                 newObjectNode(Map.of(
                         AwaitElementToBeVisibleActionConfig.Fields.cssSelector, new TextNode("${" + AwaitElementToBeVisibleActionConfig.Fields.cssSelector + "}"),

@@ -36,7 +36,8 @@ public class FocusActionProcessorTest extends AbstractActionProcessorTest<FocusA
                 Map.of(FocusActionConfig.Fields.timeout, "invalid-timeout"),
                 Map.of(FocusActionConfig.Fields.selector, ""),
                 Map.of(FocusActionConfig.Fields.cssSelector, ""),
-                Map.of(FocusActionConfig.Fields.xpathSelector, "")
+                Map.of(FocusActionConfig.Fields.xpathSelector, ""),
+                Map.of(FocusActionConfig.Fields.enabled, "invalid-enabled")
         );
     }
 
@@ -47,7 +48,8 @@ public class FocusActionProcessorTest extends AbstractActionProcessorTest<FocusA
                         FocusActionConfig.Fields.selector, VERIFICATION_CSS_SELECTOR,
                         FocusActionConfig.Fields.cssSelector, VERIFICATION_CSS_SELECTOR,
                         FocusActionConfig.Fields.xpathSelector, VERIFICATION_XPATH_SELECTOR,
-                        FocusActionConfig.Fields.timeout, "10.5s"
+                        FocusActionConfig.Fields.timeout, "10.5s",
+                        FocusActionConfig.Fields.enabled, "true"
                 )
         );
     }
@@ -83,6 +85,10 @@ public class FocusActionProcessorTest extends AbstractActionProcessorTest<FocusA
                 )),
                 newObjectNode(Map.of(
                         FocusActionConfig.Fields.xpathSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        FocusActionConfig.Fields.cssSelector, new TextNode("#valid"),
+                        FocusActionConfig.Fields.enabled, new TextNode("invalid")
                 ))
         );
     }
@@ -93,6 +99,10 @@ public class FocusActionProcessorTest extends AbstractActionProcessorTest<FocusA
                 new TextNode("${" + FocusActionConfig.Fields.cssSelector + "}"),
                 newObjectNode(Map.of(
                         FocusActionConfig.Fields.cssSelector, new TextNode("${" + FocusActionConfig.Fields.cssSelector + "}")
+                )),
+                newObjectNode(Map.of(
+                        FocusActionConfig.Fields.cssSelector, new TextNode("${" + FocusActionConfig.Fields.cssSelector + "}"),
+                        FocusActionConfig.Fields.enabled, new TextNode("${" + FocusActionConfig.Fields.enabled + "}")
                 )),
                 newObjectNode(Map.of(
                         FocusActionConfig.Fields.cssSelector, new TextNode("${" + FocusActionConfig.Fields.cssSelector + "}"),

@@ -332,10 +332,13 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
                             actionProcessor,
                             actionInstance
                     );
-                    actionProcessor.processActionInstance(
-                            driver,
-                            actionInstance
-                    );
+                    
+                    if (actionInstance.isEnabled()) {
+                        actionProcessor.processActionInstance(
+                                driver,
+                                actionInstance
+                        );
+                    }
 
                     onAfterActionInstanceProcessing(
                             driver,

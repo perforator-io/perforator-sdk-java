@@ -55,6 +55,13 @@ public class ClickActionProcessor extends AbstractSelectorActionProcessor<ClickA
                                 null
                         )
                 )
+                .enabled(
+                        getOptionalNestedField(
+                                ClickActionConfig.Fields.enabled,
+                                actionValue,
+                                "true"
+                        )
+                )
                 .build();
     }
 
@@ -79,6 +86,13 @@ public class ClickActionProcessor extends AbstractSelectorActionProcessor<ClickA
                                 ClickActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
+                                formatter
+                        )
+                )
+                .enabled(
+                        buildEnabledForActionInstance(
+                                ClickActionInstance.Fields.enabled, 
+                                actionConfig.getEnabled(), 
                                 formatter
                         )
                 )

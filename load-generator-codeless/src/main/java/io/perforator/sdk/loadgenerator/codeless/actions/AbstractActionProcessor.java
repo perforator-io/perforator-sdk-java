@@ -175,6 +175,7 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
         if (node.isValueNode()) {
             return node.textValue();
         }
+        
         return defaultValue;
     }
 
@@ -291,6 +292,27 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
         } else {
             return new RandomDuration(
                     buildDurationForActionInstance(fieldName, configDuration, null, formatter, required)
+            );
+        }
+    }
+    
+    protected boolean buildEnabledForActionInstance(String fieldName, String configEnabled, FormattingMap formatter) {
+        String formattedResult = formatter.format(configEnabled);
+        
+        if(formattedResult == null || formattedResult.isBlank()) {
+            return true;
+        } else if(formattedResult.equalsIgnoreCase("true")) {
+            return true;
+        } else if(formattedResult.equalsIgnoreCase("false")) {
+            return false;
+        } else {
+            throw new RuntimeException(
+                    actionName
+                            + "."
+                            + fieldName
+                            + " = "
+                            + configEnabled
+                            + " is invalid => only true or false values are suported"
             );
         }
     }

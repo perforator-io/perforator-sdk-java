@@ -32,6 +32,13 @@ public class AwaitPageLoadActionProcessor extends AbstractActionProcessor<AwaitP
                                 actionValue
                         )
                 )
+                .enabled(
+                        getOptionalNestedField(
+                                AwaitPageLoadActionInstance.Fields.enabled,
+                                actionValue,
+                                "true"
+                        )
+                )
                 .build();
     }
 
@@ -46,6 +53,13 @@ public class AwaitPageLoadActionProcessor extends AbstractActionProcessor<AwaitP
                                 AwaitPageLoadActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
+                                formatter
+                        )
+                )
+                .enabled(
+                        buildEnabledForActionInstance(
+                                AwaitPageLoadActionInstance.Fields.enabled, 
+                                actionConfig.getEnabled(), 
                                 formatter
                         )
                 )

@@ -61,6 +61,13 @@ public class InputActionProcessor extends AbstractSelectorActionProcessor<InputA
                                 null
                         )
                 )
+                .enabled(
+                        getOptionalNestedField(
+                                InputActionConfig.Fields.enabled,
+                                actionValue,
+                                "true"
+                        )
+                )
                 .build();
     }
 
@@ -92,6 +99,13 @@ public class InputActionProcessor extends AbstractSelectorActionProcessor<InputA
                                 InputActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
+                                formatter
+                        )
+                )
+                .enabled(
+                        buildEnabledForActionInstance(
+                                InputActionInstance.Fields.enabled, 
+                                actionConfig.getEnabled(), 
                                 formatter
                         )
                 )

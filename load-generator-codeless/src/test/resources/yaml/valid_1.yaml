@@ -44,6 +44,7 @@ suites:
         - scroll: '#file-input'
         - focus: '#file-input'
         - input:
+            enabled: true
             cssSelector: '#file-input'
             timeout: ~
             value: >-
@@ -51,10 +52,13 @@ suites:
         - awaitElementToBeClickable:
             cssSelector: '#upload-success-span'
             timeout: '90s'
+            enabled: true
         - awaitAlertToBePresent:
             timeout: '90s'
+            enabled: true
         - awaitPageLoad:
             timeout: '90s'
+            enabled: true
       Open ${landing-page} and upload file with error:
         - open: 'https://verifications.perforator.io/?delay=1000ms'
         - scroll: '#file-input'

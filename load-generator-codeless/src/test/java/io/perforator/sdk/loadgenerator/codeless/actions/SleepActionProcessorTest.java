@@ -21,15 +21,28 @@ public class SleepActionProcessorTest extends AbstractActionProcessorTest<SleepA
     @Override
     protected List<Map<String, String>> buildInvalidSuiteProps() throws Exception {
         return List.of(
-                Map.of(SleepActionConfig.Fields.timeout, "invalid-timeout")
+                Map.of(
+                        SleepActionConfig.Fields.timeout, "invalid-timeout",
+                        SleepActionConfig.Fields.enabled, "true"
+                ),
+                Map.of(
+                        SleepActionConfig.Fields.timeout, "0.1s",
+                        SleepActionConfig.Fields.enabled, "invalid-enabled"
+                )
         );
     }
 
     @Override
     protected List<Map<String, String>> buildValidSuiteProps() throws Exception {
         return List.of(
-                Map.of(SleepActionConfig.Fields.timeout, "1s-5s"),
-                Map.of(SleepActionConfig.Fields.timeout, "3s")
+                Map.of(
+                        SleepActionConfig.Fields.timeout, "0.1s-0.5s",
+                        SleepActionConfig.Fields.enabled, "true"
+                ),
+                Map.of(
+                        SleepActionConfig.Fields.timeout, "0.3s",
+                        SleepActionConfig.Fields.enabled, "false"
+                )
         );
     }
 
@@ -48,6 +61,14 @@ public class SleepActionProcessorTest extends AbstractActionProcessorTest<SleepA
                 )),
                 newObjectNode(Map.of(
                         SleepActionConfig.Fields.timeout, new TextNode("${invalid-placeholder}")
+                )),
+                newObjectNode(Map.of(
+                        SleepActionConfig.Fields.timeout, new TextNode("0.1s"),
+                        SleepActionConfig.Fields.enabled, new TextNode("invalid")
+                )),
+                newObjectNode(Map.of(
+                        SleepActionConfig.Fields.timeout, new TextNode("0.1s"),
+                        SleepActionConfig.Fields.enabled, new TextNode("${invalid-placeholder}")
                 ))
         );
     }
@@ -57,7 +78,8 @@ public class SleepActionProcessorTest extends AbstractActionProcessorTest<SleepA
         return List.of(
                 new TextNode("${" + SleepActionConfig.Fields.timeout + "}"),
                 newObjectNode(Map.of(
-                        SleepActionConfig.Fields.timeout, new TextNode("${" + SleepActionConfig.Fields.timeout + "}")
+                        SleepActionConfig.Fields.timeout, new TextNode("${" + SleepActionConfig.Fields.timeout + "}"),
+                        SleepActionConfig.Fields.enabled, new TextNode("${" + SleepActionConfig.Fields.enabled + "}")
                 ))
         );
     }

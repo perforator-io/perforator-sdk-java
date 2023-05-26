@@ -35,4 +35,7 @@ public class ScrollActionConfig implements SelectorActionConfig {
 
     @FieldNameConstants.Include
     private final String timeout;
+    
+    @FieldNameConstants.Include
+    private final String enabled;
 }

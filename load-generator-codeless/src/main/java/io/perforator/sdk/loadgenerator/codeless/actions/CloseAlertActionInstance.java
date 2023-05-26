@@ -32,6 +32,9 @@ public class CloseAlertActionInstance implements ActionInstance<CloseAlertAction
 
     @FieldNameConstants.Include
     private final String text;
+    
+    @FieldNameConstants.Include
+    private final boolean enabled;
 
     @Override
     public String toLoggingDetails() {

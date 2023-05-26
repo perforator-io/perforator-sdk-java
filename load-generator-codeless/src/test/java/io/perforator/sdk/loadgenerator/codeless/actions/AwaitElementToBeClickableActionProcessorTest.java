@@ -37,7 +37,8 @@ public class AwaitElementToBeClickableActionProcessorTest extends AbstractAction
                 Map.of(AwaitElementToBeClickableActionConfig.Fields.timeout, "invalid-timeout"),
                 Map.of(AwaitElementToBeClickableActionConfig.Fields.selector, ""),
                 Map.of(AwaitElementToBeClickableActionConfig.Fields.cssSelector, ""),
-                Map.of(AwaitElementToBeClickableActionConfig.Fields.xpathSelector, "")
+                Map.of(AwaitElementToBeClickableActionConfig.Fields.xpathSelector, ""),
+                Map.of(AwaitElementToBeClickableActionConfig.Fields.enabled, "invalid")
         );
     }
 
@@ -48,7 +49,8 @@ public class AwaitElementToBeClickableActionProcessorTest extends AbstractAction
                         AwaitElementToBeClickableActionConfig.Fields.selector, CHECKED_BTN_CSS_SELECTOR,
                         AwaitElementToBeClickableActionConfig.Fields.cssSelector, CHECKED_BTN_CSS_SELECTOR,
                         AwaitElementToBeClickableActionConfig.Fields.xpathSelector, CHECKED_BTN_XPATH_SELECTOR,
-                        AwaitElementToBeClickableActionConfig.Fields.timeout, "10.5s"
+                        AwaitElementToBeClickableActionConfig.Fields.timeout, "10.5s",
+                        AwaitElementToBeClickableActionConfig.Fields.enabled, "true"
                 )
         );
     }
@@ -88,6 +90,10 @@ public class AwaitElementToBeClickableActionProcessorTest extends AbstractAction
                 )),
                 newObjectNode(Map.of(
                         AwaitElementToBeClickableActionConfig.Fields.cssSelector, new TextNode("")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeClickableActionConfig.Fields.cssSelector, new TextNode("#valid"),
+                        AwaitElementToBeClickableActionConfig.Fields.enabled, new TextNode("invalid")
                 ))
         );
     }
@@ -98,6 +104,10 @@ public class AwaitElementToBeClickableActionProcessorTest extends AbstractAction
                 new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.selector + "}"),
                 newObjectNode(Map.of(
                         AwaitElementToBeClickableActionConfig.Fields.cssSelector, new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.cssSelector + "}")
+                )),
+                newObjectNode(Map.of(
+                        AwaitElementToBeClickableActionConfig.Fields.cssSelector, new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.cssSelector + "}"),
+                        AwaitElementToBeClickableActionConfig.Fields.enabled, new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.enabled + "}")
                 )),
                 newObjectNode(Map.of(
                         AwaitElementToBeClickableActionConfig.Fields.cssSelector, new TextNode("${" + AwaitElementToBeClickableActionConfig.Fields.cssSelector + "}"),

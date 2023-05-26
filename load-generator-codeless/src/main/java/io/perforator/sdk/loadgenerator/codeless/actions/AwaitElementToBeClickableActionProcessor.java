@@ -53,6 +53,13 @@ public class AwaitElementToBeClickableActionProcessor extends AbstractSelectorAc
                                 null
                         )
                 )
+                .enabled(
+                        getOptionalNestedField(
+                                AwaitElementToBeClickableActionConfig.Fields.enabled,
+                                actionValue,
+                                "true"
+                        )
+                )
                 .build();
     }
 
@@ -82,6 +89,13 @@ public class AwaitElementToBeClickableActionProcessor extends AbstractSelectorAc
                                 AwaitElementToBeClickableActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
+                                formatter
+                        )
+                )
+                .enabled(
+                        buildEnabledForActionInstance(
+                                AwaitElementToBeClickableActionInstance.Fields.enabled, 
+                                actionConfig.getEnabled(), 
                                 formatter
                         )
                 )

@@ -13,5 +13,7 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 public interface ActionConfig {
 
     String getActionName();
+    
+    String getEnabled();
 
 }

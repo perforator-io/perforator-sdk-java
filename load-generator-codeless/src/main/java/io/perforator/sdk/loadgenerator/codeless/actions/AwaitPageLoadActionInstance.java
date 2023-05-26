@@ -26,6 +26,9 @@ public class AwaitPageLoadActionInstance implements ActionInstance<AwaitPageLoad
 
     @FieldNameConstants.Include
     private final Duration timeout;
+    
+    @FieldNameConstants.Include
+    private final boolean enabled;
 
     @Override
     public String toLoggingDetails() {

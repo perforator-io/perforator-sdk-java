@@ -21,6 +21,7 @@ loadGenerator:
     pom.nav: 'nav#main'
     pom.nav.items: '${pom.nav} ul li'
     pom.nav.items.home: '${pom.nav.items}:nth-child(1)'
+    enablingCondition: true
 suites:
   Suite One:
     steps:
@@ -28,4 +29,8 @@ suites:
         - open: 
             url: '${baseUrl}'
             timeout: '${defaultOpenTimeout}'
+            enabled: '${enablingCondition}'
         - click: '${pom.nav.items.home}'
+        - sleep:
+            timeout: 10s
+            enabled: '${enablingCondition}'

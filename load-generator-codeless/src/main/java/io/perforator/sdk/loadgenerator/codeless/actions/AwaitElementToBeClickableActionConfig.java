@@ -35,4 +35,8 @@ public class AwaitElementToBeClickableActionConfig implements SelectorActionConf
 
     @FieldNameConstants.Include
     private final String timeout;
+    
+    @FieldNameConstants.Include
+    private final String enabled;
+    
 }

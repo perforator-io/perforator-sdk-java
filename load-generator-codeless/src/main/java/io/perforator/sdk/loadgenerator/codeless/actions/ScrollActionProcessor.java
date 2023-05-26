@@ -55,6 +55,13 @@ public class ScrollActionProcessor extends AbstractSelectorActionProcessor<Scrol
                                 null
                         )
                 )
+                .enabled(
+                        getOptionalNestedField(
+                                ScrollActionConfig.Fields.enabled,
+                                actionValue,
+                                "true"
+                        )
+                )
                 .build();
     }
 
@@ -79,6 +86,13 @@ public class ScrollActionProcessor extends AbstractSelectorActionProcessor<Scrol
                                 ScrollActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
+                                formatter
+                        )
+                )
+                .enabled(
+                        buildEnabledForActionInstance(
+                                ScrollActionInstance.Fields.enabled, 
+                                actionConfig.getEnabled(), 
                                 formatter
                         )
                 )

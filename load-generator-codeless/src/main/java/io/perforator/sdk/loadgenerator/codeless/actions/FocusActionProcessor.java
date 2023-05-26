@@ -55,6 +55,13 @@ public class FocusActionProcessor extends AbstractSelectorActionProcessor<FocusA
                                 null
                         )
                 )
+                .enabled(
+                        getOptionalNestedField(
+                                FocusActionConfig.Fields.enabled,
+                                actionValue,
+                                "true"
+                        )
+                )
                 .build();
     }
 
@@ -79,6 +86,13 @@ public class FocusActionProcessor extends AbstractSelectorActionProcessor<FocusA
                                 FocusActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
+                                formatter
+                        )
+                )
+                .enabled(
+                        buildEnabledForActionInstance(
+                                FocusActionInstance.Fields.enabled, 
+                                actionConfig.getEnabled(), 
                                 formatter
                         )
                 )
