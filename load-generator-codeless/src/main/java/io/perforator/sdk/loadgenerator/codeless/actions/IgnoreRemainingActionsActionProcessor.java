@@ -1,0 +1,57 @@
+/*
+ * Copyright Perforator, Inc. and contributors. All rights reserved.
+ *
+ * Use of this software is governed by the Business Source License
+ * included in the LICENSE file.
+ *
+ * As of the Change Date specified in that file, in accordance with
+ * the Business Source License, use of this software will be governed
+ * by the Apache License, Version 2.0.
+ */
+package io.perforator.sdk.loadgenerator.codeless.actions;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
+import org.openqa.selenium.remote.RemoteWebDriver;
+
+public class IgnoreRemainingActionsActionProcessor extends AbstractActionProcessor<IgnoreRemainingActionsActionConfig, IgnoreRemainingActionsActionInstance> {
+
+    public IgnoreRemainingActionsActionProcessor() {
+        super(IgnoreRemainingActionsActionConfig.DEFAULT_ACTION_NAME);
+    }
+
+    @Override
+    public IgnoreRemainingActionsActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
+        return IgnoreRemainingActionsActionConfig.builder()
+                .enabled(
+                        getRequiredValueOrNestedField(
+                                IgnoreRemainingActionsActionConfig.Fields.enabled,
+                                actionValue
+                        )
+                )
+                .build();
+    }
+
+    @Override
+    public IgnoreRemainingActionsActionInstance buildActionInstance(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig, FormattingMap formatter, IgnoreRemainingActionsActionConfig actionConfig) {
+        return IgnoreRemainingActionsActionInstance.builder()
+                .config(
+                        actionConfig
+                )
+                .enabled(
+                        buildEnabledForActionInstance(
+                                IgnoreRemainingActionsActionConfig.Fields.enabled,
+                                actionConfig.getEnabled(),
+                                formatter
+                        )
+                )
+                .build();
+    }
+
+    @Override
+    public void processActionInstance(RemoteWebDriver driver, IgnoreRemainingActionsActionInstance actionInstance) {
+        //DO nothing
+    }
+}

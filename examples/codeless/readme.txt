@@ -1332,3 +1332,30 @@ a look at the below docs describing available options for the config.yml
         # processing.                                                          #
         ########################################################################
         #- sleep: 3.5s
+
+        ########################################################################
+        # Action to ignore remaining actions of the step.                      #
+        #                                                                      #
+        # Parameter of this action disables(or enables) processing of          #
+        # remaining actions within a current step only.                        #
+        # Actions from all remaining steps will be processed as usual.         #
+        #                                                                      #
+        # Examples:                                                            #
+        # - ignoreRemainingActions: true                                       #
+        # - ignoreRemainingActions: false                                      #
+        # - ignoreRemainingActions: '${flagFromProps}'                         #
+        # - ignoreRemainingActions: '${flagFromConstants}'                     #
+        ########################################################################
+        #- ignoreRemainingActions: true
+
+        ########################################################################
+        # Action to ignore all remaining actions and steps of the suite.       #
+        # Effectively it leads to successful completion of the suite instance. #
+        #                                                                      #
+        # Examples:                                                            #
+        # - ignoreRemainingSteps: true                                         #
+        # - ignoreRemainingSteps: false                                        #
+        # - ignoreRemainingSteps: '${flagFromProps}'                           #
+        # - ignoreRemainingSteps: '${flagFromConstants}'                       #
+        ########################################################################
+        #- ignoreRemainingSteps: true

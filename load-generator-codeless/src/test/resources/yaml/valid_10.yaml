@@ -22,6 +22,8 @@ loadGenerator:
     pom.nav.items: '${pom.nav} ul li'
     pom.nav.items.home: '${pom.nav.items}:nth-child(1)'
     enablingCondition: true
+    ignoreRemainingSteps: false
+    ignoreRemainingActions: false
 suites:
   Suite One:
     steps:
@@ -34,3 +36,9 @@ suites:
         - sleep:
             timeout: 10s
             enabled: '${enablingCondition}'
+        - ignoreRemainingActions: ${ignoreRemainingActions}
+        - ignoreRemainingActions: 
+            enabled: ${ignoreRemainingActions}
+        - ignoreRemainingSteps: ${ignoreRemainingSteps}
+        - ignoreRemainingSteps: 
+            enabled: ${ignoreRemainingSteps}

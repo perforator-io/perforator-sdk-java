@@ -26,3 +26,5 @@ suites:
       Open and upload file successfully:
         - open: '${baseUrl}/${page1}'
         - click: '${pom.nav.items.home}'
+        - ignoreRemainingSteps: false
+        - ignoreRemainingActions: false

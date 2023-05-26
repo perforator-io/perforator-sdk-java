@@ -105,11 +105,11 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
         }
 
         String result = null;
-
+        
         if (node.isValueNode()) {
-            result = node.textValue();
+            result = asText(fieldName, node);
         } else if (node.isObject() && node.has(fieldName)) {
-            result = node.get(fieldName).textValue();
+            result = asText(fieldName, node.get(fieldName));
         }
 
         if (result == null || result.isBlank()) {
@@ -144,7 +144,7 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
             );
         }
 
-        String result = field.textValue();
+        String result = asText(fieldName, field);
         if (result == null || result.isBlank()) {
             throw new RuntimeException(
                     actionName
@@ -173,7 +173,7 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
         }
 
         if (node.isValueNode()) {
-            return node.textValue();
+            return asText(actionName, node);
         }
         
         return defaultValue;
@@ -189,7 +189,7 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
             return defaultValue;
         }
 
-        String result = field.textValue();
+        String result = asText(fieldName, field);
         if (result == null || result.isBlank()) {
             return defaultValue;
         }
@@ -354,6 +354,34 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
                             + formattedUrl
                             + " is invalid",
                     e
+            );
+        }
+    }
+    
+    protected final String asText(JsonNode node) {
+        if (node.isBoolean() || node.isNumber()) {
+            return node.asText();
+        } else if (node.isValueNode()) {
+            return node.textValue();
+        } else {
+            throw new RuntimeException(
+                    actionName
+                    + " is invalid => " + node
+            );
+        }
+    }
+    
+    protected final String asText(String fieldName, JsonNode node) {
+        if (node.isBoolean() || node.isNumber()) {
+            return node.asText();
+        } else if (node.isValueNode()) {
+            return node.textValue();
+        } else {
+            throw new RuntimeException(
+                    actionName
+                    + "."
+                    + fieldName
+                    + " is invalid => " + node
             );
         }
     }

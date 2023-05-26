@@ -14,6 +14,8 @@ import io.perforator.sdk.loadgenerator.codeless.actions.ActionConfig;
 import io.perforator.sdk.loadgenerator.codeless.actions.ActionInstance;
 import io.perforator.sdk.loadgenerator.codeless.actions.ActionProcessor;
 import io.perforator.sdk.loadgenerator.codeless.actions.ActionProcessorsRegistry;
+import io.perforator.sdk.loadgenerator.codeless.actions.IgnoreRemainingActionsActionInstance;
+import io.perforator.sdk.loadgenerator.codeless.actions.IgnoreRemainingStepsActionInstance;
 import io.perforator.sdk.loadgenerator.codeless.config.*;
 import io.perforator.sdk.loadgenerator.core.AbstractLoadGenerator;
 import io.perforator.sdk.loadgenerator.core.Perforator;
@@ -116,21 +118,30 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
 
         try {
             for (CodelessStepConfig stepConfig : suite.getSteps()) {
-                processStep(suiteInstanceContext, stepConfig, formatter, driver);
+                ProceedingContext proceedingContext = processStep(
+                        suiteInstanceContext, 
+                        stepConfig, 
+                        formatter, 
+                        driver
+                );
+                
+                if(!proceedingContext.proceedSteps) {
+                    break;
+                }
             }
         } finally {
             quiteRemoteWebDriver(driver, suiteInstanceContext);
         }
     }
 
-    private void processStep(
+    private ProceedingContext processStep(
             SuiteInstanceContext suiteInstanceContext,
             CodelessStepConfig stepConfig,
             FormattingMap formatter,
             RemoteWebDriver driver
     ) {
         if (shouldBeFinished()) {
-            return;
+            return ProceedingContext.SKIP_ACTIONS_AND_STEPS;
         }
 
         String suiteName = suiteInstanceContext.getSuiteConfigContext().getSuiteConfig().getName();
@@ -149,7 +160,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
                         actionConfig.getActionName()
                 );
 
-                processAction(
+                ProceedingContext proceedingContext = processAction(
                         suiteInstanceContext,
                         stepName,
                         actionConfig,
@@ -157,7 +168,15 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
                         driver,
                         formatter
                 );
+                
+                if(!proceedingContext.proceedSteps) {
+                    return ProceedingContext.SKIP_ACTIONS_AND_STEPS;
+                } else if(!proceedingContext.proceedActions) {
+                    break;
+                }
             }
+            
+            return ProceedingContext.PROCEED_ALL;
         } catch (RuntimeException e) {
             error = e;
             throw e;
@@ -167,7 +186,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
         }
     }
 
-    private void processAction(
+    private ProceedingContext processAction(
             SuiteInstanceContext suiteInstanceContext,
             String stepName,
             ActionConfig actionConfig,
@@ -176,7 +195,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
             FormattingMap formatter
     ) {
         if (shouldBeFinished()) {
-            return;
+            return ProceedingContext.SKIP_ACTIONS_AND_STEPS;
         }
 
         CodelessSuiteConfig suite = (CodelessSuiteConfig) suiteInstanceContext.getSuiteConfigContext().getSuiteConfig();
@@ -188,8 +207,20 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
                 actionConfig
         );
         
+        if(actionInstance instanceof IgnoreRemainingActionsActionInstance) {
+            if(actionInstance.isEnabled()) {
+                return ProceedingContext.SKIP_ACTIONS_ONLY;
+            }
+        }
+        
+        if(actionInstance instanceof IgnoreRemainingStepsActionInstance) {
+            if(actionInstance.isEnabled()) {
+                return ProceedingContext.SKIP_ACTIONS_AND_STEPS;
+            }
+        }
+        
         if(!actionInstance.isEnabled()) {
-            return;
+            return ProceedingContext.PROCEED_ALL;
         }
         
         logActionStarted(stepName, actionInstance);
@@ -199,7 +230,14 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
                     driver,
                     actionInstance
             );
-            logActionFinished(stepName, actionInstance, null);
+            
+            logActionFinished(
+                    stepName, 
+                    actionInstance, 
+                    null
+            );
+            
+            return ProceedingContext.PROCEED_ALL;
         } catch (RuntimeException e) {
             logActionFinished(stepName, actionInstance, e);
             throw new RuntimeException(
@@ -328,5 +366,21 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
                     actionInstance.getConfig().getActionName()
             );
         }
+    }
+    
+    private static enum ProceedingContext {
+        
+        SKIP_ACTIONS_AND_STEPS(false,false),
+        SKIP_ACTIONS_ONLY(false,true),
+        PROCEED_ALL(true,true);
+        
+        private final boolean proceedActions;
+        private final boolean proceedSteps;
+
+        private ProceedingContext(boolean proceedActions, boolean proceedSteps) {
+            this.proceedActions = proceedActions;
+            this.proceedSteps = proceedSteps;
+        }
+        
     }
 }
