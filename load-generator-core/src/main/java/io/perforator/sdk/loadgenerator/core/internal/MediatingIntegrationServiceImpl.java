@@ -265,6 +265,21 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
     }
     
     @Override
+    public int getMaxConcurrency(SuiteConfigContextImpl suiteConfigContext) {
+        return concurrencyManager.getMaxConcurrency(suiteConfigContext);
+    }
+
+    @Override
+    public long getIterationsCounter(SuiteConfigContextImpl suiteConfigContext) {
+        return concurrencyManager.getIterationsCounter(suiteConfigContext);
+    }
+
+    @Override
+    public long getIterationsMax(SuiteConfigContextImpl suiteConfigContext) {
+        return concurrencyManager.getIterationsMax(suiteConfigContext);
+    }
+    
+    @Override
     public void sleep(SuiteInstanceContextImpl context, long duration) {
         sleepManager.sleep(context, duration);
     }

@@ -623,6 +623,21 @@ a look at the below docs describing available options for the config.yml
     #concurrency: 100
 
     ############################################################################
+    # Iterations count to execute this suite.                                  #
+    #                                                                          #
+    # This is an upper bound of maximum attempts to run the suite.             #
+    # The suite should be stopped when the pre-configured duration is elapsed, #
+    # or iterations count is reached, whatever comes first.                    #
+    #                                                                          #
+    # This is an optional property.                                            #
+    #                                                                          #
+    # Overrides:                                                               #
+    # - System property name: suite.iterations                                 #
+    # - Environment variable name: SUITE_ITERATIONS                            #
+    ############################################################################
+    #iterations: 100
+
+    ############################################################################
     # Duration of the performance test for the given suite.                    #
     #                                                                          #
     # Also, this parameter controls how much time the browser cloud            #

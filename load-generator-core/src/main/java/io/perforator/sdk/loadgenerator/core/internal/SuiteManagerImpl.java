@@ -14,12 +14,9 @@ import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 final class SuiteManagerImpl implements SuiteManager {
-
-    private final ConcurrentHashMap<String, AtomicLong> counters = new ConcurrentHashMap<>();
+    
     private final Duration minDuration = buildMinDuration();
     private final TimeProvider timeProvider;
     private final EventsRouter eventsRouter;
@@ -48,16 +45,12 @@ final class SuiteManagerImpl implements SuiteManager {
                     "suiteConfig should not be null"
             );
         }
-
-        long iterationNumber = counters.computeIfAbsent(
-                suiteConfigContext.getSuiteConfig().getId(),
-                i -> new AtomicLong(0)
-        ).getAndIncrement();
+        
         long timestamp = timeProvider.getCurrentTime();
         SuiteInstanceContextImpl result = new SuiteInstanceContextImpl(
                 workerID,
                 timestamp,
-                iterationNumber,
+                suiteConfigContext.getConcurrencyContext().getAndIncrementIterationsCounter(),
                 loadGeneratorContext,
                 suiteConfigContext
         );

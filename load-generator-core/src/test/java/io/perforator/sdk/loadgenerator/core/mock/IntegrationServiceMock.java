@@ -55,9 +55,8 @@ public class IntegrationServiceMock implements IntegrationService<SuiteConfigCon
     @Override
     public SuiteInstanceContextMock onSuiteInstanceStarted(int workerID, SuiteConfigContextMock suiteConfigContext) {
         SuiteConfig suiteConfig = suiteConfigContext.getSuiteConfig();
-        long iterationNumber = counters.computeIfAbsent(
-                suiteConfig.getId(),
-                i -> new AtomicLong(0)
+        long iterationNumber = getIterationsCounter(
+                suiteConfig
         ).getAndIncrement();
         suiteInstancesActive.incrementAndGet();
         return new SuiteInstanceContextMock(workerID, iterationNumber, new SuiteConfigContextMock(suiteConfig));
@@ -223,8 +222,32 @@ public class IntegrationServiceMock implements IntegrationService<SuiteConfigCon
     }
 
     @Override
+    public int getMaxConcurrency(SuiteConfigContextMock suiteConfigContext) {
+        return suiteConfigContext.getSuiteConfig().getConcurrency();
+    }
+
+    @Override
+    public long getIterationsCounter(SuiteConfigContextMock suiteConfigContext) {
+        return getIterationsCounter(
+                suiteConfigContext.getSuiteConfig()
+        ).get();
+    }
+
+    @Override
+    public long getIterationsMax(SuiteConfigContextMock suiteConfigContext) {
+        return suiteConfigContext.getSuiteConfig().getIterations();
+    }
+
+    @Override
     public void sleep(SuiteInstanceContextMock context, long duration) {
         Threaded.sleep(duration);
+    }
+    
+    private AtomicLong getIterationsCounter(SuiteConfig suiteConfig) {
+        return counters.computeIfAbsent(
+                suiteConfig.getId(),
+                i -> new AtomicLong(0)
+        );
     }
 
 }

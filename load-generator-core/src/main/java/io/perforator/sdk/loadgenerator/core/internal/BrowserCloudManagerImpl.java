@@ -526,6 +526,15 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
         details.add("<p><span class=\"text-gray-700\">Load Generator Details:</span></p>");
         
         for (SuiteConfig suiteConfig: suiteConfigs){
+            long suiteConfigIterations = suiteConfig.getIterations();
+            String iterationsInfo = "";
+            if (suiteConfigIterations != SuiteConfig.DEFAULT_ITERATIONS) {
+                iterationsInfo
+                        = "<p><span class=\"text-gray-700\">iterations</span>: "
+                        + suiteConfigIterations
+                        + "</p>";
+            }
+            
             details.add(
                     new StringBuilder()
                             .append("<p><span class=\"text-gray-700\">suite</span>: ")
@@ -537,6 +546,7 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
                             .append("<p><span class=\"text-gray-700\">concurrency</span>: ")
                             .append(suiteConfig.getConcurrency())
                             .append("</p>")
+                            .append(iterationsInfo)
                             .append("<p><span class=\"text-gray-700\">duration</span>: ")
                             .append(suiteConfig.getDuration().toString().toLowerCase().replace("pt", ""))
                             .append("</p>")

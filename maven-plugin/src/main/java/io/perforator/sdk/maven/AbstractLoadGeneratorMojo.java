@@ -635,6 +635,20 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
             property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrency
     )
     protected String concurrency;
+    
+    /**
+     * Iterations count to execute this suite.
+     * This is an upper bound of maximum attempts to run the suite.
+     * The suite should be stopped when the pre-configured duration is elapsed, 
+     * or iterations count is reached, whatever comes first.
+     */
+    @Parameter(
+            required = false,
+            defaultValue = SuiteConfig.DEFAULT_ITERATIONS_S,
+            alias = SuiteConfig.Fields.iterations,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.iterations
+    )
+    protected String iterations;
 
     /**
      * Duration of the performance test. Also, this parameter controls how much 

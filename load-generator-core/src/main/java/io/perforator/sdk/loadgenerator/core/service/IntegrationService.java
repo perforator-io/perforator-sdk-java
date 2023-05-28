@@ -34,6 +34,12 @@ public interface IntegrationService<C extends SuiteConfigContext, S extends Suit
     int getCurrentConcurrency(C suiteConfigContext);
 
     int getDesiredConcurrency(C suiteConfigContext);
+    
+    int getMaxConcurrency(C suiteConfigContext);
+    
+    long getIterationsCounter(C suiteConfigContext);
+    
+    long getIterationsMax(C suiteConfigContext);
 
     C onSuiteConfigCreated(SuiteConfig suiteConfig);
 }

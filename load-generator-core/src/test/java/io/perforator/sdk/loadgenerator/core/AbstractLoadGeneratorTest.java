@@ -131,8 +131,10 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
         assumeTrue(CHROME_BROWSER_AVAILABLE);
         int concurrency = getDefaultConcurrency();
 
-        Map<String, String> suiteParams = Map.of(SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.duration, "0.1s",
+        Map<String, String> suiteParams = Map.of(
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.duration, "0.1s",
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrency, concurrency + "",
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.iterations, concurrency + "",
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampUp, "0s",
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampDown, "0s",
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverMode, WebDriverMode.local.name(),
@@ -187,9 +189,11 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
         assumeTrue(CHROME_BROWSER_AVAILABLE);
         int concurrency = getDefaultConcurrency();
 
-        Map<String, String> suiteParams = Map.of(SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.name, "suite-name-" + UUID.randomUUID(),
+        Map<String, String> suiteParams = Map.of(
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.name, "suite-name-" + UUID.randomUUID(),
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.duration, "0.1s",
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrency, concurrency + "",
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.iterations, concurrency + "",
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampUp, "0s",
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampDown, "0s",
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverMode, WebDriverMode.local.name(),
@@ -275,9 +279,11 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
     protected LoadGeneratorRunContext runLoadGeneratorWithRemoteBrowsersAndAwaitMetrics(String... dataCapturingExcludes) throws Exception {
         int concurrency = 4;
 
-        Map<String, String> suiteParams = Map.of(SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.name, "suite-name-" + UUID.randomUUID(),
+        Map<String, String> suiteParams = Map.of(
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.name, "suite-name-" + UUID.randomUUID(),
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.duration, "2s",
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrency, concurrency + "",
+                SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.iterations, concurrency + "",
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampUp, "0s",
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampDown, "0s",
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverMode, WebDriverMode.cloud.name()

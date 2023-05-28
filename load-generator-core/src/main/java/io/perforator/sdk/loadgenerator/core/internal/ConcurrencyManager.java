@@ -21,5 +21,9 @@ interface ConcurrencyManager<C extends SuiteConfigContext> extends IntegrationLi
     int getDesiredConcurrency(C suiteConfigContext);
 
     int getCurrentConcurrency(C suiteConfigContext);
+    
+    long getIterationsCounter(C suiteConfigContext);
+    
+    long getIterationsMax(C suiteConfigContext);
 
 }

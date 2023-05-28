@@ -132,4 +132,14 @@ final class ConcurrencyManagerImpl implements ConcurrencyManager<SuiteConfigCont
         return suiteConfigContext.getConcurrencyContext().getCurrentConcurrency();
     }
 
+    @Override
+    public long getIterationsCounter(SuiteConfigContextImpl suiteConfigContext) {
+        return suiteConfigContext.getConcurrencyContext().getIterationsCounter();
+    }
+
+    @Override
+    public long getIterationsMax(SuiteConfigContextImpl suiteConfigContext) {
+        return suiteConfigContext.getConcurrencyContext().getMaxIterations();
+    }
+
 }

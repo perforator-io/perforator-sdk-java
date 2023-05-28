@@ -29,8 +29,10 @@ final class ConcurrencyContextImpl {
     private final AtomicInteger failedSuitesCounter;
     private final AtomicInteger successfulSuitesCounter;
     private final AtomicLong nextRecalcTimestamp;
+    private final AtomicLong iterationsCounter;
     private final int minConcurrency;
     private final int maxConcurrency;
+    private final long maxIterations;
 
     public ConcurrencyContextImpl(
             SuiteConfig suiteConfig, 
@@ -57,6 +59,8 @@ final class ConcurrencyContextImpl {
         this.desiredConcurrency = new AtomicInteger(maxConcurrency);
         this.failedSuitesCounter = new AtomicInteger(0);
         this.successfulSuitesCounter = new AtomicInteger(0);
+        this.iterationsCounter = new AtomicLong(0);
+        this.maxIterations = suiteConfig.getIterations();
         this.nextRecalcTimestamp = new AtomicLong(nextRecalcTimestamp);
     }
     
@@ -116,6 +120,18 @@ final class ConcurrencyContextImpl {
 
     public int getCurrentConcurrency() {
         return currentConcurrency.get();
+    }
+    
+    public long getAndIncrementIterationsCounter() {
+        return iterationsCounter.getAndIncrement();
+    }
+    
+    public long getIterationsCounter() {
+        return iterationsCounter.get();
+    }
+
+    public long getMaxIterations() {
+        return maxIterations;
     }
 
     public int updateDesiredConcurrency(int delta) {

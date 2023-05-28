@@ -47,6 +47,21 @@ public class SuiteConfig implements Configurable {
      * property.
      */
     public static final int DEFAULT_CONCURRENCY = Integer.parseInt(DEFAULT_CONCURRENCY_S);
+    
+    /**
+     * String representation of default value for 
+     * <b>{@link SuiteConfig#iterations}</b>
+     * property.
+     */
+    public static final String DEFAULT_ITERATIONS_S = "9999999";
+    
+    /**
+     * Default value(<b>{@value SuiteConfig#DEFAULT_ITERATIONS_S}</b>) 
+     * for 
+     * <b>{@link SuiteConfig#iterations}</b>
+     * property.
+     */
+    public static final long DEFAULT_ITERATIONS = Integer.parseInt(DEFAULT_ITERATIONS_S);
 
     /**
      * String representation of default value for 
@@ -325,6 +340,15 @@ public class SuiteConfig implements Configurable {
      */
     @Getter @Setter @FieldNameConstants.Include
     protected int concurrency = DEFAULT_CONCURRENCY;
+    
+    /**
+     * Iterations count to execute this suite.
+     * This is an upper bound of maximum attempts to run the suite.
+     * The suite should be stopped when the pre-configured duration is elapsed, 
+     * or iterations count is reached, whatever comes first.
+     */
+    @Getter @Setter @FieldNameConstants.Include
+    protected long iterations = DEFAULT_ITERATIONS;
 
     /**
      * Duration of the performance test. Also, this parameter controls how much 

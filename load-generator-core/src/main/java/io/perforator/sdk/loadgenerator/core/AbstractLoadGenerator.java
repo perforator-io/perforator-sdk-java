@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 //TODO: add javadoc
 public abstract class AbstractLoadGenerator implements Runnable, StatisticsService {
@@ -144,12 +145,12 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
 
         List<Future> futures = new ArrayList<>();
         for (SuiteConfig suiteConfig : suiteConfigs) {
-            AtomicInteger preStartCounter = new AtomicInteger();
+            ReentrantLock preStartLock = new ReentrantLock();
             SuiteConfigContext suiteConfigContext = mediator.onSuiteConfigCreated(suiteConfig);
             for (int i = 0; i < suiteConfig.getConcurrency(); i++) {
                 futures.add(
                         executor.submit(
-                                new SuiteRunner(preStartCounter, suiteConfigContext, i)
+                                new SuiteRunner(preStartLock, suiteConfigContext, i)
                         )
                 );
             }
@@ -368,12 +369,12 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
 
     private class SuiteRunner implements Runnable {
 
-        private final AtomicInteger preStartCounter;
+        private final ReentrantLock preStartLock;
         private final int workerNumber;
         private final SuiteConfigContext suiteConfigContext;
 
-        public SuiteRunner(AtomicInteger preStartCounter, SuiteConfigContext suiteConfigContext, int workerNumber) {
-            this.preStartCounter = preStartCounter;
+        public SuiteRunner(ReentrantLock preStartLock, SuiteConfigContext suiteConfigContext, int workerNumber) {
+            this.preStartLock = preStartLock;
             this.suiteConfigContext = suiteConfigContext;
             this.workerNumber = workerNumber;
         }
@@ -410,23 +411,21 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
                     slowdown = 0;
                 }
                 
-                SuiteInstanceContext suiteInstanceContext = startSuiteContextIfAllowed(
-                        this.suiteConfigContext
-                );
-                if (suiteInstanceContext == null) {
-                    if (shouldBeFinished()) {
-                        return;
-                    } else {
-                        Threaded.sleep(
-                                calculateDelayForDesiredConcurrency(
-                                        this.suiteConfigContext,
-                                        1,
-                                        250
-                                )
-                        );
-                        continue;
-                    }
+                PreStartSuiteInstanceContext preStartContext = preStart(suiteConfigContext);
+                
+                if(!preStartContext.iterationAllowed) {
+                    return;
                 }
+                
+                if(preStartContext.delay > 0) {
+                    Threaded.sleep(delay);
+                }
+                
+                if(preStartContext.suiteInstanceContext == null) {
+                    continue;
+                }
+                
+                final SuiteInstanceContext suiteInstanceContext = preStartContext.suiteInstanceContext;
 
                 if (logger.isDebugEnabled()) {
                     logger.debug(
@@ -483,37 +482,66 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
             }
         }
         
-        private long calculateDelayForDesiredConcurrency(SuiteConfigContext suiteConfigContext, long minDelay, long maxDelay) {
-            double maxConcurrency = suiteConfigContext.getSuiteConfig().getConcurrency();
-            double desiredConcurrency = mediator.getDesiredConcurrency(suiteConfigContext);
-            double delta = maxConcurrency - desiredConcurrency;
-            double multiplier = delta / maxConcurrency;
-            
-            return Math.max(
-                    minDelay, 
-                    (long)(multiplier * maxDelay)
-            );
-        }
-        
-        private SuiteInstanceContext startSuiteContextIfAllowed(SuiteConfigContext suiteConfigContext) {
+        private PreStartSuiteInstanceContext preStart(SuiteConfigContext suiteConfigContext) {
+            preStartLock.lock();
+
             try {
-                int suitesToBeStarted = preStartCounter.incrementAndGet();
                 int currentConcurrency = mediator.getCurrentConcurrency(suiteConfigContext);
                 int desiredConcurrency = mediator.getDesiredConcurrency(suiteConfigContext);
+                int maxConcurrency = mediator.getMaxConcurrency(suiteConfigContext);
+                long iterationsCounter = mediator.getIterationsCounter(suiteConfigContext);
+                long iterationsMax = mediator.getIterationsMax(suiteConfigContext);
 
-                if (currentConcurrency + suitesToBeStarted <= desiredConcurrency && !shouldBeFinished()) {
-                    return mediator.onSuiteInstanceStarted(
-                            workerNumber,
-                            suiteConfigContext
+                if (iterationsCounter >= iterationsMax || shouldBeFinished()) {
+                    return new PreStartSuiteInstanceContext(
+                            null,
+                            false,
+                            0
                     );
-                } else {
-                    return null;
                 }
+                
+                if(currentConcurrency >= desiredConcurrency) {
+                    double delta = maxConcurrency - desiredConcurrency;
+                    double multiplier = delta / maxConcurrency;
+                    long delay = Math.max(
+                            1,
+                            (long) (multiplier * 250)
+                    );
+                    
+                    return new PreStartSuiteInstanceContext(
+                            null,
+                            !shouldBeFinished(),
+                            delay
+                    );
+                }
+                
+                return new PreStartSuiteInstanceContext(
+                        mediator.onSuiteInstanceStarted(
+                                workerNumber,
+                                suiteConfigContext
+                        ),
+                        true,
+                        0
+                );
             } finally {
-                preStartCounter.decrementAndGet();
+                preStartLock.unlock();
             }
         }
 
+    }
+    
+    private static final class PreStartSuiteInstanceContext {
+        
+        private final SuiteInstanceContext suiteInstanceContext;
+        private final boolean iterationAllowed;
+        private final long delay;
+
+        public PreStartSuiteInstanceContext(SuiteInstanceContext suiteInstanceContext, boolean iterationAllowed, long delay) {
+            this.suiteInstanceContext = suiteInstanceContext;
+            this.iterationAllowed = iterationAllowed;
+            this.delay = delay;
+        }
+        
     }
 
 }
