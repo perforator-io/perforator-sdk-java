@@ -68,7 +68,13 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
                 continue;
             }
             SuiteConfig suiteConfig = configContext.getSuiteConfig();
-            concurrency += suiteConfig.getConcurrency();
+            
+            if(suiteConfig.getWebDriverConcurrency() != null) {
+                concurrency += Math.max(1, suiteConfig.getWebDriverConcurrency());
+            } else {
+                concurrency += Math.max(1, suiteConfig.getConcurrency());
+            }
+            
             requiredDuration = Math.max(requiredDuration, (int) suiteConfig.getDuration().toMillis() / 1000);
 
             suiteConfigs.add(suiteConfig);
@@ -535,6 +541,14 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
                         + "</p>";
             }
             
+            String webDriverConcurrencyInfo = "";
+            if (suiteConfig.getWebDriverConcurrency() != null) {
+                webDriverConcurrencyInfo
+                        = "<p><span class=\"text-gray-700\">webDriverConcurrency</span>: "
+                        + suiteConfig.getWebDriverConcurrency()
+                        + "</p>";
+            }
+            
             details.add(
                     new StringBuilder()
                             .append("<p><span class=\"text-gray-700\">suite</span>: ")
@@ -546,6 +560,7 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
                             .append("<p><span class=\"text-gray-700\">concurrency</span>: ")
                             .append(suiteConfig.getConcurrency())
                             .append("</p>")
+                            .append(webDriverConcurrencyInfo)
                             .append(iterationsInfo)
                             .append("<p><span class=\"text-gray-700\">duration</span>: ")
                             .append(suiteConfig.getDuration().toString().toLowerCase().replace("pt", ""))

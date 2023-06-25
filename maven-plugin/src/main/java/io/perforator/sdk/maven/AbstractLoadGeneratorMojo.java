@@ -757,6 +757,17 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
     protected String webDriverMode;
     
     /**
+     * Predefined concurrency level for browsers in the cloud.
+     */
+    @Parameter(
+            required = false,
+            defaultValue = "",
+            alias = SuiteConfig.Fields.webDriverConcurrency,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverConcurrency
+    )
+    protected String webDriverConcurrency;
+    
+    /**
      * The mode of launching chrome instances.
      * <b>Available modes</b>:
      * <ul>

@@ -38,7 +38,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#concurrency}</b>
      * property.
      */
-    public static final String DEFAULT_CONCURRENCY_S = "30";
+    public static final String DEFAULT_CONCURRENCY_S = "16";
     
     /**
      * Default value(<b>{@value SuiteConfig#DEFAULT_CONCURRENCY_S}</b>) 
@@ -401,6 +401,12 @@ public class SuiteConfig implements Configurable {
      */
     @Getter @Setter @FieldNameConstants.Include
     protected WebDriverMode webDriverMode = DEFAULT_WEB_DRIVER_MODE;
+    
+    /**
+     * Predefined concurrency level for browsers in the cloud.
+     */
+    @Getter @Setter @FieldNameConstants.Include
+    protected Integer webDriverConcurrency = null;
     
     /**
      * The mode of launching chrome instances.

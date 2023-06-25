@@ -4,7 +4,7 @@ mvn -f $(dirname "$0")/pom.xml \
   clean test-compile \
   perforator:embedded \
   -Dsuite.webDriverMode=cloud \
-  -Dsuite.concurrency=10 \
+  -Dsuite.concurrency=16 \
   -Dsuite.duration=5m \
   -Dsuite.rampUp=1m \
   -Dsuite.rampDown=1m \
