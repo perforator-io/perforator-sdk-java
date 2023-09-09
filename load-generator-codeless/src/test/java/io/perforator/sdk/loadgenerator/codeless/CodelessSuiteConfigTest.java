@@ -27,7 +27,10 @@ public class CodelessSuiteConfigTest extends AbstractConfigTest<CodelessSuiteCon
     protected Map<String, String> buildFieldsForVerification() throws Exception {
         return Map.of(
                 SuiteConfig.Fields.name, UUID.randomUUID().toString(),
-                SuiteConfig.Fields.webDriverUseLocalFileDetector, !SuiteConfig.DEFAULT_WEB_DRIVER_USE_LOCAL_FILE_DETECTOR + ""
+                SuiteConfig.Fields.webDriverUseLocalFileDetector, !SuiteConfig.DEFAULT_WEB_DRIVER_USE_LOCAL_FILE_DETECTOR + "",
+                SuiteConfig.Fields.logWorkerID, !SuiteConfig.DEFAULT_LOG_WORKER_ID + "",
+                CodelessSuiteConfig.Fields.logActions, !CodelessSuiteConfig.DEFAULT_LOG_ACTIONS + "",
+                CodelessSuiteConfig.Fields.logSteps, !CodelessSuiteConfig.DEFAULT_LOG_STEPS + ""
         );
     }
 }

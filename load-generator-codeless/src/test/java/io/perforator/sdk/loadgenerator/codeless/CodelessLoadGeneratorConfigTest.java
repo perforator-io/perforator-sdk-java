@@ -26,10 +26,7 @@ public class CodelessLoadGeneratorConfigTest extends AbstractConfigTest<Codeless
     @Override
     protected Map<String, String> buildFieldsForVerification() throws Exception {
         return Map.of(
-                LoadGeneratorConfig.Fields.apiClientId, UUID.randomUUID().toString(),
-                LoadGeneratorConfig.Fields.logWorkerID, !LoadGeneratorConfig.DEFAULT_LOG_WORKER_ID + "",
-                CodelessLoadGeneratorConfig.Fields.logActions, !CodelessLoadGeneratorConfig.DEFAULT_LOG_ACTIONS + "",
-                CodelessLoadGeneratorConfig.Fields.logSteps, !CodelessLoadGeneratorConfig.DEFAULT_LOG_STEPS + ""
+                LoadGeneratorConfig.Fields.apiClientId, UUID.randomUUID().toString()
         );
     }
 

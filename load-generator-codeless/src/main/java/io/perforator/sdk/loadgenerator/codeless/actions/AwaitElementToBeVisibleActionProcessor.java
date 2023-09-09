@@ -71,7 +71,10 @@ public class AwaitElementToBeVisibleActionProcessor extends AbstractSelectorActi
                         actionConfig
                 )
                 .selectorType(
-                        getSelectorType(actionConfig, loadGeneratorConfig.getDefaultSelectorType())
+                        getSelectorType(
+                                actionConfig, 
+                                suiteConfig.getDefaultSelectorType()
+                        )
                 )
                 .selector(
                         buildRequiredStringSelectorForActionInstance(

@@ -18,13 +18,13 @@ loadGenerator:
   browserCloudAwaitQueued: 1h
   httpConnectTimeout: 59S
   httpReadTimeout: 59S
-  concurrencyAutoAdjustment: true
-  logSteps: false
-  logActions: false
 suites:
   Suite One:
+    logSteps: false
+    logActions: false
     webDriverMode: cloud
     concurrency: 1
+    concurrencyAutoAdjustment: true
     delay: 0S
     duration: 20M
     rampUp: 1M

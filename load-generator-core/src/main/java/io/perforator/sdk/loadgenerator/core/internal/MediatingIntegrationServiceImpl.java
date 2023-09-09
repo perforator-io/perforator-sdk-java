@@ -59,9 +59,9 @@ final class MediatingIntegrationServiceImpl implements IntegrationService<SuiteC
         this.transactionEventsAggregator = new TransactionEventsAggregatorImpl();
         this.analyticsEventsFlusher = new AnalyticsEventsFlusherImpl();
         this.concurrencyEventsAggregator = new ConcurrencyEventsAggregatorImpl();
-        this.slowdownManager = new SlowdownManagerImpl(timeProvider, loadGeneratorConfig);
+        this.slowdownManager = new SlowdownManagerImpl();
         this.concurrencyManager = new ConcurrencyManagerImpl();
-        this.loggingContextManager = new LoggingContextManagerImpl(loadGeneratorConfig);
+        this.loggingContextManager = new LoggingContextManagerImpl();
         this.seleniumLoggingManager = new SeleniumLoggingManagerImpl();
         this.reportingManager = new ReportingManagerImpl();
         this.statisticsManager = new StatisticsManagerImpl();

@@ -22,6 +22,12 @@ final class SuiteInstanceContextImpl implements SuiteInstanceContext {
     private final int workerID;
     private final long startedAt;
     private final long iterationNumber;
+    private final boolean logWorkerID;
+    private final boolean logSuiteInstanceID;
+    private final boolean logRemoteWebDriverSessionID;
+    private final boolean logTransactionID;
+    private final boolean rebuildLoggingContext;
+    private final boolean slowDownEnabled;
     private final String suiteInstanceID;
     private final LoadGeneratorContextImpl loadGeneratorContext;
     private final SuiteConfigContextImpl suiteConfigContext;
@@ -35,6 +41,12 @@ final class SuiteInstanceContextImpl implements SuiteInstanceContext {
         this.loadGeneratorContext = loadGeneratorContext;
         this.suiteInstanceID = UUID.randomUUID().toString();
         this.suiteConfigContext = suiteConfigContext;
+        this.slowDownEnabled = suiteConfigContext.getSuiteConfig().isConcurrencyAutoAdjustment();
+        this.logWorkerID = suiteConfigContext.getSuiteConfig().isLogWorkerID();
+        this.logSuiteInstanceID = suiteConfigContext.getSuiteConfig().isLogSuiteInstanceID();
+        this.logRemoteWebDriverSessionID = suiteConfigContext.getSuiteConfig().isLogRemoteWebDriverSessionID();
+        this.logTransactionID = suiteConfigContext.getSuiteConfig().isLogTransactionID();
+        this.rebuildLoggingContext = this.logWorkerID || this.logSuiteInstanceID || this.logRemoteWebDriverSessionID || this.logTransactionID;
     }
 
     @Override
@@ -71,6 +83,30 @@ final class SuiteInstanceContextImpl implements SuiteInstanceContext {
     @Override
     public SuiteConfigContextImpl getSuiteConfigContext() {
         return suiteConfigContext;
+    }
+
+    public boolean isSlowDownEnabled() {
+        return slowDownEnabled;
+    }
+
+    public boolean isLogWorkerID() {
+        return logWorkerID;
+    }
+
+    public boolean isLogSuiteInstanceID() {
+        return logSuiteInstanceID;
+    }
+
+    public boolean isLogRemoteWebDriverSessionID() {
+        return logRemoteWebDriverSessionID;
+    }
+
+    public boolean isLogTransactionID() {
+        return logTransactionID;
+    }
+
+    public boolean isRebuildLoggingContext() {
+        return rebuildLoggingContext;
     }
 
     @Override

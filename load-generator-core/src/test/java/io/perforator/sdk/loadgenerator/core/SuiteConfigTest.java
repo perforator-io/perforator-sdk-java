@@ -24,7 +24,8 @@ public class SuiteConfigTest extends AbstractConfigTest<SuiteConfig>{
     protected Map<String, String> buildFieldsForVerification() throws Exception {
         return Map.of(
                 SuiteConfig.Fields.name, UUID.randomUUID().toString(),
-                SuiteConfig.Fields.webDriverUseLocalFileDetector, !SuiteConfig.DEFAULT_WEB_DRIVER_USE_LOCAL_FILE_DETECTOR + ""
+                SuiteConfig.Fields.webDriverUseLocalFileDetector, !SuiteConfig.DEFAULT_WEB_DRIVER_USE_LOCAL_FILE_DETECTOR + "",
+                SuiteConfig.Fields.logWorkerID, !SuiteConfig.DEFAULT_LOG_WORKER_ID + ""
         );
     }
     

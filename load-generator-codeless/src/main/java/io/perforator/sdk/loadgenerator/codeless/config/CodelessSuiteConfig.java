@@ -41,6 +41,15 @@ import java.util.function.Function;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CodelessSuiteConfig extends SuiteConfig {
     
+    public static final String DEFAULT_LOG_STEPS_S = "false";
+    public static final boolean DEFAULT_LOG_STEPS = Boolean.parseBoolean(DEFAULT_LOG_STEPS_S);
+
+    public static final String DEFAULT_LOG_ACTIONS_S = "false";
+    public static final boolean DEFAULT_LOG_ACTIONS = Boolean.parseBoolean(DEFAULT_LOG_ACTIONS_S);
+
+    public static final String DEFAULT_SELECTOR_TYPE_S = "css";
+    public static SelectorType DEFAULT_SELECTOR_TYPE = SelectorType.valueOf(DEFAULT_SELECTOR_TYPE_S);
+    
     public static final String DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT_S = "30s";
     public static final Duration DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT = Configurable.parseDuration(DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT_S);
     
@@ -48,6 +57,21 @@ public class CodelessSuiteConfig extends SuiteConfig {
     @Setter
     @FieldNameConstants.Include
     private Duration webDriverFluentWaitTimeout = DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT;
+    
+    @Getter
+    @Setter
+    @FieldNameConstants.Include
+    private boolean logSteps = DEFAULT_LOG_STEPS;
+
+    @Getter
+    @Setter
+    @FieldNameConstants.Include
+    private boolean logActions = DEFAULT_LOG_ACTIONS;
+    
+    @Getter
+    @Setter
+    @FieldNameConstants.Include
+    private SelectorType defaultSelectorType = DEFAULT_SELECTOR_TYPE;
 
     @JsonDeserialize(using = PropsDeserializer.class)
     @Getter

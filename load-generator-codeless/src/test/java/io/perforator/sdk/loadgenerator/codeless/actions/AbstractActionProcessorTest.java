@@ -119,7 +119,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
         for (JsonNode invalidActionConfig : invalidActionConfigs) {
             if(invalidActionConfig.has(SELECTOR_TYPE_KEY)){
                 String s = invalidActionConfig.get(SELECTOR_TYPE_KEY).textValue();
-                loadGeneratorConfig.setDefaultSelectorType(
+                suiteConfig.setDefaultSelectorType(
                         SelectorType.valueOf(s)
                 );
             }
@@ -201,7 +201,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
         for (JsonNode invalidActionConfig : invalidActionConfigs) {
             if(invalidActionConfig.has(SELECTOR_TYPE_KEY)){
                 String s = invalidActionConfig.get(SELECTOR_TYPE_KEY).textValue();
-                loadGeneratorConfig.setDefaultSelectorType(
+                suiteConfig.setDefaultSelectorType(
                         SelectorType.valueOf(s)
                 );
             }
@@ -247,7 +247,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
         for (JsonNode validActionConfig : validActionConfigs) {
             if(validActionConfig.has(SELECTOR_TYPE_KEY)){
                 String s = validActionConfig.get(SELECTOR_TYPE_KEY).textValue();
-                loadGeneratorConfig.setDefaultSelectorType(
+                suiteConfig.setDefaultSelectorType(
                         SelectorType.valueOf(s)
                 );
             }
@@ -300,7 +300,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
             for (JsonNode validActionConfig : validActionConfigs) {
                 if(validActionConfig.has(SELECTOR_TYPE_KEY)){
                     String s = validActionConfig.get(SELECTOR_TYPE_KEY).textValue();
-                    loadGeneratorConfig.setDefaultSelectorType(
+                    suiteConfig.setDefaultSelectorType(
                             SelectorType.valueOf(s)
                     );
                 }

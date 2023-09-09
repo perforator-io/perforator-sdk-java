@@ -237,140 +237,6 @@ a look at the below docs describing available options for the config.yml
   #reportingInterval: 5s
 
   ##############################################################################
-  # It might be a case when tests start failing too often, either due to the   #
-  # problem with the test(s) logic or due to overloading of the target         #
-  # system.                                                                    #
-  #                                                                            #
-  # Perforator automatically determines when to introduce a slowdown in case   #
-  # of any abnormalities with tests execution.                                 #
-  #                                                                            #
-  # This flag controls whether automatic slowdown is enabled or not.           #
-  #                                                                            #
-  # This is an optional property.                                              #
-  # Overrides:                                                                 #
-  # - System property name: loadGenerator.concurrencyAutoAdjustment            #
-  # - Environment variable name: LOADGENERATOR_CONCURRENCYAUTOADJUSTMENT       #
-  ##############################################################################
-  #concurrencyAutoAdjustment: true
-
-  ##############################################################################
-  # How often desired concurrency should be recalculated?                      #
-  #                                                                            #
-  # This is an optional property.                                              #
-  # Overrides:                                                                 #
-  # - System property name: loadGenerator.concurrencyRecalcPeriod              #
-  # - Environment variable name: LOADGENERATOR_CONCURRENCYRECALCPERIOD         #
-  ##############################################################################
-  #concurrencyRecalcPeriod: 30s
-
-  ##############################################################################
-  # Perforator automatically decreases concurrency if there are too many       #
-  # failing transactions.                                                      #
-  #                                                                            #
-  # This property determines concurrency multiplier to use while calculating   #
-  # scale-down adjustment.                                                     #
-  #                                                                            #
-  # For example, suppose the target concurrency is 1000, and the multiplier is #
-  # 0.05. In that case, the scale-down adjustment for concurrency is           #
-  # 1000 x 0.05 = 50, so the system should decrease concurrency by 50 threads  #
-  # in case of too many failing transactions.                                  #
-  #                                                                            #
-  # This is an optional property.                                              #
-  # Overrides:                                                                 #
-  # - System property name: loadGenerator.concurrencyScaleDownMultiplier       #
-  # - Environment variable name: LOADGENERATOR_CONCURRENCYSCALEDOWNMULTIPLIER  #
-  ##############################################################################
-  #concurrencyScaleDownMultiplier: 0.05
-
-  ##############################################################################
-  # Perforator automatically increases concurrency if previously it was        #
-  # slowing down due to failing transactions, and the amount of such failing   #
-  # transactions decreases.                                                    #
-  #                                                                            #
-  # This property determines concurrency multiplier to use while calculating   #
-  # scale-up adjustment.                                                       #
-  #                                                                            #
-  # For example, suppose the target concurrency is 1000, and the multiplier is #
-  # 0.025. In that case, the scale-up adjustment for concurrency is            #
-  # 1000 x 0.025 = 25, so the system should increase concurrency by 25 threads #
-  # in case failing transactions percent goes down.                            #
-  #                                                                            #
-  # This is an optional property.                                              #
-  # Overrides:                                                                 #
-  # - System property name: loadGenerator.concurrencyScaleUpMultiplier         #
-  # - Environment variable name: LOADGENERATOR_CONCURRENCYSCALEUPMULTIPLIER    #
-  ##############################################################################
-  #concurrencyScaleUpMultiplier: 0.025
-
-  ##############################################################################
-  # All the suites are processed concurrently via multiple thread workers.     #
-  # Every thread worker has a dedicated ID.                                    #
-  #                                                                            #
-  # This flag determines should the worker ID be logged as a part of every log #
-  # item.                                                                      #
-  #                                                                            #
-  # This is an optional property.                                              #
-  # Overrides:                                                                 #
-  # - System property name: loadGenerator.logWorkerID                          #
-  # - Environment variable name: LOADGENERATOR_LOGWORKERID                     #
-  ##############################################################################
-  #logWorkerID: false
-
-  ##############################################################################
-  # A new suite instance ID is generated whenever a thread worker starts       #
-  # processing a test suite.                                                   #
-  #                                                                            #
-  # This flag determines should the suite instance ID be logged for all log    #
-  # items related to the processing of the suite instance.                     #
-  #                                                                            #
-  # This is an optional property.                                              #
-  # Overrides:                                                                 #
-  # - System property name: loadGenerator.logSuiteInstanceID                   #
-  # - Environment variable name: LOADGENERATOR_LOGSUITEINSTANCEID              #
-  ##############################################################################
-  #logSuiteInstanceID: false
-
-  ##############################################################################
-  # Should a selenium session-id be logged while processing a test suite?      #
-  #                                                                            #
-  # This is an optional property.                                              #
-  # Overrides:                                                                 #
-  # - System property name: loadGenerator.logRemoteWebDriverSessionID          #
-  # - Environment variable name: LOADGENERATOR_LOGREMOTEWEBDRIVERSESSIONID     #
-  ##############################################################################
-  #logRemoteWebDriverSessionID: true
-
-  ##############################################################################
-  # Should a transaction id be logged for every transaction in an active state?#
-  #                                                                            #
-  # This is an optional property.                                              #
-  # Overrides:                                                                 #
-  # - System property name: loadGenerator.logTransactionID                     #
-  # - Environment variable name: LOADGENERATOR_LOGTRANSACTIONID                #
-  ##############################################################################
-  #logTransactionID: false
-  
-  ##############################################################################
-  # Should we log every step when it is executed by the load generator?        #
-  #                                                                            #
-  # This is an optional property.                                              #
-  # Overrides:                                                                 #
-  # - System property name: loadGenerator.logSteps                             #
-  # - Environment variable name: LOADGENERATOR_LOGSTEPS                        #
-  ##############################################################################
-  #logSteps: false
-  
-  ##############################################################################
-  # Should we log every action when it is executed by the load generator?      #
-  #                                                                            #
-  # This is an optional property.                                              #
-  # Overrides:                                                                 #
-  # - System property name: loadGenerator.logActions                           #
-  # - Environment variable name: LOADGENERATOR_LOGACTIONS                      #
-  ##############################################################################
-  #logActions: false
-
-  ##############################################################################
   # Should a performance test fail at the end of the execution in case of any  #
   # suite errors?                                                              #
   #                                                                            #
@@ -391,21 +257,6 @@ a look at the below docs describing available options for the config.yml
   # - Environment variable name: LOADGENERATOR_FAILONTRANSACTIONERRORS         #
   ##############################################################################
   #failOnTransactionErrors: true
-
-  ##############################################################################
-  # The mode controlling selector type to use while searching elements on the  #
-  # page.                                                                      #
-  #                                                                            #
-  # Available modes:                                                           #
-  # - css                                                                      #
-  # - xpath                                                                    #
-  #                                                                            #
-  # This is an optional property.                                              #
-  # Overrides:                                                                 #
-  # - System property name: loadGenerator.defaultSelectorType                  #
-  # - Environment variable name: LOADGENERATOR_DEFAULTSELECTORTYPE             #
-  ##############################################################################
-  #defaultSelectorType: css
 
   ##############################################################################
   # The platform automatically assigns random public IP addresses when         #
@@ -605,7 +456,7 @@ a look at the below docs describing available options for the config.yml
   # top-level transaction with the name of the suite.                          #
   #                                                                            #
   # You can configure multiple suites, and a load generator will process such  #
-  # suites in parallel. The only requirement is to have a unique name for     #
+  # suites in parallel. The only requirement is to have a unique name for      #
   # every configured suite.                                                    #
   ##############################################################################
   #Suite Name A:
@@ -621,6 +472,72 @@ a look at the below docs describing available options for the config.yml
     # - Environment variable name: SUITE_CONCURRENCY                           #
     ############################################################################
     #concurrency: 100
+
+    ############################################################################
+    # It might be a case when tests start failing too often, either due to the #
+    # problem with the test(s) logic or due to overloading of the target       #
+    # system.                                                                  #
+    #                                                                          #
+    # Perforator automatically determines when to introduce a slowdown in case #
+    # of any abnormalities with tests execution.                               #
+    #                                                                          #
+    # This flag controls whether automatic slowdown is enabled or not.         #
+    #                                                                          #
+    # This is an optional property.                                            #
+    # Overrides:                                                               #
+    # - System property name: suite.concurrencyAutoAdjustment                  #
+    # - Environment variable name: SUITE_CONCURRENCYAUTOADJUSTMENT             #
+    ############################################################################
+    #concurrencyAutoAdjustment: true
+
+    ############################################################################
+    # How often desired concurrency should be recalculated?                    #
+    #                                                                          #
+    # This is an optional property.                                            #
+    # Overrides:                                                               #
+    # - System property name: suite.concurrencyRecalcPeriod                    #
+    # - Environment variable name: SUITE_CONCURRENCYRECALCPERIOD               #
+    ############################################################################
+    #concurrencyRecalcPeriod: 30s
+
+    ############################################################################
+    # Perforator automatically decreases concurrency if there are too many     #
+    # failing transactions.                                                    #
+    #                                                                          #
+    # This property determines concurrency multiplier to use while calculating #
+    # scale-down adjustment.                                                   #
+    #                                                                          #
+    # For example, suppose the target concurrency is 1000, and the multiplier  #
+    # is 0.05. In that case, the scale-down adjustment for concurrency is      #
+    # 1000 x 0.05 = 50, so the system should decrease concurrency by 50 threads#
+    # in case of too many failing transactions.                                #
+    #                                                                          #
+    # This is an optional property.                                            #
+    # Overrides:                                                               #
+    # - System property name: suite.concurrencyScaleDownMultiplier             #
+    # - Environment variable name: SUITE_CONCURRENCYSCALEDOWNMULTIPLIER        #
+    ############################################################################
+    #concurrencyScaleDownMultiplier: 0.05
+
+    ############################################################################
+    # Perforator automatically increases concurrency if previously it was      #
+    # slowing down due to failing transactions, and the amount of such failing #
+    # transactions decreases.                                                  #
+    #                                                                          #
+    # This property determines concurrency multiplier to use while calculating #
+    # scale-up adjustment.                                                     #
+    #                                                                          #
+    # For example, suppose the target concurrency is 1000, and the multiplier  #
+    # is 0.025. In that case, the scale-up adjustment for concurrency is       #
+    # 1000 x 0.025 = 25, so the system should increase concurrency by 25       #
+    # threads in case failing transactions percent goes down.                  #
+    #                                                                          #
+    # This is an optional property.                                            #
+    # Overrides:                                                               #
+    # - System property name: suite.concurrencyScaleUpMultiplier               #
+    # - Environment variable name: SUITE_CONCURRENCYSCALEUPMULTIPLIER          #
+    ############################################################################
+    #concurrencyScaleUpMultiplier: 0.025
 
     ############################################################################
     # Iterations count to execute this suite.                                  #
@@ -856,6 +773,90 @@ a look at the below docs describing available options for the config.yml
     # - Environment variable name: SUITE_WEBDRIVERACCEPTINSECURECERTS          #
     ############################################################################
     #webDriverAcceptInsecureCerts: false
+
+    ############################################################################
+    # The mode controlling selector type to use while searching elements on the#
+    # page.                                                                    #
+    #                                                                          #
+    # Available modes:                                                         #
+    # - css                                                                    #
+    # - xpath                                                                  #
+    #                                                                          #
+    # This is an optional property.                                            #
+    # Overrides:                                                               #
+    # - System property name: suite.defaultSelectorType                        #
+    # - Environment variable name: SUITE_DEFAULTSELECTORTYPE                   #
+    ############################################################################
+    #defaultSelectorType: css
+
+    ############################################################################
+    # All the suites are processed concurrently via multiple thread workers.   #
+    # Every thread worker has a dedicated ID.                                  #
+    #                                                                          #
+    # This flag determines should the worker ID be logged as a part of every   #
+    # log item.                                                                #
+    #                                                                          #
+    # This is an optional property.                                            #
+    # Overrides:                                                               #
+    # - System property name: suite.logWorkerID                                #
+    # - Environment variable name: SUITE_LOGWORKERID                           #
+    ############################################################################
+    #logWorkerID: false
+
+    ############################################################################
+    # A new suite instance ID is generated whenever a thread worker starts     #
+    # processing a test suite.                                                 #
+    #                                                                          #
+    # This flag determines should the suite instance ID be logged for all log  #
+    # items related to the processing of the suite instance.                   #
+    #                                                                          #
+    # This is an optional property.                                            #
+    # Overrides:                                                               #
+    # - System property name: suite.logSuiteInstanceID                         #
+    # - Environment variable name: SUITE_LOGSUITEINSTANCEID                    #
+    ############################################################################
+    #logSuiteInstanceID: false
+
+    ############################################################################
+    # Should a selenium session-id be logged while processing a test suite?    #
+    #                                                                          #
+    # This is an optional property.                                            #
+    # Overrides:                                                               #
+    # - System property name: suite.logRemoteWebDriverSessionID                #
+    # - Environment variable name: SUITE_LOGREMOTEWEBDRIVERSESSIONID           #
+    ############################################################################
+    #logRemoteWebDriverSessionID: true
+
+    ############################################################################
+    # Should a transaction id be logged for every transaction in an active     #
+    # state?#                                                                  #
+    #                                                                          #
+    # This is an optional property.                                            #
+    # Overrides:                                                               #
+    # - System property name: suite.logTransactionID                           #
+    # - Environment variable name: SUITE_LOGTRANSACTIONID                      #
+    ############################################################################
+    #logTransactionID: false
+
+    ############################################################################
+    # Should we log every step when it is executed by the load generator?      #
+    #                                                                          #
+    # This is an optional property.                                            #
+    # Overrides:                                                               #
+    # - System property name: suite.logSteps                                   #
+    # - Environment variable name: SUITE_LOGSTEPS                              #
+    ############################################################################
+    #logSteps: false
+
+    ############################################################################
+    # Should we log every action when it is executed by the load generator?    #
+    #                                                                          #
+    # This is an optional property.                                            #
+    # Overrides:                                                               #
+    # - System property name: suite.logActions                                 #
+    # - Environment variable name: SUITE_LOGACTIONS                            #
+    ############################################################################
+    #logActions: false
     
     ############################################################################
     # Props is an array of key-value pairs which can be referenced in the      #
@@ -988,7 +989,7 @@ a look at the below docs describing available options for the config.yml
         # in the DOM tree of the page. By default, load-generator uses 'css'   #
         # selectors, but you can switch default and global behavior to use     #
         # 'xpath' based selectors via changing 'defaultSelectorType' property  #
-        # of the load-generator.                                               #
+        # of the suite.                                                        #
         #                                                                      #
         # Additionally, if you want to have more granular control over selector#
         # type, you can specify selector as a child property, for example:     #
@@ -1024,7 +1025,7 @@ a look at the below docs describing available options for the config.yml
         # in the DOM tree of the page. By default, load-generator uses 'css'   #
         # selectors, but you can switch default and global behavior to use     #
         # 'xpath' based selectors via changing 'defaultSelectorType' property  #
-        # of the load-generator.                                               #
+        # of the suite.                                                        #
         #                                                                      #
         # Additionally, if you want to have more granular control over selector#
         # type, you can specify selector as a child property, for example:     #
@@ -1059,7 +1060,7 @@ a look at the below docs describing available options for the config.yml
         # in the DOM tree of the page. By default, load-generator uses 'css'   #
         # selectors, but you can switch default and global behavior to use     #
         # 'xpath' based selectors via changing 'defaultSelectorType' property  #
-        # of the load-generator.                                               #
+        # of the suite.                                                        #
         #                                                                      #
         # Additionally, if you want to have more granular control over selector#
         # type, you can specify selector as a child property, for example:     #
@@ -1095,7 +1096,7 @@ a look at the below docs describing available options for the config.yml
         # in the DOM tree of the page. By default, load-generator uses 'css'   #
         # selectors, but you can switch default and global behavior to use     #
         # 'xpath' based selectors via changing 'defaultSelectorType' property  #
-        # of the load-generator.                                               #
+        # of the suite.                                                        #
         #                                                                      #
         # Additionally, if you want to have more granular control over selector#
         # type, you can specify selector as a child property, for example:     #
@@ -1130,7 +1131,7 @@ a look at the below docs describing available options for the config.yml
         # in the DOM tree of the page. By default, load-generator uses 'css'   #
         # selectors, but you can switch default and global behavior to use     #
         # 'xpath' based selectors via changing 'defaultSelectorType' property  #
-        # of the load-generator.                                               #
+        # of the suite.                                                        #
         #                                                                      #
         # Additionally, if you want to have more granular control over selector#
         # type, you can specify selector as a child property, for example:     #
@@ -1172,7 +1173,7 @@ a look at the below docs describing available options for the config.yml
         # in the DOM tree of the page. By default, load-generator uses 'css'   #
         # selectors, but you can switch default and global behavior to use     #
         # 'xpath' based selectors via changing 'defaultSelectorType' property  #
-        # of the load-generator.                                               #
+        # of the suite.                                                        #
         #                                                                      #
         # Additionally, if you want to have more granular control over selector#
         # type, you can specify selector as a child property, for example:     #
@@ -1238,7 +1239,7 @@ a look at the below docs describing available options for the config.yml
         # in the DOM tree of the page. By default, load-generator uses 'css'   #
         # selectors, but you can switch default and global behavior to use     #
         # 'xpath' based selectors via changing 'defaultSelectorType' property  #
-        # of the load-generator.                                               #
+        # of the suite.                                                        #
         #                                                                      #
         # Additionally, if you want to have more granular control over selector#
         # type, you can specify selector as a child property, for example:     #
@@ -1307,7 +1308,7 @@ a look at the below docs describing available options for the config.yml
         # in the DOM tree of the page. By default, load-generator uses 'css'   #
         # selectors, but you can switch default and global behavior to use     #
         # 'xpath' based selectors via changing 'defaultSelectorType' property  #
-        # of the load-generator.                                               #
+        # of the suite.                                                        #
         #                                                                      #
         # Additionally, if you want to have more granular control over selector#
         # type, you can specify selector as a child property, for example:     #

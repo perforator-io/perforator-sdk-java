@@ -34,35 +34,11 @@ import lombok.experimental.FieldNameConstants;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CodelessLoadGeneratorConfig extends LoadGeneratorConfig {
 
-    public static final String DEFAULT_LOG_STEPS_S = "false";
-    public static final boolean DEFAULT_LOG_STEPS = Boolean.parseBoolean(DEFAULT_LOG_STEPS_S);
-
-    public static final String DEFAULT_LOG_ACTIONS_S = "false";
-    public static final boolean DEFAULT_LOG_ACTIONS = Boolean.parseBoolean(DEFAULT_LOG_ACTIONS_S);
-
-    public static final String DEFAULT_SELECTOR_TYPE_S = "css";
-    public static SelectorType DEFAULT_SELECTOR_TYPE = SelectorType.valueOf(DEFAULT_SELECTOR_TYPE_S);
-
-    @Getter
-    @Setter
-    @FieldNameConstants.Include
-    private boolean logSteps = DEFAULT_LOG_STEPS;
-
-    @Getter
-    @Setter
-    @FieldNameConstants.Include
-    private boolean logActions = DEFAULT_LOG_ACTIONS;
-
     @JsonDeserialize(using = ConstantsDeserializer.class)
     @Getter
     @Setter
     @FieldNameConstants.Include
     private FormattingMap constants = FormattingMap.EMPTY;
-
-    @Getter
-    @Setter
-    @FieldNameConstants.Include
-    private SelectorType defaultSelectorType = DEFAULT_SELECTOR_TYPE;
 
     public CodelessLoadGeneratorConfig() {
         applyDefaults();

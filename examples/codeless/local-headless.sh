@@ -2,8 +2,8 @@
 
 java \
   -Dlog4j2.configurationFile=$(dirname "$0")/log4j2.xml \
-  -DloadGenerator.logActions=true \
-  -DloadGenerator.logSteps=true \
+  -Dsuite.logActions=true \
+  -Dsuite.logSteps=true \
   -Dsuite.webDriverMode=local \
   -Dsuite.chromeMode=headless \
   -Dsuite.concurrency=1 \

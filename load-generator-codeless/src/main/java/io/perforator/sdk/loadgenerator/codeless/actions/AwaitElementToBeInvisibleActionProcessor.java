@@ -71,7 +71,10 @@ public class AwaitElementToBeInvisibleActionProcessor extends AbstractSelectorAc
                         actionConfig
                 )
                 .selectorType(
-                        getSelectorType(actionConfig, loadGeneratorConfig.getDefaultSelectorType())
+                        getSelectorType(
+                                actionConfig, 
+                                suiteConfig.getDefaultSelectorType()
+                        )
                 )
                 .selector(
                         buildRequiredStringSelectorForActionInstance(

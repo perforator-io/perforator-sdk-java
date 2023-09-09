@@ -318,9 +318,9 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
      */
     @Parameter(
             required = false,
-            defaultValue = LoadGeneratorConfig.DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT_S,
-            alias = LoadGeneratorConfig.Fields.concurrencyAutoAdjustment,
-            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.concurrencyAutoAdjustment
+            defaultValue = SuiteConfig.DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT_S,
+            alias = SuiteConfig.Fields.concurrencyAutoAdjustment,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrencyAutoAdjustment
     )
     protected String concurrencyAutoAdjustment;
     
@@ -336,9 +336,9 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
      */
     @Parameter(
             required = false,
-            defaultValue = LoadGeneratorConfig.DEFAULT_CONCURRENCY_RECALC_PERIOD_S,
-            alias = LoadGeneratorConfig.Fields.concurrencyRecalcPeriod,
-            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.concurrencyRecalcPeriod
+            defaultValue = SuiteConfig.DEFAULT_CONCURRENCY_RECALC_PERIOD_S,
+            alias = SuiteConfig.Fields.concurrencyRecalcPeriod,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrencyRecalcPeriod
     )
     protected String concurrencyRecalcPeriod;
     
@@ -356,9 +356,9 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
      */
     @Parameter(
             required = false,
-            defaultValue = LoadGeneratorConfig.DEFAULT_CONCURRENCY_SCALE_DOWN_MULTIPLIER_S,
-            alias = LoadGeneratorConfig.Fields.concurrencyScaleDownMultiplier,
-            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.concurrencyScaleDownMultiplier
+            defaultValue = SuiteConfig.DEFAULT_CONCURRENCY_SCALE_DOWN_MULTIPLIER_S,
+            alias = SuiteConfig.Fields.concurrencyScaleDownMultiplier,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrencyScaleDownMultiplier
     )
     protected String concurrencyScaleDownMultiplier;
     
@@ -377,9 +377,9 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
      */
     @Parameter(
             required = false,
-            defaultValue = LoadGeneratorConfig.DEFAULT_CONCURRENCY_SCALE_UP_MULTIPLIER_S,
-            alias = LoadGeneratorConfig.Fields.concurrencyScaleUpMultiplier,
-            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.concurrencyScaleUpMultiplier
+            defaultValue = SuiteConfig.DEFAULT_CONCURRENCY_SCALE_UP_MULTIPLIER_S,
+            alias = SuiteConfig.Fields.concurrencyScaleUpMultiplier,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrencyScaleUpMultiplier
     )
     protected String concurrencyScaleUpMultiplier;
 
@@ -390,9 +390,9 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
      */
     @Parameter(
             required = false,
-            defaultValue = LoadGeneratorConfig.DEFAULT_LOG_WORKER_ID_S,
-            alias = LoadGeneratorConfig.Fields.logWorkerID,
-            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.logWorkerID
+            defaultValue = SuiteConfig.DEFAULT_LOG_WORKER_ID_S,
+            alias = SuiteConfig.Fields.logWorkerID,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.logWorkerID
     )
     protected String logWorkerID;
 
@@ -404,9 +404,9 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
      */
     @Parameter(
             required = false,
-            defaultValue = LoadGeneratorConfig.DEFAULT_LOG_SUITE_INSTANCE_ID_S,
-            alias = LoadGeneratorConfig.Fields.logSuiteInstanceID,
-            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.logSuiteInstanceID
+            defaultValue = SuiteConfig.DEFAULT_LOG_SUITE_INSTANCE_ID_S,
+            alias = SuiteConfig.Fields.logSuiteInstanceID,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.logSuiteInstanceID
     )
     protected String logSuiteInstanceID;
 
@@ -415,9 +415,9 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
      */
     @Parameter(
             required = false,
-            defaultValue = LoadGeneratorConfig.DEFAULT_LOG_REMOTE_WEB_DRIVER_SESSION_ID_S,
-            alias = LoadGeneratorConfig.Fields.logRemoteWebDriverSessionID,
-            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.logRemoteWebDriverSessionID
+            defaultValue = SuiteConfig.DEFAULT_LOG_REMOTE_WEB_DRIVER_SESSION_ID_S,
+            alias = SuiteConfig.Fields.logRemoteWebDriverSessionID,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.logRemoteWebDriverSessionID
     )
     protected String logRemoteWebDriverSessionID;
 
@@ -427,9 +427,9 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
      */
     @Parameter(
             required = false,
-            defaultValue = LoadGeneratorConfig.DEFAULT_LOG_TRANSACTION_ID_S,
-            alias = LoadGeneratorConfig.Fields.logTransactionID,
-            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.logTransactionID
+            defaultValue = SuiteConfig.DEFAULT_LOG_TRANSACTION_ID_S,
+            alias = SuiteConfig.Fields.logTransactionID,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.logTransactionID
     )
     protected String logTransactionID;
     

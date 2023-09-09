@@ -10,7 +10,6 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -66,7 +65,7 @@ final class ConcurrencyContextImpl {
     
     private static Duration determineConcurrencyRecalcPeriod(Duration concurrencyRecalcPeriod) {
         if(concurrencyRecalcPeriod == null) {
-            return LoadGeneratorConfig.DEFAULT_CONCURRENCY_RECALC_PERIOD;
+            return SuiteConfig.DEFAULT_CONCURRENCY_RECALC_PERIOD;
         } else if(concurrencyRecalcPeriod.compareTo(Duration.ofSeconds(1)) < 0) {
             return Duration.ofSeconds(1);
         } else {

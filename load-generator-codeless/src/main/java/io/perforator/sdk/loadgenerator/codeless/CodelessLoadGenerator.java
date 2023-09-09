@@ -34,9 +34,6 @@ import java.util.List;
 //TODO: add javadoc
 public class CodelessLoadGenerator extends AbstractLoadGenerator {
 
-    private final boolean logSteps;
-    private final boolean logActions;
-
     public CodelessLoadGenerator(Path location) throws IOException {
         this(CodelessConfigFactory.INSTANCE.getCodelessConfig(location));
     }
@@ -51,8 +48,6 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
 
     private CodelessLoadGenerator(IntegrationService<SuiteConfigContext, SuiteInstanceContext, TransactionContext, RemoteWebDriverContext> mediator, CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suites) {
         super(mediator, loadGeneratorConfig, (List) preprocessConfigs(loadGeneratorConfig, suites));
-        this.logSteps = loadGeneratorConfig.isLogSteps();
-        this.logActions = loadGeneratorConfig.isLogActions();
     }
     
     private static List<CodelessSuiteConfig> preprocessConfigs(CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suites) {
@@ -101,7 +96,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
         if (shouldBeFinished()) {
             return;
         }
-
+        
         CodelessSuiteConfig suite = (CodelessSuiteConfig) suiteInstanceContext.getSuiteConfigContext().getSuiteConfig();
         List<FormattingMap> formatters = suite.getProps();
         FormattingMap formatter;
@@ -143,7 +138,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
         if (shouldBeFinished()) {
             return ProceedingContext.SKIP_ACTIONS_AND_STEPS;
         }
-
+        
         String suiteName = suiteInstanceContext.getSuiteConfigContext().getSuiteConfig().getName();
         String stepName = formatter.format(stepConfig.getName());
         TransactionContext transactionContext = startTransaction(
@@ -152,7 +147,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
         );
         RuntimeException error = null;
 
-        logStepStarted(suiteName, stepName);
+        logStepStarted(suiteInstanceContext, suiteName, stepName);
 
         try {
             for (ActionConfig actionConfig : stepConfig.getActions()) {
@@ -182,7 +177,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
             throw e;
         } finally {
             finishTransaction(transactionContext, error);
-            logStepFinished(suiteName, stepName, error);
+            logStepFinished(suiteInstanceContext, suiteName, stepName, error);
         }
     }
 
@@ -223,7 +218,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
             return ProceedingContext.PROCEED_ALL;
         }
         
-        logActionStarted(stepName, actionInstance);
+        logActionStarted(suiteInstanceContext, stepName, actionInstance);
 
         try {
             processor.processActionInstance(
@@ -232,6 +227,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
             );
             
             logActionFinished(
+                    suiteInstanceContext,
                     stepName, 
                     actionInstance, 
                     null
@@ -239,7 +235,13 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
             
             return ProceedingContext.PROCEED_ALL;
         } catch (RuntimeException e) {
-            logActionFinished(stepName, actionInstance, e);
+            logActionFinished(
+                    suiteInstanceContext, 
+                    stepName, 
+                    actionInstance, 
+                    e
+            );
+            
             throw new RuntimeException(
                     "Step '" + stepName
                     + "' has failed action '" + actionInstance.getConfig().getActionName()
@@ -264,7 +266,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
         } catch (RuntimeException e) {
             webDriverException = e;
             
-            if(!isCancelled() && (logSteps || logActions)) {
+            if(!isCancelled() && (isLogSteps(suiteInstanceContext) || isLogActions(suiteInstanceContext))) {
                 logger.error("There was a problem creating RemoteWebDriver", e);
             }
             
@@ -290,7 +292,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
         } catch (RuntimeException e) {
             webDriverException = e;
             
-            if(!isCancelled() && (logSteps || logActions)) {
+            if(!isCancelled() && (isLogSteps(suiteInstanceContext) || isLogActions(suiteInstanceContext))) {
                 logger.error("There was a problem terminating RemoteWebDriver", e);
             }
             
@@ -300,8 +302,8 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
         }
     }
 
-    private void logStepStarted(String suiteName, String stepName) {
-        if (!logSteps) {
+    private void logStepStarted(SuiteInstanceContext suiteInstanceContext, String suiteName, String stepName) {
+        if (!isLogSteps(suiteInstanceContext)) {
             return;
         }
 
@@ -312,8 +314,8 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
         );
     }
 
-    private void logStepFinished(String suiteName, String stepName, Throwable stepError) {
-        if (!logSteps) {
+    private void logStepFinished(SuiteInstanceContext suiteInstanceContext, String suiteName, String stepName, Throwable stepError) {
+        if (!isLogSteps(suiteInstanceContext)) {
             return;
         }
 
@@ -333,8 +335,8 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
         }
     }
 
-    private void logActionStarted(String stepName, ActionInstance actionInstance) {
-        if (!logActions) {
+    private void logActionStarted(SuiteInstanceContext suiteInstanceContext, String stepName, ActionInstance actionInstance) {
+        if (!isLogActions(suiteInstanceContext)) {
             return;
         }
 
@@ -346,8 +348,8 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
         );
     }
 
-    private void logActionFinished(String stepName, ActionInstance actionInstance, Throwable actionError) {
-        if (!logActions) {
+    private void logActionFinished(SuiteInstanceContext suiteInstanceContext, String stepName, ActionInstance actionInstance, Throwable actionError) {
+        if (!isLogActions(suiteInstanceContext)) {
             return;
         }
 
@@ -366,6 +368,14 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
                     actionInstance.getConfig().getActionName()
             );
         }
+    }
+    
+    private boolean isLogActions(SuiteInstanceContext suiteInstanceContext) {
+        return ((CodelessSuiteConfig)suiteInstanceContext.getSuiteConfigContext().getSuiteConfig()).isLogActions();
+    }
+    
+    private boolean isLogSteps(SuiteInstanceContext suiteInstanceContext) {
+        return ((CodelessSuiteConfig)suiteInstanceContext.getSuiteConfigContext().getSuiteConfig()).isLogSteps();
     }
     
     private static enum ProceedingContext {

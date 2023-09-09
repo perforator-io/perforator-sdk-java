@@ -11,7 +11,6 @@
 package io.perforator.sdk.loadgenerator.codeless;
 
 import io.perforator.sdk.loadgenerator.codeless.config.*;
-import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -78,9 +77,8 @@ public class ConfigFactoryTest {
             assertNotNull(config.getLoadGeneratorConfig());
             assertNotNull(config.getSuiteConfigs());
             
-            assertEquals(true, config.getLoadGeneratorConfig().isConcurrencyAutoAdjustment());
-            
             for (CodelessSuiteConfig suiteConfig : config.getSuiteConfigs()) {
+                assertEquals(true, suiteConfig.isConcurrencyAutoAdjustment());
                 assertNotEquals(Duration.ofSeconds(17), suiteConfig.getRampUp());
             }
             
@@ -89,7 +87,7 @@ public class ConfigFactoryTest {
                     "17s"
             );
             System.setProperty(
-                    LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.concurrencyAutoAdjustment, 
+                    SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrencyAutoAdjustment, 
                     "false"
             );
             
@@ -100,9 +98,8 @@ public class ConfigFactoryTest {
             assertNotNull(config.getLoadGeneratorConfig());
             assertNotNull(config.getSuiteConfigs());
             
-            assertEquals(false, config.getLoadGeneratorConfig().isConcurrencyAutoAdjustment());
-            
             for (CodelessSuiteConfig suiteConfig : config.getSuiteConfigs()) {
+                assertEquals(false, suiteConfig.isConcurrencyAutoAdjustment());
                 assertEquals(Duration.ofSeconds(17), suiteConfig.getRampUp());
             }
         } finally {
@@ -110,7 +107,7 @@ public class ConfigFactoryTest {
                     SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.rampUp
             );
             System.clearProperty(
-                    LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.concurrencyAutoAdjustment
+                    SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.concurrencyAutoAdjustment
             );
         }
     }

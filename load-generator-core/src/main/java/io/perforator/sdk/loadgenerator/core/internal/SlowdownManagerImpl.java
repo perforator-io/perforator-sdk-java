@@ -10,21 +10,11 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
-
 final class SlowdownManagerImpl implements SlowdownManager {
-    
-    private final boolean slowdownEnabled;
-    private final TimeProvider timeProvider;
-    
-    public SlowdownManagerImpl(TimeProvider timeProvider, LoadGeneratorConfig loadGeneratorConfig) {
-        this.slowdownEnabled = loadGeneratorConfig.isConcurrencyAutoAdjustment();
-        this.timeProvider = timeProvider;
-    }
     
     @Override
     public long getSlowdownTimeout(SuiteInstanceContextImpl suiteInstanceContext, Throwable suiteError) {
-        if(!slowdownEnabled || suiteError == null) {
+        if(!suiteInstanceContext.isSlowDownEnabled() || suiteError == null) {
             return 0;
         }
         
