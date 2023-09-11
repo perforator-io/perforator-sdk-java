@@ -14,7 +14,7 @@
     <parent>
         <groupId>io.perforator.sdk</groupId>
         <artifactId>perforator-sdk-parent</artifactId>
-        <version>1.3.2</version>
+        <version>1.3.3</version>
     </parent>
     <artifactId>perforator-sdk-load-generator-codeless</artifactId>
     <packaging>jar</packaging>
@@ -89,6 +89,16 @@
                     </transformers>
                     <shadedArtifactAttached>true</shadedArtifactAttached>
                     <shadedClassifierName>full</shadedClassifierName>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                 </configuration>
                 <executions>
                     <execution>
