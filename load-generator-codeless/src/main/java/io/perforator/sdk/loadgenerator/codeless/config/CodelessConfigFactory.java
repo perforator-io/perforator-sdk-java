@@ -16,14 +16,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.DurationDeserializer;
-import io.perforator.sdk.loadgenerator.core.configs.Configurable;
-
+import io.perforator.sdk.loadgenerator.core.configs.StringConverter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.DateTimeException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
-//TODO: add javadoc
 public final class CodelessConfigFactory {
 
     public static final CodelessConfigFactory INSTANCE = new CodelessConfigFactory();
@@ -43,22 +43,33 @@ public final class CodelessConfigFactory {
                 configPath.toFile(),
                 CodelessConfig.class
         );
-
-        if (result.getLoadGeneratorConfig() != null && result.getLoadGeneratorConfig().isPrioritizeSystemProperties()) {
-            result.getLoadGeneratorConfig().applyDefaults();
-
-            if (result.getSuiteConfigs() != null && !result.getSuiteConfigs().isEmpty()) {
-                for (CodelessSuiteConfig suiteConfig : result.getSuiteConfigs()) {
-                    suiteConfig.applyDefaults(
-                            System::getProperty, 
-                            System::getenv,
-                            result.getLoadGeneratorConfig().getConstants()::get
-                    );
-                }
+        
+        List<CodelessSuiteConfig> suiteConfigs = result.getSuiteConfigs();
+        CodelessLoadGeneratorConfig loadGeneratorConfig = result.getLoadGeneratorConfig();
+        
+        if(loadGeneratorConfig == null) {
+            loadGeneratorConfig = CodelessLoadGeneratorConfig.builder().buildWithDefaults();
+        } else {
+            loadGeneratorConfig = loadGeneratorConfig.toBuilder().buildWithDefaults();
+        }
+        
+        if (suiteConfigs != null && !suiteConfigs.isEmpty()) {
+            suiteConfigs = new ArrayList<>();
+            for (CodelessSuiteConfig suiteConfig : result.getSuiteConfigs()) {
+                suiteConfigs.add(
+                        suiteConfig.toBuilder().buildWithDefaults(
+                                System::getProperty,
+                                System::getenv,
+                                loadGeneratorConfig.getConstants()::get
+                        )
+                );
             }
         }
-
-        return result;
+        
+        return CodelessConfig.builder()
+                .loadGeneratorConfig(loadGeneratorConfig)
+                .suiteConfigs(suiteConfigs)
+                .build();
     }
 
     private static class CustomDurationDeserializer extends DurationDeserializer {
@@ -69,7 +80,7 @@ public final class CodelessConfigFactory {
                 return null;
             }
             try {
-                return Configurable.parseDuration(value0);
+                return StringConverter.toDuration(value0);
             } catch (DateTimeException e) {
                 return _handleDateTimeException(ctxt, e, value0);
             }

@@ -33,12 +33,13 @@ public class RemoteWebDriverHelper {
     }
 
     public static RemoteWebDriver createLocalChromeDriver(ChromeOptions chromeOptions) {
-        SuiteConfig suiteConfig = new SuiteConfig();
-        if (suiteConfig.getWebDriverMode() == WebDriverMode.cloud) {
-            suiteConfig.setWebDriverMode(WebDriverMode.local);
-        }
-
-        return createLocalChromeDriver(chromeOptions, suiteConfig);
+        return createLocalChromeDriver(
+                chromeOptions, 
+                SuiteConfig.builder()
+                        .applyDefaults()
+                        .webDriverMode(WebDriverMode.local)
+                        .build()
+        );
     }
 
     public static RemoteWebDriver createLocalChromeDriver(ChromeOptions chromeOptions, SuiteConfig suiteConfig) {

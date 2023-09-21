@@ -10,12 +10,10 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
-import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 final class InfoMessagesManagerImpl implements InfoMessagesManager {
 
@@ -53,9 +51,9 @@ final class InfoMessagesManagerImpl implements InfoMessagesManager {
         if (loadGeneratorContext.isLocalOnly()) {
             return;
         }
-        LoadGeneratorConfig config = loadGeneratorContext.getLoadGeneratorConfig();
+        
         LOGGER.info(
-                formatBanner(START_BANNER, getUrl(config))
+                formatBanner(START_BANNER, getUrl(loadGeneratorContext))
         );
         startBannerShowedByConfigId.add(loadGeneratorContext.getLoadGeneratorConfig().getId());
     }
@@ -65,17 +63,17 @@ final class InfoMessagesManagerImpl implements InfoMessagesManager {
         if (loadGeneratorContext.isLocalOnly() || !startBannerShowedByConfigId.contains(loadGeneratorContext.getLoadGeneratorConfig().getId())) {
             return;
         }
-        LoadGeneratorConfig config = loadGeneratorContext.getLoadGeneratorConfig();
+        
         LOGGER.info(
-                formatBanner(FINISH_BANNER, getUrl(config))
+                formatBanner(FINISH_BANNER, getUrl(loadGeneratorContext))
         );
     }
 
-    private String getUrl(LoadGeneratorConfig config) {
-        return config.getApiBaseUrl().replace("api", "app") +
+    private String getUrl(LoadGeneratorContextImpl context) {
+        return context.getLoadGeneratorConfig().getApiBaseUrl().replace("api", "app") +
                 "/statistics/" +
-                config.getProjectKey() + "/" +
-                config.getExecutionKey() +
+                context.getBrowserCloudContext().getProjectKey() + "/" +
+                context.getBrowserCloudContext().getExecutionKey() +
                 "";
     }
 

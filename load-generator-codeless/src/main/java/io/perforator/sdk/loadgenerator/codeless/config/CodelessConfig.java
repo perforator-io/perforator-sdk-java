@@ -18,34 +18,56 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import io.perforator.sdk.loadgenerator.core.configs.Config;
+import io.perforator.sdk.loadgenerator.core.configs.ConfigBuilder;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.experimental.FieldNameConstants;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.Builder.Default;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Singular;
+import lombok.ToString;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.FieldNameConstants;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
-@ToString
+@Getter
+@ToString(callSuper = true)
+@SuperBuilder(toBuilder = true)
+@EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @FieldNameConstants
+@Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CodelessConfig {
-    
+public class CodelessConfig implements Config {
+
+    public static final String DEFAULTS_FIELD_PREFIX = "codelessConfig";
+
+    @Default
+    String id = UUID.randomUUID().toString();
+
     @JsonProperty(LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX)
-    @Getter
-    @Setter
-    @FieldNameConstants.Include
-    private CodelessLoadGeneratorConfig loadGeneratorConfig = new CodelessLoadGeneratorConfig();
+    CodelessLoadGeneratorConfig loadGeneratorConfig;
 
     @JsonProperty("suites")
     @JsonDeserialize(using = SuitesDeserializer.class)
-    @Getter
-    @Setter
-    @FieldNameConstants.Include
-    private List<CodelessSuiteConfig> suiteConfigs;
+    @Singular
+    List<CodelessSuiteConfig> suiteConfigs;
+
+    public static abstract class CodelessConfigBuilder<C extends CodelessConfig, B extends CodelessConfigBuilder<C, B>> implements ConfigBuilder<C, B> {
+
+        @Override
+        public String getDefaultsPrefix() {
+            return DEFAULTS_FIELD_PREFIX;
+        }
+
+    }
 
     public static class SuitesDeserializer extends JsonDeserializer<List<CodelessSuiteConfig>> {
 
@@ -54,14 +76,14 @@ public class CodelessConfig {
             if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
                 List<CodelessSuiteConfig> result = new ArrayList<>();
                 LinkedHashMap<String, CodelessSuiteConfig> mappedConfigs = jp.readValueAs(
-                        new TypeReference<LinkedHashMap<String, CodelessSuiteConfig>>() {
-                        }
+                        new TypeReference<LinkedHashMap<String, CodelessSuiteConfig>>() {}
                 );
 
                 for (String suiteName : mappedConfigs.keySet()) {
                     CodelessSuiteConfig suite = mappedConfigs.get(suiteName);
-                    suite.setName(suiteName);
-                    result.add(suite);
+                    result.add(
+                            suite.toBuilder().name(suiteName).build()
+                    );
                 }
 
                 return result;
@@ -69,8 +91,7 @@ public class CodelessConfig {
 
             if (jp.getCurrentToken() == JsonToken.START_ARRAY) {
                 return jp.readValueAs(
-                        new TypeReference<List<CodelessSuiteConfig>>() {
-                        }
+                        new TypeReference<List<CodelessSuiteConfig>>() {}
                 );
             }
 

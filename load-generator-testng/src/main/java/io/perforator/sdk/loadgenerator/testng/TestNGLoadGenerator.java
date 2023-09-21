@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
-//TODO: add javadoc
 public class TestNGLoadGenerator extends AbstractLoadGenerator {
 
     static {
@@ -77,11 +76,13 @@ public class TestNGLoadGenerator extends AbstractLoadGenerator {
                         e
                 );
             }
-            String suiteName = parsedSuites.get(0).getName();
-            if (suiteName == null || suiteName.isBlank()) {
-                suite.setName(suiteLocation);
-            } else {
-                suite.setName(suiteName);
+            
+            if(logger.isDebugEnabled()) {
+                logger.info(
+                        "Suite {} has been validated successfully => {}", 
+                        suiteLocation,
+                        parsedSuites
+                );
             }
         }
     }

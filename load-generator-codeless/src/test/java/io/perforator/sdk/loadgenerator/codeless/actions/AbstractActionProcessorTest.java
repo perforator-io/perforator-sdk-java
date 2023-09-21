@@ -22,23 +22,22 @@ import io.perforator.sdk.loadgenerator.core.RemoteWebDriverHelper;
 import io.perforator.sdk.loadgenerator.core.configs.ChromeMode;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.openqa.selenium.remote.RemoteWebDriver;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractActionProcessorTest<T extends ActionConfig, V extends ActionInstance<T>, P extends AbstractActionProcessor<T, V>> {
     
-    protected static final String VERIFICATIONS_APP_URL = new LoadGeneratorConfig().getApiBaseUrl().replace("api", "verifications");
+    protected static final String VERIFICATIONS_APP_URL = LoadGeneratorConfig.builder().buildWithDefaults().getApiBaseUrl().replace("api", "verifications");
     protected static final boolean CHROME_BROWSER_AVAILABLE = isChromeBrowserAvailable();
     protected static final String SELECTOR_TYPE_KEY = "selectorType";
 
@@ -60,10 +59,13 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
     }
 
     protected static RemoteWebDriver createHeadlessLocalChromeDriver() {
-        CodelessSuiteConfig suiteConfig = new CodelessSuiteConfig();
-        suiteConfig.setWebDriverMode(WebDriverMode.local);
-        suiteConfig.setChromeMode(ChromeMode.headless);
-        return RemoteWebDriverHelper.createLocalChromeDriver(null, suiteConfig);
+        return RemoteWebDriverHelper.createLocalChromeDriver(
+                null, 
+                CodelessSuiteConfig.builder()
+                        .webDriverMode(WebDriverMode.local)
+                        .chromeMode(ChromeMode.headless)
+                        .build()
+        );
     }
 
     private static boolean isChromeBrowserAvailable() {
@@ -101,25 +103,28 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
 
     @Test
     public final void verifyInvalidSuitePropsAndInvalidActions() throws Exception {
-        CodelessLoadGeneratorConfig loadGeneratorConfig = new CodelessLoadGeneratorConfig();
-        CodelessSuiteConfig suiteConfig = new CodelessSuiteConfig();
-
         P actionProcessor = newActionProcessorInstance();
         assertNotNull(actionProcessor);
 
         List<Map<String, String>> invalidSuiteProps = buildInvalidSuiteProps();
         assertNotNull(invalidSuiteProps);
         assertFalse(invalidSuiteProps.isEmpty());
-        suiteConfig.setProps(toFormatters(invalidSuiteProps));
+        
+        CodelessLoadGeneratorConfig loadGeneratorConfig = CodelessLoadGeneratorConfig.builder().buildWithDefaults();
+        CodelessSuiteConfig suiteConfig = CodelessSuiteConfig.builder()
+                .props(toFormatters(invalidSuiteProps))
+                .buildWithDefaults();
 
         List<JsonNode> invalidActionConfigs = buildInvalidActionConfigs();
         assertNotNull(invalidActionConfigs);
         assertFalse(invalidActionConfigs.isEmpty());
 
         for (JsonNode invalidActionConfig : invalidActionConfigs) {
+            final CodelessSuiteConfig.CodelessSuiteConfigBuilder suiteConfigBuilder = suiteConfig.toBuilder();
+            
             if(invalidActionConfig.has(SELECTOR_TYPE_KEY)){
                 String s = invalidActionConfig.get(SELECTOR_TYPE_KEY).textValue();
-                suiteConfig.setDefaultSelectorType(
+                suiteConfigBuilder.defaultSelectorType(
                         SelectorType.valueOf(s)
                 );
             }
@@ -133,7 +138,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
 
                         actionProcessor.validateActionConfig(
                                 loadGeneratorConfig,
-                                suiteConfig,
+                                suiteConfigBuilder.build(),
                                 actionConfig
                         );
                     },
@@ -146,16 +151,17 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
 
     @Test
     public void verifyInvalidSuitePropsAndValidActions() throws Exception {
-        CodelessLoadGeneratorConfig loadGeneratorConfig = new CodelessLoadGeneratorConfig();
-        CodelessSuiteConfig suiteConfig = new CodelessSuiteConfig();
-
         P actionProcessor = newActionProcessorInstance();
         assertNotNull(actionProcessor);
 
         List<Map<String, String>> invalidSuiteProps = buildInvalidSuiteProps();
         assertNotNull(invalidSuiteProps);
         assertFalse(invalidSuiteProps.isEmpty());
-        suiteConfig.setProps(toFormatters(invalidSuiteProps));
+        
+        CodelessLoadGeneratorConfig loadGeneratorConfig = CodelessLoadGeneratorConfig.builder().buildWithDefaults();
+        CodelessSuiteConfig suiteConfig = CodelessSuiteConfig.builder()
+                .props(toFormatters(invalidSuiteProps))
+                .buildWithDefaults();
 
         List<JsonNode> validActionConfigs = buildValidActionConfigs();
         assertNotNull(validActionConfigs);
@@ -183,25 +189,29 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
 
     @Test
     public final void verifyValidSuitePropsAndInvalidActions() throws Exception {
-        CodelessLoadGeneratorConfig loadGeneratorConfig = new CodelessLoadGeneratorConfig();
-        CodelessSuiteConfig suiteConfig = new CodelessSuiteConfig();
-
         P actionProcessor = newActionProcessorInstance();
         assertNotNull(actionProcessor);
-
+        
         List<Map<String, String>> validSuiteProps = buildValidSuiteProps();
         assertNotNull(validSuiteProps);
         assertFalse(validSuiteProps.isEmpty());
-        suiteConfig.setProps(toFormatters(validSuiteProps));
+        
+        CodelessLoadGeneratorConfig loadGeneratorConfig = CodelessLoadGeneratorConfig.builder().buildWithDefaults();
+        CodelessSuiteConfig suiteConfig = CodelessSuiteConfig.builder()
+                .props(toFormatters(validSuiteProps))
+                .buildWithDefaults();
 
         List<JsonNode> invalidActionConfigs = buildInvalidActionConfigs();
         assertNotNull(invalidActionConfigs);
         assertFalse(invalidActionConfigs.isEmpty());
 
         for (JsonNode invalidActionConfig : invalidActionConfigs) {
+            final CodelessSuiteConfig.CodelessSuiteConfigBuilder suiteConfigBuilder = suiteConfig.toBuilder();
+            
             if(invalidActionConfig.has(SELECTOR_TYPE_KEY)){
                 String s = invalidActionConfig.get(SELECTOR_TYPE_KEY).textValue();
-                suiteConfig.setDefaultSelectorType(
+                
+                suiteConfigBuilder.defaultSelectorType(
                         SelectorType.valueOf(s)
                 );
             }
@@ -216,7 +226,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
 
                         actionProcessor.validateActionConfig(
                                 loadGeneratorConfig,
-                                suiteConfig,
+                                suiteConfigBuilder.build(),
                                 actionConfig
                         );
                     },
@@ -229,25 +239,28 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
 
     @Test
     public final void verifyValidSuitePropsAndValidActions() throws Exception {
-        CodelessLoadGeneratorConfig loadGeneratorConfig = new CodelessLoadGeneratorConfig();
-        CodelessSuiteConfig suiteConfig = new CodelessSuiteConfig();
-
         P actionProcessor = newActionProcessorInstance();
         assertNotNull(actionProcessor);
 
         List<Map<String, String>> validSuiteProps = buildValidSuiteProps();
         assertNotNull(validSuiteProps);
         assertFalse(validSuiteProps.isEmpty());
-        suiteConfig.setProps(toFormatters(validSuiteProps));
+        
+        CodelessLoadGeneratorConfig loadGeneratorConfig = CodelessLoadGeneratorConfig.builder().buildWithDefaults();
+        CodelessSuiteConfig suiteConfig = CodelessSuiteConfig.builder()
+                .props(toFormatters(validSuiteProps))
+                .buildWithDefaults();
 
         List<JsonNode> validActionConfigs = buildValidActionConfigs();
         assertNotNull(validActionConfigs);
         assertFalse(validActionConfigs.isEmpty());
 
         for (JsonNode validActionConfig : validActionConfigs) {
+            final CodelessSuiteConfig.CodelessSuiteConfigBuilder suiteConfigBuilder = suiteConfig.toBuilder();
+            
             if(validActionConfig.has(SELECTOR_TYPE_KEY)){
                 String s = validActionConfig.get(SELECTOR_TYPE_KEY).textValue();
-                suiteConfig.setDefaultSelectorType(
+                suiteConfigBuilder.defaultSelectorType(
                         SelectorType.valueOf(s)
                 );
             }
@@ -258,7 +271,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
 
             actionProcessor.validateActionConfig(
                     loadGeneratorConfig,
-                    suiteConfig,
+                    suiteConfigBuilder.build(),
                     actionConfig
             );
 
@@ -267,7 +280,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
             for (FormattingMap formatter : toFormatters(validSuiteProps)) {
                 V actionInstance = actionProcessor.buildActionInstance(
                         loadGeneratorConfig,
-                        suiteConfig,
+                        suiteConfigBuilder.build(),
                         formatter,
                         actionConfig
                 );
@@ -279,17 +292,18 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
     @Test
     public final void verifyActionInstanceProcessing() throws Exception {
         assumeTrue(CHROME_BROWSER_AVAILABLE);
-
-        CodelessLoadGeneratorConfig loadGeneratorConfig = new CodelessLoadGeneratorConfig();
-        CodelessSuiteConfig suiteConfig = new CodelessSuiteConfig();
-
+        
         P actionProcessor = newActionProcessorInstance();
         assertNotNull(actionProcessor);
-
+        
         List<Map<String, String>> validSuiteProps = buildValidSuiteProps();
         assertNotNull(validSuiteProps);
         assertFalse(validSuiteProps.isEmpty());
-        suiteConfig.setProps(toFormatters(validSuiteProps));
+
+        CodelessLoadGeneratorConfig loadGeneratorConfig = CodelessLoadGeneratorConfig.builder().buildWithDefaults();
+        CodelessSuiteConfig suiteConfig = CodelessSuiteConfig.builder()
+                .props(toFormatters(validSuiteProps))
+                .buildWithDefaults();
 
         List<JsonNode> validActionConfigs = buildValidActionConfigs();
         assertNotNull(validActionConfigs);
@@ -298,9 +312,11 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
 
         try {
             for (JsonNode validActionConfig : validActionConfigs) {
+                final CodelessSuiteConfig.CodelessSuiteConfigBuilder suiteConfigBuilder = suiteConfig.toBuilder();
+                
                 if(validActionConfig.has(SELECTOR_TYPE_KEY)){
                     String s = validActionConfig.get(SELECTOR_TYPE_KEY).textValue();
-                    suiteConfig.setDefaultSelectorType(
+                    suiteConfigBuilder.defaultSelectorType(
                             SelectorType.valueOf(s)
                     );
                 }
@@ -312,7 +328,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
 
                 actionProcessor.validateActionConfig(
                         loadGeneratorConfig,
-                        suiteConfig,
+                        suiteConfigBuilder.build(),
                         actionConfig
                 );
 
@@ -321,7 +337,7 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
                 for (FormattingMap formatter : toFormatters(validSuiteProps)) {
                     V actionInstance = actionProcessor.buildActionInstance(
                             loadGeneratorConfig,
-                            suiteConfig,
+                            suiteConfigBuilder.build(),
                             formatter,
                             actionConfig
                     );

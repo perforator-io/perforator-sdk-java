@@ -10,10 +10,8 @@
 ---
 suites:
   Suite One:
-    propsFile: 'src/test/resources/csv/not_valid_props_2.csv'
-    props:
-      - landing-page: 'https://verifications.perforator.io/?delay=2000ms'
+    propsFile: 'src/test/resources/csv/valid_props.csv'
     steps:
       Open and upload file successfully:
         - sleep: 10s
-        - open: https://verifications.perforator.io/
+        - open: ${invalid}

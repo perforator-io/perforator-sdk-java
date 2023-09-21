@@ -14,42 +14,50 @@ import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 
-import java.util.function.Function;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 /**
  * Configuration for TestNG performance testing suites processed by
  * {@link TestNGLoadGenerator}.
  */
-@ToString
+@Getter
+@ToString(callSuper = true)
+@SuperBuilder(toBuilder = true)
+@EqualsAndHashCode(callSuper = true, cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @FieldNameConstants
+@Jacksonized
 public class TestNGSuiteConfig extends SuiteConfig {
 
     /**
      * File system location of TestNG suite.xml file
      */
-    @Getter @Setter @FieldNameConstants.Include
-    private String suiteXmlFile;
+    String suiteXmlFile;
+    
+    public static abstract class TestNGSuiteConfigBuilder<C extends TestNGSuiteConfig, B extends TestNGSuiteConfigBuilder<C, B>> extends SuiteConfigBuilder<C, B> {
 
-    /**
-     * Default constructor looking up property defaults via the following providers:
-     * <ul>
-     *   <li>{@link System#getProperty(java.lang.String) }</li>
-     *   <li>{@link System#getenv(java.lang.String) }</li>
-     * </ul>
-     */
-    public TestNGSuiteConfig() {
-        applyDefaults();
-    }
+        private String name;
 
-    /**
-     * Constructor looking up property defaults in user-supplied property providers.
-     * @param defaultsProviders varargs of {@link Function functions} where to lookup up
-     * for property defaults.
-     */
-    public TestNGSuiteConfig(Function<String, String>... defaultsProviders) {
-        applyDefaults(defaultsProviders);
+        @Override
+        public B name(String name) {
+            super.name(name);
+            this.name = name;
+            return (B) this;
+        }
+
+        public B suiteXmlFile(String suiteXmlFile) {
+            if (suiteXmlFile != null && !suiteXmlFile.isBlank() && (name == null || name.isBlank())) {
+                this.name(suiteXmlFile.trim());
+            }
+            this.suiteXmlFile = suiteXmlFile;
+            return (B) this;
+        }
+
     }
     
 }

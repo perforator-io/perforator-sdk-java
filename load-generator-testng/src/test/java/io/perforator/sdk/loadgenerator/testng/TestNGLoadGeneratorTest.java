@@ -12,7 +12,6 @@ package io.perforator.sdk.loadgenerator.testng;
 
 import io.perforator.sdk.loadgenerator.core.AbstractLoadGeneratorTest;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
-
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -24,11 +23,12 @@ public class TestNGLoadGeneratorTest extends AbstractLoadGeneratorTest<TestNGLoa
     }
 
     @Override
-    protected TestNGSuiteConfig buildDefaultSuiteConfig() throws Exception {
-        TestNGSuiteConfig result = super.buildDefaultSuiteConfig();
-        result.setName("Testing Suite");
-        result.setSuiteXmlFile(getFileFromResource("suite.xml").getAbsolutePath());
-        return result;
+    protected TestNGSuiteConfig.TestNGSuiteConfigBuilder defaultSuiteConfigBuilder() throws Exception {
+        return TestNGSuiteConfig.builder()
+                .applyDefaults()
+                .suiteXmlFile(
+                        getFileFromResource("suite.xml").getAbsolutePath()
+                );
     }
 
     private File getFileFromResource(String fileName) {

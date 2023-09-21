@@ -15,8 +15,7 @@ import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.codeless.RandomDuration;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
-import io.perforator.sdk.loadgenerator.core.configs.Configurable;
-
+import io.perforator.sdk.loadgenerator.core.configs.StringConverter;
 import java.lang.reflect.ParameterizedType;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -241,7 +240,7 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
 
             if (formattedTimeout != null && !formattedTimeout.isBlank()) {
                 try {
-                    result = Configurable.parseDuration(
+                    result = StringConverter.toDuration(
                             formattedTimeout
                     );
                 } catch (RuntimeException e) {

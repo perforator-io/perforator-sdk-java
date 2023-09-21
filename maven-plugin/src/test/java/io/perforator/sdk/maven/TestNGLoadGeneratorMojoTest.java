@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 public class TestNGLoadGeneratorMojoTest extends AbstractMojoTest<TestNGLoadGeneratorMojo> {
 
-    private static final TestNGSuiteConfig DEFAULT_TESTNG_SUITE_CONFIG = new TestNGSuiteConfig(p -> null);
+    private static final TestNGSuiteConfig DEFAULT_TESTNG_SUITE_CONFIG = TestNGSuiteConfig.builder().build();
 
     public TestNGLoadGeneratorMojoTest() {
         super(TestNGLoadGeneratorMojo.class, TestNGLoadGeneratorMojo.MOJO_NAME);

@@ -20,7 +20,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class EmbeddedSuiteProcessorMock extends AbstractSuiteProcessor {
     
-    private static final String VERIFICATIONS_APP_URL = new LoadGeneratorConfig().getApiBaseUrl().replace("api", "verifications");
+    private static final String VERIFICATIONS_APP_URL = LoadGeneratorConfig.builder().buildWithDefaults().getApiBaseUrl().replace("api", "verifications");
     private static final String ASYNC_CONTAINER_ID = "async-container";
     
     @Override

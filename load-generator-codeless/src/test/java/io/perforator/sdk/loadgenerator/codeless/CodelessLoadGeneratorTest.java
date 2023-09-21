@@ -17,9 +17,8 @@ import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConf
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessStepConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
 import io.perforator.sdk.loadgenerator.core.AbstractLoadGeneratorTest;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -30,49 +29,48 @@ public class CodelessLoadGeneratorTest extends AbstractLoadGeneratorTest<Codeles
     }
 
     @Override
-    protected CodelessSuiteConfig buildDefaultSuiteConfig() throws Exception {
-        CodelessSuiteConfig result = super.buildDefaultSuiteConfig();
-        result.setName("Testing Suite");
+    protected CodelessSuiteConfig.CodelessSuiteConfigBuilder defaultSuiteConfigBuilder() throws Exception {
+        CodelessStepConfig stepConfig = CodelessStepConfig.builder()
+                .name("Step One")
+                .actions(List.of(
+                        OpenActionConfig.builder()
+                                .url(verificationsBaseUrl)
+                                .build(),
+                        AwaitElementToBeVisibleActionConfig.builder()
+                                .cssSelector("#async-content")
+                                .build(),
+                        OpenActionConfig.builder()
+                                .url(verificationsBaseUrl + "/satisne")
+                                .build(),
+                        AwaitElementToBeVisibleActionConfig.builder()
+                                .cssSelector("#async-content")
+                                .build(),
+                        SleepActionConfig.builder()
+                                .timeout("1s-2s")
+                                .build()
+                ))
+                .build();
         
-        CodelessStepConfig stepConfig = new CodelessStepConfig();
-        stepConfig.setName("Step One");
-        stepConfig.setActions(List.of(
-                OpenActionConfig.builder()
-                        .url(verificationsBaseUrl)
-                        .build(),
-                AwaitElementToBeVisibleActionConfig.builder()
-                        .cssSelector("#async-content")
-                        .build(),
-                OpenActionConfig.builder()
-                        .url(verificationsBaseUrl + "/satisne")
-                        .build(),
-                AwaitElementToBeVisibleActionConfig.builder()
-                        .cssSelector("#async-content")
-                        .build(),
-                SleepActionConfig.builder()
-                        .timeout("1s-2s")
-                        .build()
-        ));
-
-        result.setSteps(List.of(stepConfig));
-
-        return result;
+        return CodelessSuiteConfig.builder()
+                .applyDefaults()
+                .name("Testing Suite")
+                .step(stepConfig);
     }
 
     @Test
     public void shouldFailOnInvalidDirectConfig() throws Exception {
-        CodelessLoadGeneratorConfig loadGeneratorConfig = buildDefaultLoadGeneratorConfig();
-        CodelessSuiteConfig suiteConfig = buildDefaultSuiteConfig();
-
-        CodelessStepConfig stepConfig = new CodelessStepConfig();
-        stepConfig.setName("Step One");
-        stepConfig.setActions(List.of(
-                OpenActionConfig.builder()
-                        .timeout("invalid_duration")
-                        .build()
-        ));
-
-        suiteConfig.setSteps(List.of(stepConfig));
+        CodelessStepConfig stepConfig = CodelessStepConfig.builder()
+                .name("Step One")
+                .action(
+                        OpenActionConfig.builder()
+                                .timeout("invalid_duration")
+                                .build()
+                )
+                .build();
+        CodelessLoadGeneratorConfig loadGeneratorConfig = defaultLoadGeneratorConfigBuilder().build();
+        CodelessSuiteConfig suiteConfig = defaultSuiteConfigBuilder()
+                .step(stepConfig)
+                .build();
 
         assertThrows(
                 RuntimeException.class,

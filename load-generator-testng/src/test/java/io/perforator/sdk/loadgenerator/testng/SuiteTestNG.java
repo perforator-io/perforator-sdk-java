@@ -22,7 +22,7 @@ import org.testng.annotations.Test;
 
 public class SuiteTestNG {
 
-    private static final String VERIFICATIONS_APP_URL = new LoadGeneratorConfig().getApiBaseUrl().replace("api", "verifications");
+    private static final String VERIFICATIONS_APP_URL = LoadGeneratorConfig.builder().buildWithDefaults().getApiBaseUrl().replace("api", "verifications");
     private static final String ASYNC_CONTAINER_ID = "async-container";
 
     @Test(timeOut = 30000)

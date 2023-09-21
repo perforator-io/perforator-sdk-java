@@ -10,24 +10,32 @@
  */
 package io.perforator.sdk.loadgenerator.core.configs;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.experimental.FieldNameConstants;
-
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
+import lombok.AccessLevel;
+import lombok.Builder.Default;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Singular;
+import lombok.ToString;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.FieldNameConstants;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 /**
  * Configuration with the general properties for load-generator.
  */
+@Getter
 @ToString
+@SuperBuilder(toBuilder = true)
+@EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @FieldNameConstants
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class LoadGeneratorConfig implements Configurable {
+@Jacksonized
+public class LoadGeneratorConfig implements Config {
 
     /**
      * Default prefix to lookup property values across providers.
@@ -54,7 +62,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#browserCloudAwaitQueued browserCloudAwaitQueued}</b>
      * property.
      */
-    public static final Duration DEFAULT_BROWSER_CLOUD_AWAIT_QUEUED = Configurable.parseDuration(DEFAULT_BROWSER_CLOUD_AWAIT_QUEUED_S);
+    public static final Duration DEFAULT_BROWSER_CLOUD_AWAIT_QUEUED = StringConverter.toDuration(DEFAULT_BROWSER_CLOUD_AWAIT_QUEUED_S);
 
     /**
      * String representation of default value for
@@ -69,7 +77,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#browserCloudAwaitProvisioning browserCloudAwaitProvisioning}</b>
      * property.
      */
-    public static final Duration DEFAULT_BROWSER_CLOUD_AWAIT_PROVISIONING = Configurable.parseDuration(DEFAULT_BROWSER_CLOUD_AWAIT_PROVISIONING_S);
+    public static final Duration DEFAULT_BROWSER_CLOUD_AWAIT_PROVISIONING = StringConverter.toDuration(DEFAULT_BROWSER_CLOUD_AWAIT_PROVISIONING_S);
 
     /**
      * String representation of default value for 
@@ -84,7 +92,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#browserCloudStatusPollInterval}</b>
      * property.
      */
-    public static final Duration DEFAULT_BROWSER_CLOUD_STATUS_POLL_INTERVAL = Configurable.parseDuration(DEFAULT_BROWSER_CLOUD_STATUS_POLL_INTERVAL_S);
+    public static final Duration DEFAULT_BROWSER_CLOUD_STATUS_POLL_INTERVAL = StringConverter.toDuration(DEFAULT_BROWSER_CLOUD_STATUS_POLL_INTERVAL_S);
 
     /**
      * String representation of default value for 
@@ -99,7 +107,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#browserCloudTerminateAutomatically}</b>
      * property.
      */
-    public static final boolean DEFAULT_BROWSER_CLOUD_TERMINATE_AUTOMATICALY = Boolean.parseBoolean(DEFAULT_BROWSER_CLOUD_TERMINATE_AUTOMATICALY_S);
+    public static final boolean DEFAULT_BROWSER_CLOUD_TERMINATE_AUTOMATICALY = StringConverter.toBoolean(DEFAULT_BROWSER_CLOUD_TERMINATE_AUTOMATICALY_S);
 
     /**
      * String representation of default value for 
@@ -114,7 +122,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#httpConnectTimeout}</b>
      * property.
      */
-    public static final Duration DEFAULT_HTTP_CONNECT_TIMEOUT = Configurable.parseDuration(DEFAULT_HTTP_CONNECT_TIMEOUT_S);
+    public static final Duration DEFAULT_HTTP_CONNECT_TIMEOUT = StringConverter.toDuration(DEFAULT_HTTP_CONNECT_TIMEOUT_S);
 
     /**
      * String representation of default value for 
@@ -129,7 +137,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#httpReadTimeout}</b>
      * property.
      */
-    public static final Duration DEFAULT_HTTP_READ_TIMEOUT = Configurable.parseDuration(DEFAULT_HTTP_READ_TIMEOUT_S);
+    public static final Duration DEFAULT_HTTP_READ_TIMEOUT = StringConverter.toDuration(DEFAULT_HTTP_READ_TIMEOUT_S);
 
     /**
      * String representation of default value for 
@@ -144,7 +152,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#eventsFlushInterval}</b>
      * property.
      */
-    public static final Duration DEFAULT_EVENTS_FLUSH_INTERVAL = Configurable.parseDuration(DEFAULT_EVENTS_FLUSH_INTERVAL_S);
+    public static final Duration DEFAULT_EVENTS_FLUSH_INTERVAL = StringConverter.toDuration(DEFAULT_EVENTS_FLUSH_INTERVAL_S);
 
     /**
      * String representation of default value for 
@@ -159,7 +167,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#eventsFlushThreshold}</b>
      * property.
      */
-    public static final int DEFAULT_EVENTS_FLUSH_THRESHOLD = Integer.parseInt(DEFAULT_EVENTS_FLUSH_THRESHOLD_S);
+    public static final int DEFAULT_EVENTS_FLUSH_THRESHOLD = StringConverter.toInt(DEFAULT_EVENTS_FLUSH_THRESHOLD_S);
 
     /**
      * String representation of default value for 
@@ -174,7 +182,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#reportingInterval}</b>
      * property.
      */
-    public static final Duration DEFAULT_REPORTING_INTERVAL = Configurable.parseDuration(DEFAULT_REPORTING_INTERVAL_S);
+    public static final Duration DEFAULT_REPORTING_INTERVAL = StringConverter.toDuration(DEFAULT_REPORTING_INTERVAL_S);
     
     /**
      * String representation of default value for 
@@ -189,7 +197,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#failOnSuiteErrors}</b>
      * property.
      */
-    public static final boolean DEFAULT_FAIL_ON_SUITE_ERRORS = Boolean.parseBoolean(DEFAULT_FAIL_ON_SUITE_ERRORS_S);
+    public static final boolean DEFAULT_FAIL_ON_SUITE_ERRORS = StringConverter.toBoolean(DEFAULT_FAIL_ON_SUITE_ERRORS_S);
     
     /**
      * String representation of default value for 
@@ -204,22 +212,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#failOnTransactionErrors}</b>
      * property.
      */
-    public static final boolean DEFAULT_FAIL_ON_TRANSACTION_ERRORS = Boolean.parseBoolean(DEFAULT_FAIL_ON_SUITE_ERRORS_S);
-    
-    /**
-     * String representation of default value for 
-     * <b>{@link LoadGeneratorConfig#prioritizeSystemProperties}</b>
-     * property.
-     */
-    public static final String DEFAULT_PRIORITIZE_SYSTEM_PROPERTIES_S = "true";
-    
-    /**
-     * Default value(<b>{@value LoadGeneratorConfig#DEFAULT_PRIORITIZE_SYSTEM_PROPERTIES_S}</b>)
-     * for 
-     * <b>{@link LoadGeneratorConfig#prioritizeSystemProperties}</b>
-     * property.
-     */
-    public static final boolean DEFAULT_PRIORITIZE_SYSTEM_PROPERTIES = Boolean.parseBoolean(DEFAULT_PRIORITIZE_SYSTEM_PROPERTIES_S);
+    public static final boolean DEFAULT_FAIL_ON_TRANSACTION_ERRORS = StringConverter.toBoolean(DEFAULT_FAIL_ON_SUITE_ERRORS_S);
 
     /**
      * String representation of default value for
@@ -234,7 +227,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#usePreAllocatedIPs}</b>
      * property.
      */
-    public static final boolean DEFAULT_USE_PRE_ALLOCATED_IPS = Boolean.parseBoolean(DEFAULT_USE_PRE_ALLOCATED_IPS_S);
+    public static final boolean DEFAULT_USE_PRE_ALLOCATED_IPS = StringConverter.toBoolean(DEFAULT_USE_PRE_ALLOCATED_IPS_S);
     
     /**
      * String representation of default value for
@@ -249,7 +242,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#dataCapturingIncludeRequestHeaders}</b>
      * property.
      */
-    public static final boolean DEFAULT_DATA_CAPTURING_INCLUDE_REQUEST_HEADERS = Boolean.parseBoolean(DEFAULT_DATA_CAPTURING_INCLUDE_REQUEST_HEADERS_S);
+    public static final boolean DEFAULT_DATA_CAPTURING_INCLUDE_REQUEST_HEADERS = StringConverter.toBoolean(DEFAULT_DATA_CAPTURING_INCLUDE_REQUEST_HEADERS_S);
     
     /**
      * String representation of default value for
@@ -264,7 +257,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#dataCapturingIncludeRequestBody}</b>
      * property.
      */
-    public static final boolean DEFAULT_DATA_CAPTURING_INCLUDE_REQUEST_BODY = Boolean.parseBoolean(DEFAULT_DATA_CAPTURING_INCLUDE_REQUEST_BODY_S);
+    public static final boolean DEFAULT_DATA_CAPTURING_INCLUDE_REQUEST_BODY = StringConverter.toBoolean(DEFAULT_DATA_CAPTURING_INCLUDE_REQUEST_BODY_S);
     
     /**
      * String representation of default value for
@@ -279,7 +272,7 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#dataCapturingIncludeResponseHeaders}</b>
      * property.
      */
-    public static final boolean DEFAULT_DATA_CAPTURING_INCLUDE_RESPONSE_HEADERS = Boolean.parseBoolean(DEFAULT_DATA_CAPTURING_INCLUDE_RESPONSE_HEADERS_S);
+    public static final boolean DEFAULT_DATA_CAPTURING_INCLUDE_RESPONSE_HEADERS = StringConverter.toBoolean(DEFAULT_DATA_CAPTURING_INCLUDE_RESPONSE_HEADERS_S);
     
     /**
      * String representation of default value for
@@ -294,33 +287,31 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>{@link LoadGeneratorConfig#dataCapturingIncludeResponseBody}</b>
      * property.
      */
-    public static final boolean DEFAULT_DATA_CAPTURING_INCLUDE_RESPONSE_BODY = Boolean.parseBoolean(DEFAULT_DATA_CAPTURING_INCLUDE_RESPONSE_BODY_S);
+    public static final boolean DEFAULT_DATA_CAPTURING_INCLUDE_RESPONSE_BODY = StringConverter.toBoolean(DEFAULT_DATA_CAPTURING_INCLUDE_RESPONSE_BODY_S);
 
     /**
      * Autogenerated ID of the configuration.
      */
-    @Getter @FieldNameConstants.Include @EqualsAndHashCode.Include
-    protected final String id = UUID.randomUUID().toString();
+    @Default
+    String id = UUID.randomUUID().toString();
     
     /**
      * Base URL for API communication
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected String apiBaseUrl = DEFAULT_API_BASE_URL;
+    @Default
+    String apiBaseUrl = DEFAULT_API_BASE_URL;
 
     /**
      * cliend_id to obtain access token via OAuth 2.0 Client Credentials Grant
      * flow.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected String apiClientId;
+    String apiClientId;
 
     /**
      * client_secret to obtain access token via OAuth 2.0 Client Credentials
      * Grant flow.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected String apiClientSecret;
+    String apiClientSecret;
 
     /**
      * OAuth 2.0 access token for Perforator API calls.
@@ -331,14 +322,12 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>Note:</b> Please keep in mind that the access token has a limited 
      * validity period and usually expires 8 hours after authentication.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected String apiToken;
+    String apiToken;
 
     /**
      * Key of the project where to create a new execution and a browser cloud.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected String projectKey;
+    String projectKey;
 
     /**
      * Key of the execution where to create a new browser cloud.
@@ -346,50 +335,49 @@ public class LoadGeneratorConfig implements Configurable {
      * A new execution is automatically created within the parent project if 
      * an executionKey is not provided.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected String executionKey;
+    String executionKey;
 
     /**
      * How much time to wait till the browser cloud changes state from QUEUED to PROVISIONING?
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration browserCloudAwaitQueued = DEFAULT_BROWSER_CLOUD_AWAIT_QUEUED;
+    @Default
+    Duration browserCloudAwaitQueued = DEFAULT_BROWSER_CLOUD_AWAIT_QUEUED;
 
     /**
      * How much time to wait till the browser cloud changes state from PROVISIONING to OPERATIONAL?
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration browserCloudAwaitProvisioning = DEFAULT_BROWSER_CLOUD_AWAIT_PROVISIONING;
+    @Default
+    Duration browserCloudAwaitProvisioning = DEFAULT_BROWSER_CLOUD_AWAIT_PROVISIONING;
 
     /**
      * Time interval on how often to check browser cloud status.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration browserCloudStatusPollInterval = DEFAULT_BROWSER_CLOUD_STATUS_POLL_INTERVAL;
+    @Default
+    Duration browserCloudStatusPollInterval = DEFAULT_BROWSER_CLOUD_STATUS_POLL_INTERVAL;
 
     /**
      * Should a browser cloud be turned off at the end of the test?
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean browserCloudTerminateAutomatically = DEFAULT_BROWSER_CLOUD_TERMINATE_AUTOMATICALY;
+    @Default
+    boolean browserCloudTerminateAutomatically = DEFAULT_BROWSER_CLOUD_TERMINATE_AUTOMATICALY;
 
     /**
      * HTTP connect timeout while establishing connection(s) with remote browsers.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration httpConnectTimeout = DEFAULT_HTTP_CONNECT_TIMEOUT;
+    @Default
+    Duration httpConnectTimeout = DEFAULT_HTTP_CONNECT_TIMEOUT;
 
     /**
      * HTTP read timeout while awaiting response from remote browsers.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration httpReadTimeout = DEFAULT_HTTP_READ_TIMEOUT;
+    @Default
+    Duration httpReadTimeout = DEFAULT_HTTP_READ_TIMEOUT;
 
     /**
      * Interval on how often to send transaction events data to API.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration eventsFlushInterval = DEFAULT_EVENTS_FLUSH_INTERVAL;
+    @Default
+    Duration eventsFlushInterval = DEFAULT_EVENTS_FLUSH_INTERVAL;
 
     /**
      * How many transaction events should be sent to API per one request?
@@ -397,36 +385,29 @@ public class LoadGeneratorConfig implements Configurable {
      * <b>Note</b>: this value might be as high as 2000, everything else on top 
      * will be rejected on API end.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected int eventsFlushThreshold = DEFAULT_EVENTS_FLUSH_THRESHOLD;
+    @Default
+    int eventsFlushThreshold = DEFAULT_EVENTS_FLUSH_THRESHOLD;
 
     /**
      * How often progress statistics should be reported in the log? You can turn
      * off progress reporting by specifying this value as <b>0s</b>.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration reportingInterval = DEFAULT_REPORTING_INTERVAL;
+    @Default
+    Duration reportingInterval = DEFAULT_REPORTING_INTERVAL;
     
     /**
      * Should a performance test fail at the end of the execution in case of any
      * suite errors?
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean failOnSuiteErrors = DEFAULT_FAIL_ON_SUITE_ERRORS;
+    @Default
+    boolean failOnSuiteErrors = DEFAULT_FAIL_ON_SUITE_ERRORS;
     
     /**
      * Should a performance test fail at the end of the execution in case of any
      * transaction errors?
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean failOnTransactionErrors = DEFAULT_FAIL_ON_TRANSACTION_ERRORS;
-    
-    /**
-     * Should system properties and environment variables override values specified
-     * in configuration(s)?
-     */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean prioritizeSystemProperties = DEFAULT_PRIORITIZE_SYSTEM_PROPERTIES;
+    @Default
+    boolean failOnTransactionErrors = DEFAULT_FAIL_ON_TRANSACTION_ERRORS;
 
     /**
      * The platform automatically assigns random public IP addresses when creating
@@ -434,8 +415,8 @@ public class LoadGeneratorConfig implements Configurable {
      * Please set usePreAllocatedIPs parameter to true if you would like all browsers
      * to have preallocated IPs, for example, to establish network trust on your firewall side.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean usePreAllocatedIPs = DEFAULT_USE_PRE_ALLOCATED_IPS;
+    @Default
+    boolean usePreAllocatedIPs = DEFAULT_USE_PRE_ALLOCATED_IPS;
     
     /**
      * It may be a case when you need precise control over capturing HTTP request 
@@ -448,8 +429,8 @@ public class LoadGeneratorConfig implements Configurable {
      * The dataCapturingIncludeRequestHeaders property allows you to control 
      * capturing of any HTTP request headers.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean dataCapturingIncludeRequestHeaders = DEFAULT_DATA_CAPTURING_INCLUDE_REQUEST_HEADERS;
+    @Default
+    boolean dataCapturingIncludeRequestHeaders = DEFAULT_DATA_CAPTURING_INCLUDE_REQUEST_HEADERS;
     
     /**
      * It may be a case when you need precise control over capturing HTTP requests 
@@ -462,8 +443,8 @@ public class LoadGeneratorConfig implements Configurable {
      * The dataCapturingIncludeRequestBody property allows you to control capturing 
      * of any HTTP request body.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean dataCapturingIncludeRequestBody = DEFAULT_DATA_CAPTURING_INCLUDE_REQUEST_BODY;
+    @Default
+    boolean dataCapturingIncludeRequestBody = DEFAULT_DATA_CAPTURING_INCLUDE_REQUEST_BODY;
     
     /**
      * It may be a case when you need precise control over capturing HTTP response 
@@ -476,8 +457,8 @@ public class LoadGeneratorConfig implements Configurable {
      * The dataCapturingIncludeResponseHeaders property allows you to control capturing 
      * of any HTTP response headers.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean dataCapturingIncludeResponseHeaders = DEFAULT_DATA_CAPTURING_INCLUDE_RESPONSE_HEADERS;
+    @Default
+    boolean dataCapturingIncludeResponseHeaders = DEFAULT_DATA_CAPTURING_INCLUDE_RESPONSE_HEADERS;
     
     /**
      * It may be a case when you need precise control over capturing HTTP responses 
@@ -489,8 +470,8 @@ public class LoadGeneratorConfig implements Configurable {
      * The 'dataCapturingIncludeResponseBody' property allows you to control capturing 
      * of any HTTP response body.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean dataCapturingIncludeResponseBody = DEFAULT_DATA_CAPTURING_INCLUDE_RESPONSE_BODY;
+    @Default
+    boolean dataCapturingIncludeResponseBody = DEFAULT_DATA_CAPTURING_INCLUDE_RESPONSE_BODY;
 
     /**
      * It might be a case when you would like to exclude specific HTTP requests
@@ -508,16 +489,16 @@ public class LoadGeneratorConfig implements Configurable {
      * You can specify either absolute URLs to exclude or JS-based patterns to
      * match against the tested HTTP request URL.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected List<String> dataCapturingExcludes;
+    @Singular
+    List<String> dataCapturingExcludes;
 
     /**
      * You can supply an optional field 'browserCloudHttpHeaders', and as a result, 
      * all browsers from the cloud will include such headers in every HTTP request. 
      * For example, to set the Authorization bearer token.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Headers browserCloudHttpHeaders;
+    @Singular
+    Map<String, String> browserCloudHttpHeaders;
 
     /*
      * Please set the ‘browserCloudHosts’ parameter if you would like
@@ -527,32 +508,16 @@ public class LoadGeneratorConfig implements Configurable {
      * you can supply a map of additional DNS records via 'browserCloudHosts' parameter,
      * for example: example.com = 1.2.3.4
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Hosts browserCloudHosts;
+    @Singular
+    Map<String, String> browserCloudHosts;
+    
+    public static abstract class LoadGeneratorConfigBuilder<C extends LoadGeneratorConfig, B extends LoadGeneratorConfigBuilder<C, B>> implements ConfigBuilder<C, B> {
 
-    /**
-     * Default constructor looking up property defaults via the following providers:
-     * <ul>
-     *   <li>{@link System#getProperty(java.lang.String) }</li>
-     *   <li>{@link System#getenv(java.lang.String) }</li>
-     * </ul>
-     */
-    public LoadGeneratorConfig() {
-        applyDefaults();
-    }
-
-    /**
-     * Constructor looking up property defaults in user-supplied property providers.
-     * @param defaultsProviders varargs of {@link Function functions} where to lookup up
-     * for property defaults.
-     */
-    public LoadGeneratorConfig(Function<String, String>... defaultsProviders) {
-        applyDefaults(defaultsProviders);
-    }
-
-    @Override
-    public String getDefaultsPrefix() {
-        return DEFAULTS_FIELD_PREFIX;
+        @Override
+        public String getDefaultsPrefix() {
+            return DEFAULTS_FIELD_PREFIX;
+        }
+        
     }
 
 }

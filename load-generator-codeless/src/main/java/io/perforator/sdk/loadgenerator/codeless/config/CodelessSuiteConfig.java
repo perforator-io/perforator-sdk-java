@@ -24,78 +24,73 @@ import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.codeless.actions.ActionConfig;
 import io.perforator.sdk.loadgenerator.codeless.actions.ActionProcessor;
 import io.perforator.sdk.loadgenerator.codeless.actions.ActionProcessorsRegistry;
-import io.perforator.sdk.loadgenerator.core.configs.Configurable;
+import io.perforator.sdk.loadgenerator.core.configs.StringConverter;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.experimental.FieldNameConstants;
-
 import java.io.IOException;
 import java.time.Duration;
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import lombok.AccessLevel;
+import lombok.Builder.Default;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Singular;
+import lombok.ToString;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.FieldNameConstants;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
-@ToString
+@Getter
+@ToString(callSuper = true)
+@SuperBuilder(toBuilder = true)
+@EqualsAndHashCode(callSuper = true, cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @FieldNameConstants
+@Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CodelessSuiteConfig extends SuiteConfig {
     
     public static final String DEFAULT_LOG_STEPS_S = "false";
-    public static final boolean DEFAULT_LOG_STEPS = Boolean.parseBoolean(DEFAULT_LOG_STEPS_S);
+    public static final boolean DEFAULT_LOG_STEPS = StringConverter.toBoolean(DEFAULT_LOG_STEPS_S);
 
     public static final String DEFAULT_LOG_ACTIONS_S = "false";
-    public static final boolean DEFAULT_LOG_ACTIONS = Boolean.parseBoolean(DEFAULT_LOG_ACTIONS_S);
+    public static final boolean DEFAULT_LOG_ACTIONS = StringConverter.toBoolean(DEFAULT_LOG_ACTIONS_S);
 
     public static final String DEFAULT_SELECTOR_TYPE_S = "css";
-    public static SelectorType DEFAULT_SELECTOR_TYPE = SelectorType.valueOf(DEFAULT_SELECTOR_TYPE_S);
+    public static SelectorType DEFAULT_SELECTOR_TYPE = StringConverter.toEnum(SelectorType.class, DEFAULT_SELECTOR_TYPE_S);
     
     public static final String DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT_S = "30s";
-    public static final Duration DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT = Configurable.parseDuration(DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT_S);
+    public static final Duration DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT = StringConverter.toDuration(DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT_S);
     
-    @Getter
-    @Setter
-    @FieldNameConstants.Include
-    private Duration webDriverFluentWaitTimeout = DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT;
+    @Default
+    Duration webDriverFluentWaitTimeout = DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT;
     
-    @Getter
-    @Setter
-    @FieldNameConstants.Include
-    private boolean logSteps = DEFAULT_LOG_STEPS;
+    @Default
+    boolean logSteps = DEFAULT_LOG_STEPS;
 
-    @Getter
-    @Setter
-    @FieldNameConstants.Include
-    private boolean logActions = DEFAULT_LOG_ACTIONS;
+    @Default
+    boolean logActions = DEFAULT_LOG_ACTIONS;
     
-    @Getter
-    @Setter
-    @FieldNameConstants.Include
-    private SelectorType defaultSelectorType = DEFAULT_SELECTOR_TYPE;
-
+    @Default
+    SelectorType defaultSelectorType = DEFAULT_SELECTOR_TYPE;
+    
+    @Default
     @JsonDeserialize(using = PropsDeserializer.class)
-    @Getter
-    @Setter
-    @FieldNameConstants.Include
-    private List<FormattingMap> props = new ArrayList<>();
+    List<FormattingMap> props = Collections.EMPTY_LIST;
 
-    @Getter
-    @Setter
-    @FieldNameConstants.Include
     private String propsFile;
-
+    
     @JsonDeserialize(using = StepsDeserializer.class)
-    @Getter
-    @Setter
-    @FieldNameConstants.Include
-    private List<CodelessStepConfig> steps = new ArrayList<>();
+    @Singular
+    private List<CodelessStepConfig> steps;
+    
+    public static abstract class CodelessSuiteConfigBuilder<C extends CodelessSuiteConfig, B extends CodelessSuiteConfigBuilder<C, B>> extends SuiteConfigBuilder<C, B> {
 
-    public CodelessSuiteConfig() {
-        applyDefaults();
-    }
-
-    public CodelessSuiteConfig(Function<String, String>... defaultsProviders) {
-        applyDefaults(defaultsProviders);
     }
 
     public static class PropsDeserializer extends JsonDeserializer<List<FormattingMap>> {
@@ -164,12 +159,13 @@ public class CodelessSuiteConfig extends SuiteConfig {
                 for (JsonNode actionNode : actionNodes) {
                     actionConfigs.addAll(convertActionConfigNode(dc, actionNode));
                 }
-
-                CodelessStepConfig stepConfig = new CodelessStepConfig();
-                stepConfig.setName(stepName);
-                stepConfig.setActions(actionConfigs);
-
-                result.add(stepConfig);
+                
+                result.add(
+                        CodelessStepConfig.builder()
+                                .name(stepName)
+                                .actions(actionConfigs)
+                                .build()
+                );
             }
 
             return result;

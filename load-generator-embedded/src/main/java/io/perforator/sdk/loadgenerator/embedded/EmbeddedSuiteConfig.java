@@ -11,18 +11,27 @@
 package io.perforator.sdk.loadgenerator.embedded;
 
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
-import java.util.function.Function;
+import lombok.AccessLevel;
+import lombok.Builder.Default;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.FieldNameConstants;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 /**
  * Configuration for embedded performance testing suites processed by
  * {@link EmbeddedLoadGenerator}.
  */
-@ToString
+@Getter
+@ToString(callSuper = true)
+@SuperBuilder(toBuilder = true)
+@EqualsAndHashCode(callSuper = true, cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @FieldNameConstants
+@Jacksonized
 public class EmbeddedSuiteConfig extends SuiteConfig {
     
     /**
@@ -43,8 +52,7 @@ public class EmbeddedSuiteConfig extends SuiteConfig {
     /**
      * The class name of the processor to execute while processing any suite instance.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected String processorClass;
+    String processorClass;
     
     /**
      * This flag determines how processor instance should be instantiated:
@@ -53,39 +61,28 @@ public class EmbeddedSuiteConfig extends SuiteConfig {
      * <li>false - a new processor instance is instantiated for every suite instance run.</li>
      * </ul>
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean processorSingleton = DEFAULT_PROCESSOR_SINGLETON;
+    @Default
+    boolean processorSingleton = DEFAULT_PROCESSOR_SINGLETON;
     
-    /**
-     * Default constructor looking up property defaults via the following providers:
-     * <ul>
-     *   <li>{@link System#getProperty(java.lang.String) }</li>
-     *   <li>{@link System#getenv(java.lang.String) }</li>
-     * </ul>
-     */
-    public EmbeddedSuiteConfig() {
-        applyDefaults();
-        applyNameDefaults();
-    }
-    
-    /**
-     * Constructor looking up property defaults in user-supplied property providers.
-     * @param defaultsProviders varargs of {@link Function functions} where to lookup up
-     * for property defaults.
-     */
-    public EmbeddedSuiteConfig(Function<String, String>... defaultsProviders) {
-        applyDefaults(defaultsProviders);
-        applyNameDefaults();
-    }
-    
-    private void applyNameDefaults() {
-        if(processorClass == null || processorClass.isBlank()) {
-            return;
+    public static abstract class EmbeddedSuiteConfigBuilder<C extends EmbeddedSuiteConfig, B extends EmbeddedSuiteConfigBuilder<C, B>> extends SuiteConfigBuilder<C, B> {
+
+        private String name;
+
+        @Override
+        public B name(String name) {
+            super.name(name);
+            this.name = name;
+            return (B) this;
         }
-        
-        if(name == null || name.isBlank()) {
-            setName(processorClass);
+
+        public B processorClass(String processorClass) {
+            if (processorClass != null && !processorClass.isBlank() && (name == null || name.isBlank())) {
+                this.name(processorClass.trim());
+            }
+            this.processorClass = processorClass;
+            return (B) this;
         }
+
     }
     
 }

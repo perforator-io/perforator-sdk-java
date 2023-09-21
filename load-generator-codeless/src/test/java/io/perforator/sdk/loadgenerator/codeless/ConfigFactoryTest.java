@@ -26,9 +26,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ConfigFactoryTest {
+    
+    @Test
+    public void tttt() throws Exception {
+        Path path = getFileFromResource("yaml/valid_9.yaml").toPath();
+        
+        CodelessConfig config = assertDoesNotThrow(
+                () -> {
+                    CodelessConfig c = CodelessConfigFactory.INSTANCE.getCodelessConfig(
+                            path
+                    );
+                    new CodelessLoadGenerator(c);
+                    return c;
+                },
+                "Config at " + path + " should be valid"
+        );
+    }
 
     @ParameterizedTest
     @MethodSource("getInvalidConfigs")

@@ -10,8 +10,10 @@
  */
 package io.perforator.sdk.loadgenerator.core;
 
-import io.perforator.sdk.loadgenerator.core.configs.Configurable;
+import io.perforator.sdk.loadgenerator.core.configs.Config;
+import io.perforator.sdk.loadgenerator.core.configs.ConfigBuilder;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map;
@@ -24,7 +26,7 @@ import org.junit.jupiter.api.TestInstance;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public abstract class AbstractConfigTest<T extends Configurable> {
+public abstract class AbstractConfigTest<T extends Config> {
     
     protected final Class<T> configClass;
     protected Class fieldsClass;
@@ -60,7 +62,8 @@ public abstract class AbstractConfigTest<T extends Configurable> {
     }
     
     @Test
-    public void verifyNoArgsConstructor() throws Exception {
+    public void verifyDefaultBuilder() throws Exception {
+        String defaultsPrefix = newBuilder().getDefaultsPrefix();
         T defaultConfig = newConfigInstance();
         assertNotNull(defaultConfig);
         
@@ -72,7 +75,7 @@ public abstract class AbstractConfigTest<T extends Configurable> {
         
         for (String fieldName : verificationFields.keySet()) {
             String fieldValue = verificationFields.get(fieldName);
-            String systemPropertyName = defaultConfig.getDefaultsPrefix() + "." + fieldName;
+            String systemPropertyName = defaultsPrefix + "." + fieldName;
             try {
                 System.setProperty(systemPropertyName, fieldValue);
                 T newConfig = newConfigInstance();
@@ -87,7 +90,7 @@ public abstract class AbstractConfigTest<T extends Configurable> {
     }
     
     @Test
-    public void verifyProvidersConstructor() throws Exception {
+    public void verifyBuilderWithProvider() throws Exception {
         T defaultConfig = newConfigInstance(p -> null);
         assertNotNull(defaultConfig);
         
@@ -109,18 +112,34 @@ public abstract class AbstractConfigTest<T extends Configurable> {
         }
     }
     
+    protected ConfigBuilder<T, ?> newBuilder() throws Exception {
+        for (Method method : configClass.getDeclaredMethods()) {
+            if(!method.getName().equals("builder")) {
+                continue;
+            }
+            
+            if(!Modifier.isStatic(method.getModifiers())) {
+                continue;
+            }
+            
+            if(method.getParameterCount() > 0) {
+                continue;
+            }
+            
+            return (ConfigBuilder<T, ?>) method.invoke(null);
+        }
+        
+        throw new IllegalArgumentException(
+                "Config " + configClass + " doesn't have static builder method"
+        );
+    }
+    
     protected T newConfigInstance() throws Exception {
-        return configClass.getConstructor().newInstance();
+        return newBuilder().applyDefaults().build();
     }
     
     protected T newConfigInstance(Function<String, String>... providers) throws Exception {
-        return configClass.getConstructor(
-                Function[].class
-        ).newInstance(
-                new Object[]{
-                    providers
-                }
-        );
+        return newBuilder().applyDefaults(providers).build();
     }
     
     protected static boolean hasConfigFields(Class configClass, Collection<String> fieldNames) throws Exception {
@@ -138,7 +157,7 @@ public abstract class AbstractConfigTest<T extends Configurable> {
         
         while(current != null) {
             for (Field field : current.getDeclaredFields()) {
-                if(Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())) {
+                if(Modifier.isStatic(field.getModifiers()) || !Modifier.isFinal(field.getModifiers())) {
                     continue;
                 }
                 

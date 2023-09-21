@@ -20,7 +20,7 @@ import java.util.List;
 
 public class EmbeddedSuiteProcessor extends AbstractSuiteProcessor {
 
-    public static final String BASE_URL = new LoadGeneratorConfig().getApiBaseUrl().replace("api", "verifications");;
+    public static final String BASE_URL = LoadGeneratorConfig.builder().buildWithDefaults().getApiBaseUrl().replace("api", "verifications");;
 
     @Override
     protected void processSuite(long iterationNumber, String suiteInstanceID, EmbeddedSuiteConfig suiteConfig, RemoteWebDriver driver) {

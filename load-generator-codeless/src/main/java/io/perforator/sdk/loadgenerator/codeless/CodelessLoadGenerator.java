@@ -16,7 +16,13 @@ import io.perforator.sdk.loadgenerator.codeless.actions.ActionProcessor;
 import io.perforator.sdk.loadgenerator.codeless.actions.ActionProcessorsRegistry;
 import io.perforator.sdk.loadgenerator.codeless.actions.IgnoreRemainingActionsActionInstance;
 import io.perforator.sdk.loadgenerator.codeless.actions.IgnoreRemainingStepsActionInstance;
-import io.perforator.sdk.loadgenerator.codeless.config.*;
+import io.perforator.sdk.loadgenerator.codeless.config.CSVUtils;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessConfig;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessConfigFactory;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessStepConfig;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfigValidator;
 import io.perforator.sdk.loadgenerator.core.AbstractLoadGenerator;
 import io.perforator.sdk.loadgenerator.core.Perforator;
 import io.perforator.sdk.loadgenerator.core.context.RemoteWebDriverContext;
@@ -24,14 +30,12 @@ import io.perforator.sdk.loadgenerator.core.context.SuiteConfigContext;
 import io.perforator.sdk.loadgenerator.core.context.SuiteInstanceContext;
 import io.perforator.sdk.loadgenerator.core.context.TransactionContext;
 import io.perforator.sdk.loadgenerator.core.service.IntegrationService;
-import org.openqa.selenium.remote.RemoteWebDriver;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
-//TODO: add javadoc
 public class CodelessLoadGenerator extends AbstractLoadGenerator {
 
     public CodelessLoadGenerator(Path location) throws IOException {
@@ -51,44 +55,58 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
     }
     
     private static List<CodelessSuiteConfig> preprocessConfigs(CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suites) {
-        FormattingMap constants = loadGeneratorConfig.getConstants();
-        List<String> propsFiles = new ArrayList<>(suites.size());
+        if(loadGeneratorConfig == null) {
+            throw new RuntimeException("loadGenerator is required");
+        }
         
-        for (CodelessSuiteConfig suiteConfig : suites) {
-            CodelessSuiteConfig suite = CodelessSuiteConfigValidator.validateSuiteProps(suiteConfig);
+        if(suites == null || suites.isEmpty()) {
+            throw new RuntimeException("suites are required");
+        }
+        
+        List<CodelessSuiteConfig> result = new ArrayList<>(suites.size());
+        for (CodelessSuiteConfig suite : suites) {
+            result.add(preprocessSuite(suite, loadGeneratorConfig.getConstants()));
+        }
 
-            String propsFile = suite.getPropsFile();
-            List<FormattingMap> propsFromCSV = CSVUtils.parseToFormattingMapList(propsFile);
-
-            propsFiles.add(propsFile);
-            suite.getProps().addAll(propsFromCSV);
-            
-            if (constants != null && !constants.isEmpty()) {
-                List<FormattingMap> adjustedProps = new ArrayList<>();
-
-                if (suite.getProps().isEmpty()) {
-                    adjustedProps.add(constants);
+        CodelessSuiteConfigValidator.validate(loadGeneratorConfig, result);
+        
+        return List.copyOf(result);
+    }
+    
+    private static CodelessSuiteConfig preprocessSuite(CodelessSuiteConfig suite, FormattingMap constants) {
+        if(suite == null) {
+            return null;
+        }
+        
+        List<FormattingMap> formattersFromProps = suite.getProps();
+        List<FormattingMap> formattersFromFile = CSVUtils.parseToFormattingMapList(suite.getPropsFile());
+        List<FormattingMap> formattersToReturn = new ArrayList<>();
+        
+        if(formattersFromProps != null && !formattersFromProps.isEmpty()) {
+            for (FormattingMap formatter : formattersFromProps) {
+                if(constants != null && !constants.isEmpty()) {
+                    formattersToReturn.add(new FormattingMap(constants, formatter));
                 } else {
-                    for (FormattingMap props : suite.getProps()) {
-                        adjustedProps.add(
-                                new FormattingMap(constants, props)
-                        );
-                    }
+                    formattersToReturn.add(formatter);
                 }
-
-                suite.setProps(adjustedProps);
             }
-            
-            suite.setPropsFile(null);
-        }
-
-        CodelessSuiteConfigValidator.validate(loadGeneratorConfig, suites);
-        
-        for (int i = 0; i < suites.size(); i++) {
-            suites.get(i).setPropsFile(propsFiles.get(i));
         }
         
-        return suites;
+        if(formattersFromFile != null && !formattersFromFile.isEmpty()) {
+            for (FormattingMap formatter : formattersFromFile) {
+                if(constants != null && !constants.isEmpty()) {
+                    formattersToReturn.add(new FormattingMap(constants, formatter));
+                } else {
+                    formattersToReturn.add(formatter);
+                }
+            }
+        }
+        
+        if(formattersToReturn.isEmpty() && constants != null && !constants.isEmpty()) {
+            formattersToReturn.add(constants);
+        }
+        
+        return suite.toBuilder().props(formattersToReturn).build();
     }
 
     @Override

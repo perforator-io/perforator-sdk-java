@@ -10,23 +10,29 @@
  */
 package io.perforator.sdk.loadgenerator.core.configs;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.experimental.FieldNameConstants;
-
 import java.time.Duration;
 import java.util.UUID;
-import java.util.function.Function;
+import lombok.AccessLevel;
+import lombok.Builder.Default;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.FieldNameConstants;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 /**
  * Configuration for performance testing suite.
  */
+@Getter
 @ToString
+@SuperBuilder(toBuilder = true)
+@EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @FieldNameConstants
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class SuiteConfig implements Configurable {
+@Jacksonized
+public class SuiteConfig implements Config {
     
     /**
      * Default prefix to lookup property values across providers.
@@ -46,7 +52,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#concurrency}</b>
      * property.
      */
-    public static final int DEFAULT_CONCURRENCY = Integer.parseInt(DEFAULT_CONCURRENCY_S);
+    public static final int DEFAULT_CONCURRENCY = StringConverter.toInt(DEFAULT_CONCURRENCY_S);
     
     /**
      * String representation of default value for 
@@ -61,7 +67,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#concurrencyAutoAdjustment}</b>
      * property.
      */
-    public static final boolean DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT = Boolean.parseBoolean(DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT_S);
+    public static final boolean DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT = StringConverter.toBoolean(DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT_S);
     
     /**
      * String representation of default value for 
@@ -76,7 +82,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#concurrencyRecalcPeriod}</b>
      * property.
      */
-    public static final Duration DEFAULT_CONCURRENCY_RECALC_PERIOD = Configurable.parseDuration(DEFAULT_CONCURRENCY_RECALC_PERIOD_S);
+    public static final Duration DEFAULT_CONCURRENCY_RECALC_PERIOD = StringConverter.toDuration(DEFAULT_CONCURRENCY_RECALC_PERIOD_S);
     
     /**
      * String representation of default value for 
@@ -90,7 +96,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#concurrencyScaleDownMultiplier}</b>
      * property.
      */
-    public static final double DEFAULT_CONCURRENCY_SCALE_DOWN_MULTIPLIER = Double.parseDouble(DEFAULT_CONCURRENCY_SCALE_DOWN_MULTIPLIER_S);
+    public static final double DEFAULT_CONCURRENCY_SCALE_DOWN_MULTIPLIER = StringConverter.toDouble(DEFAULT_CONCURRENCY_SCALE_DOWN_MULTIPLIER_S);
     
     /**
      * String representation of default value for 
@@ -104,7 +110,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#concurrencyScaleUpMultiplier}</b>
      * property.
      */
-    public static final double DEFAULT_CONCURRENCY_SCALE_UP_MULTIPLIER = Double.parseDouble(DEFAULT_CONCURRENCY_SCALE_UP_MULTIPLIER_S);
+    public static final double DEFAULT_CONCURRENCY_SCALE_UP_MULTIPLIER = StringConverter.toDouble(DEFAULT_CONCURRENCY_SCALE_UP_MULTIPLIER_S);
     
     /**
      * String representation of default value for 
@@ -119,7 +125,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#iterations}</b>
      * property.
      */
-    public static final long DEFAULT_ITERATIONS = Integer.parseInt(DEFAULT_ITERATIONS_S);
+    public static final long DEFAULT_ITERATIONS = StringConverter.toInt(DEFAULT_ITERATIONS_S);
 
     /**
      * String representation of default value for 
@@ -134,7 +140,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#duration}</b>
      * property.
      */
-    public static final Duration DEFAULT_DURATION = Configurable.parseDuration(DEFAULT_DURATION_S);
+    public static final Duration DEFAULT_DURATION = StringConverter.toDuration(DEFAULT_DURATION_S);
 
     /**
      * String representation of default value for 
@@ -149,7 +155,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#delay}</b>
      * property.
      */
-    public static final Duration DEFAULT_DELAY = Configurable.parseDuration(DEFAULT_DELAY_S);
+    public static final Duration DEFAULT_DELAY = StringConverter.toDuration(DEFAULT_DELAY_S);
 
     /**
      * String representation of default value for 
@@ -164,7 +170,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#rampUp}</b>
      * property.
      */
-    public static final Duration DEFAULT_RAMP_UP = Configurable.parseDuration(DEFAULT_RAMP_UP_S);
+    public static final Duration DEFAULT_RAMP_UP = StringConverter.toDuration(DEFAULT_RAMP_UP_S);
 
     /**
      * String representation of default value for 
@@ -179,7 +185,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#rampDown}</b>
      * property.
      */
-    public static final Duration DEFAULT_RAMP_DOWN = Configurable.parseDuration(DEFAULT_RAMP_DOWN_S);
+    public static final Duration DEFAULT_RAMP_DOWN = StringConverter.toDuration(DEFAULT_RAMP_DOWN_S);
 
     /**
      * String representation of default value for 
@@ -224,7 +230,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#chromeDriverSilent}</b>
      * property.
      */
-    public static final boolean DEFAULT_CHROME_DRIVER_SILENT = Boolean.parseBoolean(DEFAULT_CHROME_DRIVER_SILENT_S);
+    public static final boolean DEFAULT_CHROME_DRIVER_SILENT = StringConverter.toBoolean(DEFAULT_CHROME_DRIVER_SILENT_S);
 
     /**
      * String representation of default value for 
@@ -239,7 +245,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#webDriverCreateSessionRetryTimeout}</b>
      * property.
      */
-    public static final Duration DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_TIMEOUT = Configurable.parseDuration(DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_TIMEOUT_S);
+    public static final Duration DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_TIMEOUT = StringConverter.toDuration(DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_TIMEOUT_S);
 
     /**
      * String representation of default value for 
@@ -254,7 +260,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#webDriverDeleteSessionRetryTimeout}</b>
      * property.
      */
-    public static final Duration DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_TIMEOUT = Configurable.parseDuration(DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_TIMEOUT_S);
+    public static final Duration DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_TIMEOUT = StringConverter.toDuration(DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_TIMEOUT_S);
     
     /**
      * String representation of default value for 
@@ -269,7 +275,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#webDriverSessionImplicitlyWait}</b>
      * property.
      */
-    public static final Duration DEFAULT_WEB_DRIVER_SESSION_IMPLICITLY_WAIT = Configurable.parseDuration(DEFAULT_WEB_DRIVER_SESSION_IMPLICITLY_WAIT_S);
+    public static final Duration DEFAULT_WEB_DRIVER_SESSION_IMPLICITLY_WAIT = StringConverter.toDuration(DEFAULT_WEB_DRIVER_SESSION_IMPLICITLY_WAIT_S);
     
     /**
      * String representation of default value for 
@@ -284,7 +290,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#webDriverSessionScriptTimeout}</b>
      * property.
      */
-    public static final Duration DEFAULT_WEB_DRIVER_SESSION_SCRIPT_TIMEOUT = Configurable.parseDuration(DEFAULT_WEB_DRIVER_SESSION_SCRIPT_TIMEOUT_S);
+    public static final Duration DEFAULT_WEB_DRIVER_SESSION_SCRIPT_TIMEOUT = StringConverter.toDuration(DEFAULT_WEB_DRIVER_SESSION_SCRIPT_TIMEOUT_S);
     
     /**
      * String representation of default value for 
@@ -299,7 +305,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#webDriverSessionPageLoadTimeout}</b>
      * property.
      */
-    public static final Duration DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT = Configurable.parseDuration(DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT_S);
+    public static final Duration DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT = StringConverter.toDuration(DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT_S);
     
     /**
      * String representation of default value for 
@@ -314,7 +320,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#webDriverSessionKeepAlive}</b>
      * property.
      */
-    public static final boolean DEFAULT_WEB_DRIVER_SESSION_KEEP_ALIVE = Boolean.parseBoolean(DEFAULT_WEB_DRIVER_SESSION_KEEP_ALIVE_S);
+    public static final boolean DEFAULT_WEB_DRIVER_SESSION_KEEP_ALIVE = StringConverter.toBoolean(DEFAULT_WEB_DRIVER_SESSION_KEEP_ALIVE_S);
 
     /**
      * String representation of default value for 
@@ -329,7 +335,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#webDriverUseLocalFileDetector}</b>
      * property.
      */
-    public static final boolean DEFAULT_WEB_DRIVER_USE_LOCAL_FILE_DETECTOR = Boolean.parseBoolean(DEFAULT_WEB_DRIVER_USE_LOCAL_FILE_DETECTOR_S);
+    public static final boolean DEFAULT_WEB_DRIVER_USE_LOCAL_FILE_DETECTOR = StringConverter.toBoolean(DEFAULT_WEB_DRIVER_USE_LOCAL_FILE_DETECTOR_S);
 
     /**
      * String representation of default value for 
@@ -344,7 +350,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#webDriverWindowWidth}</b>
      * property.
      */
-    public static final int DEFAULT_WEB_DRIVER_WINDOW_WIDTH = Integer.parseInt(DEFAULT_WEB_DRIVER_WINDOW_WIDTH_S);
+    public static final int DEFAULT_WEB_DRIVER_WINDOW_WIDTH = StringConverter.toInt(DEFAULT_WEB_DRIVER_WINDOW_WIDTH_S);
 
     /**
      * String representation of default value for 
@@ -359,7 +365,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#webDriverWindowHeight}</b>
      * property.
      */
-    public static final int DEFAULT_WEB_DRIVER_WINDOW_HEIGHT = Integer.parseInt(DEFAULT_WEB_DRIVER_WINDOW_HEIGHT_S);
+    public static final int DEFAULT_WEB_DRIVER_WINDOW_HEIGHT = StringConverter.toInt(DEFAULT_WEB_DRIVER_WINDOW_HEIGHT_S);
     
     /**
      * String representation of default value for 
@@ -374,7 +380,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#webDriverAcceptInsecureCerts}</b>
      * property.
      */
-    public static final boolean DEFAULT_WEB_DRIVER_ACCEPT_INSECURE_CERTS = Boolean.parseBoolean(DEFAULT_WEB_DRIVER_ACCEPT_INSECURE_CERTS_S);
+    public static final boolean DEFAULT_WEB_DRIVER_ACCEPT_INSECURE_CERTS = StringConverter.toBoolean(DEFAULT_WEB_DRIVER_ACCEPT_INSECURE_CERTS_S);
     
     /**
      * String representation of default value for 
@@ -389,7 +395,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#logWorkerID}</b>
      * property.
      */
-    public static final boolean DEFAULT_LOG_WORKER_ID = Boolean.parseBoolean(DEFAULT_LOG_WORKER_ID_S);
+    public static final boolean DEFAULT_LOG_WORKER_ID = StringConverter.toBoolean(DEFAULT_LOG_WORKER_ID_S);
 
     /**
      * String representation of default value for 
@@ -404,7 +410,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#logSuiteInstanceID}</b>
      * property.
      */
-    public static final boolean DEFAULT_LOG_SUITE_INSTANCE_ID = Boolean.parseBoolean(DEFAULT_LOG_SUITE_INSTANCE_ID_S);
+    public static final boolean DEFAULT_LOG_SUITE_INSTANCE_ID = StringConverter.toBoolean(DEFAULT_LOG_SUITE_INSTANCE_ID_S);
 
     /**
      * String representation of default value for 
@@ -419,7 +425,7 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#logRemoteWebDriverSessionID}</b>
      * property.
      */
-    public static final boolean DEFAULT_LOG_REMOTE_WEB_DRIVER_SESSION_ID = Boolean.parseBoolean(DEFAULT_LOG_REMOTE_WEB_DRIVER_SESSION_ID_S);
+    public static final boolean DEFAULT_LOG_REMOTE_WEB_DRIVER_SESSION_ID = StringConverter.toBoolean(DEFAULT_LOG_REMOTE_WEB_DRIVER_SESSION_ID_S);
 
     /**
      * String representation of default value for 
@@ -434,13 +440,13 @@ public class SuiteConfig implements Configurable {
      * <b>{@link SuiteConfig#logTransactionID}</b>
      * property.
      */
-    public static final boolean DEFAULT_LOG_TRANSACTION_ID = Boolean.parseBoolean(DEFAULT_LOG_TRANSACTION_ID_S);
+    public static final boolean DEFAULT_LOG_TRANSACTION_ID = StringConverter.toBoolean(DEFAULT_LOG_TRANSACTION_ID_S);
 
     /**
      * Autogenerated ID of the configuration.
      */
-    @Getter @FieldNameConstants.Include @EqualsAndHashCode.Include
-    protected final String id = UUID.randomUUID().toString();
+    @Default
+    String id = UUID.randomUUID().toString();
 
     /**
      * The name of the test suite.
@@ -448,16 +454,15 @@ public class SuiteConfig implements Configurable {
      * Typically this name is used as a top-level transaction covering 
      * the whole suite instance execution.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected String name;
+    String name;
 
     /**
      * Concurrency level of test suites execution, i.e., how many concurrent 
      * threads will process suite instances. Also, this parameter controls how many browsers
      * are allowed to be launched concurrently in the cloud for cloud-based executions.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected int concurrency = DEFAULT_CONCURRENCY;
+    @Default
+    int concurrency = DEFAULT_CONCURRENCY;
     
     /**
      * It might be a case when tests start failing too often, either due to the
@@ -469,14 +474,14 @@ public class SuiteConfig implements Configurable {
      * <br>
      * This flag controls whether automatic slowdown is enabled or not.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean concurrencyAutoAdjustment = DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT;
+    @Default
+    boolean concurrencyAutoAdjustment = DEFAULT_CONCURRENCY_AUTO_ADJUSTMENT;
     
     /**
      * How often desired concurrency should be recalculated?
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration concurrencyRecalcPeriod = DEFAULT_CONCURRENCY_RECALC_PERIOD;
+    @Default
+    Duration concurrencyRecalcPeriod = DEFAULT_CONCURRENCY_RECALC_PERIOD;
     
     /**
      * Perforator automatically decreases concurrency if there are too many 
@@ -490,8 +495,8 @@ public class SuiteConfig implements Configurable {
      * so the system should decrease concurrency by 50 threads in case of 
      * too many failing transactions.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected double concurrencyScaleDownMultiplier = DEFAULT_CONCURRENCY_SCALE_DOWN_MULTIPLIER;
+    @Default
+    double concurrencyScaleDownMultiplier = DEFAULT_CONCURRENCY_SCALE_DOWN_MULTIPLIER;
     
     /**
      * Perforator automatically increases concurrency if previously it was 
@@ -506,8 +511,8 @@ public class SuiteConfig implements Configurable {
      * so the system should increase concurrency by 25 threads in case failing 
      * transactions percent goes down.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected double concurrencyScaleUpMultiplier = DEFAULT_CONCURRENCY_SCALE_UP_MULTIPLIER;
+    @Default
+    double concurrencyScaleUpMultiplier = DEFAULT_CONCURRENCY_SCALE_UP_MULTIPLIER;
     
     /**
      * Iterations count to execute this suite.
@@ -515,8 +520,8 @@ public class SuiteConfig implements Configurable {
      * The suite should be stopped when the pre-configured duration is elapsed, 
      * or iterations count is reached, whatever comes first.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected long iterations = DEFAULT_ITERATIONS;
+    @Default
+    long iterations = DEFAULT_ITERATIONS;
 
     /**
      * Duration of the performance test. Also, this parameter controls how much 
@@ -525,15 +530,15 @@ public class SuiteConfig implements Configurable {
      * hour value. For example, if duration = 45m, then browser cloud is created 
      * for 1 hour.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration duration = DEFAULT_DURATION;
+    @Default
+    Duration duration = DEFAULT_DURATION;
 
     /**
      * How much time to wait once performance test starts before executing 
      * actual logic?
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration delay = DEFAULT_DELAY;
+    @Default
+    Duration delay = DEFAULT_DELAY;
 
     /**
      * The time interval for ramping up concurrent processing of suite instances 
@@ -542,8 +547,8 @@ public class SuiteConfig implements Configurable {
      * rampUp = 10s, then every second additional worker thread will be launched,
      * starting from 1 thread up to 10 threads.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration rampUp = DEFAULT_RAMP_UP;
+    @Default
+    Duration rampUp = DEFAULT_RAMP_UP;
 
     /**
      * The time interval before the end of the test to stop launching new suite 
@@ -554,8 +559,8 @@ public class SuiteConfig implements Configurable {
      * At the same time, if a suite instance started execution before the 8th 
      * minute - such instance will proceed execution till its natural completion.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration rampDown = DEFAULT_RAMP_DOWN;
+    @Default
+    Duration rampDown = DEFAULT_RAMP_DOWN;
 
     /**
      * The mode of launching browsers for the test suite.
@@ -567,14 +572,14 @@ public class SuiteConfig implements Configurable {
      * <b>Note</b>: transactions reporting is disabled when browsers are launched 
      * locally
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected WebDriverMode webDriverMode = DEFAULT_WEB_DRIVER_MODE;
+    @Default
+    WebDriverMode webDriverMode = DEFAULT_WEB_DRIVER_MODE;
     
     /**
      * Predefined concurrency level for browsers in the cloud.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Integer webDriverConcurrency = null;
+    @Default
+    Integer webDriverConcurrency = null;
     
     /**
      * The mode of launching chrome instances.
@@ -584,14 +589,14 @@ public class SuiteConfig implements Configurable {
      * <li>{@link ChromeMode#headful headful}</li>
      * </ul>
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected ChromeMode chromeMode = DEFAULT_CHROME_MODE;
+    @Default
+    ChromeMode chromeMode = DEFAULT_CHROME_MODE;
     
     /**
      * Should a chrome driver be started in silent mode?
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean chromeDriverSilent = DEFAULT_CHROME_DRIVER_SILENT;
+    @Default
+    boolean chromeDriverSilent = DEFAULT_CHROME_DRIVER_SILENT;
 
     /**
      * The system automatically retries to create a new selenium session, 
@@ -600,8 +605,8 @@ public class SuiteConfig implements Configurable {
      * <br>
      * This parameter is only applicable when webDriverMode = cloud.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration webDriverCreateSessionRetryTimeout = DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_TIMEOUT;
+    @Default
+    Duration webDriverCreateSessionRetryTimeout = DEFAULT_WEB_DRIVER_CREATE_SESSION_RETRY_TIMEOUT;
 
     /**
      * The system automatically retries to delete existing selenium session, 
@@ -610,38 +615,38 @@ public class SuiteConfig implements Configurable {
      * <br>
      * This parameter is only applicable when webDriverMode = cloud.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration webDriverDeleteSessionRetryTimeout = DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_TIMEOUT;
+    @Default
+    Duration webDriverDeleteSessionRetryTimeout = DEFAULT_WEB_DRIVER_DELETE_SESSION_RETRY_TIMEOUT;
 
     /**
      * Implicit wait timeout for selenium session.
      * <br>
      * Please see {@link org.openqa.selenium.WebDriver.Timeouts#implicitlyWait(long, java.util.concurrent.TimeUnit) Timeouts#implicitlyWait} documentation.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration webDriverSessionImplicitlyWait = DEFAULT_WEB_DRIVER_SESSION_IMPLICITLY_WAIT;
+    @Default
+    Duration webDriverSessionImplicitlyWait = DEFAULT_WEB_DRIVER_SESSION_IMPLICITLY_WAIT;
 
     /**
      * Selenium timeout to wait for JS execution before throwing an error.
      * <br>
      * Please see {@link org.openqa.selenium.WebDriver.Timeouts#setScriptTimeout(long, java.util.concurrent.TimeUnit) Timeouts#setScriptTimeout} documentation.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration webDriverSessionScriptTimeout = DEFAULT_WEB_DRIVER_SESSION_SCRIPT_TIMEOUT;
+    @Default
+    Duration webDriverSessionScriptTimeout = DEFAULT_WEB_DRIVER_SESSION_SCRIPT_TIMEOUT;
 
     /**
      * Selenium timeout to wait for a page load to complete before throwing an error.
      * <br>
      * Please see {@link org.openqa.selenium.WebDriver.Timeouts#pageLoadTimeout(long, java.util.concurrent.TimeUnit) Timeouts#pageLoadTimeout} documentation.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected Duration webDriverSessionPageLoadTimeout = DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT;
+    @Default
+    Duration webDriverSessionPageLoadTimeout = DEFAULT_WEB_DRIVER_SESSION_PAGE_LOAD_TIMEOUT;
     
     /**
      * Keep alive RemoteWebDriver during sleep actions.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean webDriverSessionKeepAlive = DEFAULT_WEB_DRIVER_SESSION_KEEP_ALIVE;
+    @Default
+    boolean webDriverSessionKeepAlive = DEFAULT_WEB_DRIVER_SESSION_KEEP_ALIVE;
 
     /**
      * The flag allowing file uploads functionality while working with browsers 
@@ -650,26 +655,26 @@ public class SuiteConfig implements Configurable {
      * This parameter is only applicable when webDriverMode = cloud.
      * <br>
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean webDriverUseLocalFileDetector = DEFAULT_WEB_DRIVER_USE_LOCAL_FILE_DETECTOR;
+    @Default
+    boolean webDriverUseLocalFileDetector = DEFAULT_WEB_DRIVER_USE_LOCAL_FILE_DETECTOR;
 
     /**
      * Default width of the browser launched via selenium.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected int webDriverWindowWidth = DEFAULT_WEB_DRIVER_WINDOW_WIDTH;
+    @Default
+    int webDriverWindowWidth = DEFAULT_WEB_DRIVER_WINDOW_WIDTH;
 
     /**
      * Default height of the browser launched via selenium.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected int webDriverWindowHeight = DEFAULT_WEB_DRIVER_WINDOW_HEIGHT;
+    @Default
+    int webDriverWindowHeight = DEFAULT_WEB_DRIVER_WINDOW_HEIGHT;
     
     /**
      * Allow browsers connecting to web-sites with insecure HTTPS certificates.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean webDriverAcceptInsecureCerts = DEFAULT_WEB_DRIVER_ACCEPT_INSECURE_CERTS;
+    @Default
+    boolean webDriverAcceptInsecureCerts = DEFAULT_WEB_DRIVER_ACCEPT_INSECURE_CERTS;
     
     /**
      * All the suites are processed concurrently via multiple thread workers.
@@ -677,8 +682,8 @@ public class SuiteConfig implements Configurable {
      * <br>
      * This flag determines should the worker ID be logged as a part of every log item.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean logWorkerID = DEFAULT_LOG_WORKER_ID;
+    @Default
+    boolean logWorkerID = DEFAULT_LOG_WORKER_ID;
 
     /**
      * A new suite instance ID is generated whenever a thread worker starts
@@ -687,45 +692,29 @@ public class SuiteConfig implements Configurable {
      * This flag determines should the suite instance ID be logged for all log 
      * items related to the processing of the suite instance.
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean logSuiteInstanceID = DEFAULT_LOG_SUITE_INSTANCE_ID;
+    @Default
+    boolean logSuiteInstanceID = DEFAULT_LOG_SUITE_INSTANCE_ID;
 
     /**
      * Should a selenium session-id be logged while processing a test suite?
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean logRemoteWebDriverSessionID = DEFAULT_LOG_REMOTE_WEB_DRIVER_SESSION_ID;
+    @Default
+    boolean logRemoteWebDriverSessionID = DEFAULT_LOG_REMOTE_WEB_DRIVER_SESSION_ID;
 
     /**
      * Should a transaction id be logged for every transaction in an active
      * state?
      */
-    @Getter @Setter @FieldNameConstants.Include
-    protected boolean logTransactionID = DEFAULT_LOG_TRANSACTION_ID;
+    @Default
+    boolean logTransactionID = DEFAULT_LOG_TRANSACTION_ID;
+    
+    public static abstract class SuiteConfigBuilder<C extends SuiteConfig, B extends SuiteConfigBuilder<C, B>> implements ConfigBuilder<C, B> {
 
-    /**
-     * Default constructor looking up property defaults via the following providers:
-     * <ul>
-     *   <li>{@link System#getProperty(java.lang.String) }</li>
-     *   <li>{@link System#getenv(java.lang.String) }</li>
-     * </ul>
-     */
-    public SuiteConfig() {
-        applyDefaults();
-    }
+        @Override
+        public String getDefaultsPrefix() {
+            return DEFAULTS_FIELD_PREFIX;
+        }
 
-    /**
-     * Constructor looking up property defaults in user-supplied property providers.
-     * @param defaultsProviders varargs of {@link Function functions} where to lookup up
-     * for property defaults.
-     */
-    public SuiteConfig(Function<String, String>... defaultsProviders) {
-        applyDefaults(defaultsProviders);
-    }
-
-    @Override
-    public String getDefaultsPrefix() {
-        return DEFAULTS_FIELD_PREFIX;
     }
 
 }

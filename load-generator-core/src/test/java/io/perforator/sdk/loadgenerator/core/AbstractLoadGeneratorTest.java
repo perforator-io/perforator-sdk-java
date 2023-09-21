@@ -18,31 +18,32 @@ import io.perforator.sdk.api.okhttpgson.operations.BrowserCloudsApi;
 import io.perforator.sdk.api.okhttpgson.operations.ExecutionsApi;
 import io.perforator.sdk.api.okhttpgson.operations.ProjectsApi;
 import io.perforator.sdk.loadgenerator.core.configs.ChromeMode;
-import io.perforator.sdk.loadgenerator.core.configs.Configurable;
+import io.perforator.sdk.loadgenerator.core.configs.Config;
+import io.perforator.sdk.loadgenerator.core.configs.ConfigBuilder;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
-import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
+import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 import io.perforator.sdk.loadgenerator.core.mock.IntegrationServiceMock;
 import io.perforator.sdk.loadgenerator.core.mock.RemoteWebDriverContextMock;
 import io.perforator.sdk.loadgenerator.core.service.IntegrationService;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.time.Duration;
+import java.util.*;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
-import java.time.Duration;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator, C extends Configurable, S extends Configurable> {
+public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator, C extends Config, S extends Config> {
     
     private static final String SUITE_MIN_DURATION_PROPERTY = "io.perforator.sdk.loadgenerator.core.internal.SuiteManagerImpl.minDuration";
     
@@ -142,9 +143,8 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
         );
 
         IntegrationServiceMock mediationService = new IntegrationServiceMock();
-        C loadGeneratorConfig = buildDefaultLoadGeneratorConfig();
-        S suiteConfig = buildDefaultSuiteConfig();
-        suiteConfig.applyDefaults(suiteParams::get);
+        C loadGeneratorConfig = defaultLoadGeneratorConfigBuilder().buildWithDefaults();
+        S suiteConfig = defaultSuiteConfigBuilder().buildWithDefaults(suiteParams::get);
 
         L loadGenerator = getCustomInstance(
                 mediationService,
@@ -200,9 +200,8 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.chromeMode, ChromeMode.headless.name()
         );
 
-        C loadGeneratorConfig = buildDefaultLoadGeneratorConfig();
-        S suiteConfig = buildDefaultSuiteConfig();
-        suiteConfig.applyDefaults(suiteParams::get);
+        C loadGeneratorConfig = defaultLoadGeneratorConfigBuilder().buildWithDefaults();
+        S suiteConfig = defaultSuiteConfigBuilder().buildWithDefaults(suiteParams::get);
         L loadGenerator = getDefaultInstance(
                 loadGeneratorConfig,
                 suiteConfig
@@ -289,17 +288,18 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
                 SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverMode, WebDriverMode.cloud.name()
         );
 
-        C loadGeneratorConfig = buildDefaultLoadGeneratorConfig();
+        C loadGeneratorConfig;
         if(dataCapturingExcludes != null && dataCapturingExcludes.length > 0) {
             Map<String, String> exludeParams = Map.of(
                     LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.dataCapturingExcludes,
                     Arrays.stream(dataCapturingExcludes).collect(Collectors.joining(","))
             );
-            loadGeneratorConfig.applyDefaults(exludeParams::get);
+            loadGeneratorConfig = defaultLoadGeneratorConfigBuilder().buildWithDefaults(exludeParams::get);
+        } else {
+            loadGeneratorConfig = defaultLoadGeneratorConfigBuilder().buildWithDefaults();
         }
         
-        S suiteConfig = buildDefaultSuiteConfig();
-        suiteConfig.applyDefaults(suiteParams::get);
+        S suiteConfig = defaultSuiteConfigBuilder().buildWithDefaults(suiteParams::get);
         
         L loadGenerator = getDefaultInstance(
                 loadGeneratorConfig,
@@ -477,8 +477,8 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
 
     protected L getDefaultInstance() throws Exception {
         return getDefaultInstance(
-                buildDefaultLoadGeneratorConfig(),
-                buildDefaultSuiteConfig()
+                defaultLoadGeneratorConfigBuilder().buildWithDefaults(),
+                defaultSuiteConfigBuilder().buildWithDefaults()
         );
     }
 
@@ -501,8 +501,8 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
     ) throws Exception {
         return getCustomInstance(
                 mediationService,
-                buildDefaultLoadGeneratorConfig(),
-                buildDefaultSuiteConfig()
+                defaultLoadGeneratorConfigBuilder().buildWithDefaults(),
+                defaultSuiteConfigBuilder().buildWithDefaults()
         );
     }
 
@@ -525,12 +525,36 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
         }
     }
 
-    protected C buildDefaultLoadGeneratorConfig() throws Exception {
-        return loadGeneratorConfigClass.getDeclaredConstructor().newInstance();
+    protected ConfigBuilder<C,?> defaultLoadGeneratorConfigBuilder() throws Exception {
+        ConfigBuilder<C,?> result = (ConfigBuilder<C,?>) getBuilderMethod(loadGeneratorConfigClass).invoke(null);
+        return result.applyDefaults();
     }
 
-    protected S buildDefaultSuiteConfig() throws Exception {
-        return suiteConfigClass.getDeclaredConstructor().newInstance();
+    protected ConfigBuilder<S,?> defaultSuiteConfigBuilder() throws Exception {
+        ConfigBuilder<S,?> result = (ConfigBuilder<S,?>) getBuilderMethod(suiteConfigClass).invoke(null);
+        return result.applyDefaults();
+    }
+    
+    protected static Method getBuilderMethod(Class configClass) {
+        for (Method method : configClass.getDeclaredMethods()) {
+            if(!method.getName().equals("builder")) {
+                continue;
+            }
+            
+            if(!Modifier.isStatic(method.getModifiers())) {
+                continue;
+            }
+            
+            if(method.getParameterCount() > 0) {
+                continue;
+            }
+            
+            return method;
+        }
+        
+        throw new IllegalArgumentException(
+                "Config " + configClass + " doesn't have static builder method"
+        );
     }
 
     protected boolean hasRequiredProperty(String key) {
@@ -574,10 +598,13 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
     private static boolean isChromeBrowserAvailable() {
         RemoteWebDriver driver = null;
         try {
-            SuiteConfig suiteConfig = new SuiteConfig();
-            suiteConfig.setWebDriverMode(WebDriverMode.local);
-            suiteConfig.setChromeMode(ChromeMode.headless);
-            driver = RemoteWebDriverHelper.createLocalChromeDriver(null, suiteConfig);
+            driver = RemoteWebDriverHelper.createLocalChromeDriver(
+                    null, 
+                    SuiteConfig.builder()
+                            .webDriverMode(WebDriverMode.local)
+                            .chromeMode(ChromeMode.headless)
+                            .build()
+            );
             return true;
         } catch(Exception e) {
             return false;
@@ -586,48 +613,6 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
                 driver.quit();
             }
         }
-    }
-
-    private Set<String> runBrowserCloudAndGetAllUniqueRequestsAfterTerminating(Map<String, String> loadGeneratorParams, Map<String, String> suiteParams) throws Exception {
-        C loadGeneratorConfig = buildDefaultLoadGeneratorConfig();
-        if(loadGeneratorParams != null){
-            loadGeneratorConfig.applyDefaults(loadGeneratorParams::get);
-        }
-        S suiteConfig = buildDefaultSuiteConfig();
-        if(suiteParams != null) {
-            suiteConfig.applyDefaults(suiteParams::get);
-        }
-
-        L loadGenerator = getDefaultInstance(
-                loadGeneratorConfig,
-                suiteConfig
-        );
-        List<String> executionsBeforeRun = getExecutionList(projectKey);
-        loadGenerator.run();
-        List<String> executionsAfterRun = getExecutionList(projectKey);
-
-        String executionKey = null;
-        for(String e: executionsAfterRun){
-            if(!executionsBeforeRun.contains(e)){
-                executionKey = e;
-                break;
-            }
-        }
-
-        AnalyticsRecordsResult result = analyticsApi.getNamespaceRecords(
-                projectKey,
-                executionKey,
-                new AnalyticsRecordsRequest()
-                        .namespace("requests")
-                        .fields(List.of("request_url"))
-        );
-
-        assertNotNull(result.getRecords());
-
-        return result.getRecords().stream()
-                .map(map -> map.get("request_url"))
-                .map(String::valueOf)
-                .collect(Collectors.toCollection(HashSet::new));
     }
     
     protected class LoadGeneratorRunContext {

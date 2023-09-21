@@ -20,11 +20,11 @@ public class EmbeddedLoadGeneratorTest extends AbstractLoadGeneratorTest<Embedde
     }
 
     @Override
-    protected EmbeddedSuiteConfig buildDefaultSuiteConfig() throws Exception {
-        EmbeddedSuiteConfig result = super.buildDefaultSuiteConfig();
-        result.setProcessorClass(EmbeddedSuiteProcessorMock.class.getName());
-        result.setProcessorSingleton(true);
-        return result;
+    protected EmbeddedSuiteConfig.EmbeddedSuiteConfigBuilder defaultSuiteConfigBuilder() throws Exception {
+        return EmbeddedSuiteConfig.builder()
+                .processorClass(EmbeddedSuiteProcessorMock.class.getName())
+                .processorSingleton(true)
+                .applyDefaults();
     }
     
 }

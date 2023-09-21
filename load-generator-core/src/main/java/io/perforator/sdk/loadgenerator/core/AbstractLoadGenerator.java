@@ -74,14 +74,6 @@ public abstract class AbstractLoadGenerator implements Runnable, StatisticsServi
         if(suiteConfigs == null || suiteConfigs.isEmpty()) {
             throw new RuntimeException("suiteConfigs is required");
         }
-
-        if(loadGeneratorConfig.isPrioritizeSystemProperties()) {
-            loadGeneratorConfig.applyDefaults();
-            
-            for (SuiteConfig suiteConfig : suiteConfigs) {
-                suiteConfig.applyDefaults();
-            }
-        }
         
         if (mediator == null) {
             try {

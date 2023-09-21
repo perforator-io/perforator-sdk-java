@@ -24,6 +24,8 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -456,18 +458,6 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
             property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.failOnTransactionErrors
     )
     protected String failOnTransactionErrors;
-    
-    /**
-     * Should system properties and environment variables override values specified
-     * in configuration(s)?
-     */
-    @Parameter(
-            required = false,
-            defaultValue = LoadGeneratorConfig.DEFAULT_PRIORITIZE_SYSTEM_PROPERTIES_S,
-            alias = LoadGeneratorConfig.Fields.prioritizeSystemProperties,
-            property = LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "." + LoadGeneratorConfig.Fields.prioritizeSystemProperties
-    )
-    protected String prioritizeSystemProperties;
     
     /**
      * The platform automatically assigns random public IP addresses when creating
@@ -1160,6 +1150,57 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
     }
     
     protected Object newInstance(Class instanceClass, Class[] constructorArgTypes, Object[] constructorArgValues) throws MojoFailureException {
+        if(isBuilderAvailable(instanceClass)) {
+            return newInstanceViaBuilder(
+                    instanceClass, 
+                    constructorArgTypes, 
+                    constructorArgValues
+            );
+        } else {
+            return newInstanceViaConstructor(
+                    instanceClass, 
+                    constructorArgTypes, 
+                    constructorArgValues
+            );
+        }
+    }
+    
+    protected Object newInstanceViaBuilder(Class instanceClass, Class[] builderArgTypes, Object[] builderArgValues) throws MojoFailureException {
+        Method builderMethod = getBuilderMethod(instanceClass);
+        Object builder = null;
+        try {
+            builder = builderMethod.invoke(null);
+        } catch(ReflectiveOperationException e) {
+            throw new MojoFailureException(
+                    "Can't create new builder from " + instanceClass,
+                    e
+            );
+        }
+        
+        Method buildMethod = null;
+        try {
+            buildMethod = builder.getClass().getMethod(
+                    "buildWithDefaults",
+                    builderArgTypes
+            );
+        } catch(ReflectiveOperationException e) {
+            throw new MojoFailureException(
+                    "Can't determine build method from " + builder.getClass(),
+                    e
+            );
+        }
+        
+        try {
+            return buildMethod.invoke(builder, builderArgValues);
+        } catch(ReflectiveOperationException e) {
+            throw new MojoFailureException(
+                    "Can't invoke build method from " + builder.getClass(),
+                    e
+            );
+        }
+    }
+    
+    protected Object newInstanceViaConstructor(Class instanceClass, Class[] constructorArgTypes, Object[] constructorArgValues) throws MojoFailureException {
         Constructor instanceConstructor;
         try {
             instanceConstructor = instanceClass.getConstructor(
@@ -1197,6 +1238,37 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
         }
 
         return result;
+    }
+    
+    protected Method getBuilderMethod(Class clazz) throws MojoFailureException {
+        try {
+            Method result = clazz.getMethod("builder");
+            
+            if(result != null && Modifier.isStatic(result.getModifiers())) {
+                return result;
+            } else {
+                return null;
+            }
+        } catch(ReflectiveOperationException e) {
+            throw new MojoFailureException(
+                        "Can't determine builder method for " + clazz,
+                        e
+                );
+        }
+    }
+    
+    protected boolean isBuilderAvailable(Class clazz) {
+        try {
+            Method result = clazz.getMethod("builder");
+            
+            if(result != null && Modifier.isStatic(result.getModifiers())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch(ReflectiveOperationException e) {
+            return false;
+        }
     }
     
     protected Class loadClass(ClassLoader classLoader, String className) throws MojoFailureException {

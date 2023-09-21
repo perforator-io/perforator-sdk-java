@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 public class EmbeddedLoadGeneratorMojoTest extends AbstractMojoTest<EmbeddedLoadGeneratorMojo> {
 
-    private static final EmbeddedSuiteConfig DEFAULT_EMBEDDED_SUITE_CONFIG = new EmbeddedSuiteConfig(p -> null);
+    private static final EmbeddedSuiteConfig DEFAULT_EMBEDDED_SUITE_CONFIG = EmbeddedSuiteConfig.builder().build();
 
     public EmbeddedLoadGeneratorMojoTest() {
         super(EmbeddedLoadGeneratorMojo.class, EmbeddedLoadGeneratorMojo.MOJO_NAME);

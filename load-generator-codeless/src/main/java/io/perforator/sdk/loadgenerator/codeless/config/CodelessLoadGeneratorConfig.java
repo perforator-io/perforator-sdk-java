@@ -23,29 +23,37 @@ import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.function.Function;
+import lombok.AccessLevel;
+import lombok.Builder.Default;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.FieldNameConstants;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
-@ToString
+@Getter
+@ToString(callSuper = true)
+@SuperBuilder(toBuilder = true)
+@EqualsAndHashCode(callSuper = true, cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @FieldNameConstants
+@Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CodelessLoadGeneratorConfig extends LoadGeneratorConfig {
 
+    @Default
     @JsonDeserialize(using = ConstantsDeserializer.class)
-    @Getter
-    @Setter
-    @FieldNameConstants.Include
-    private FormattingMap constants = FormattingMap.EMPTY;
+    FormattingMap constants = FormattingMap.EMPTY;
+    
+    public static abstract class CodelessLoadGeneratorConfigBuilder<C extends CodelessLoadGeneratorConfig, B extends CodelessLoadGeneratorConfigBuilder<C, B>> extends LoadGeneratorConfigBuilder<C, B> {
 
-    public CodelessLoadGeneratorConfig() {
-        applyDefaults();
-    }
+        @Override
+        public String getDefaultsPrefix() {
+            return DEFAULTS_FIELD_PREFIX;
+        }
 
-    public CodelessLoadGeneratorConfig(Function<String, String>... defaultsProviders) {
-        applyDefaults(defaultsProviders);
     }
 
     public static class ConstantsDeserializer extends JsonDeserializer<FormattingMap> {

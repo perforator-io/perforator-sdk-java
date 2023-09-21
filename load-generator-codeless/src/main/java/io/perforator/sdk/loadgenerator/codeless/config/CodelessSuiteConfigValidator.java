@@ -35,22 +35,6 @@ public final class CodelessSuiteConfigValidator {
         return suiteConfigs;
     }
 
-    public static CodelessSuiteConfig validateSuiteProps(CodelessSuiteConfig suiteConfig) {
-        if(suiteConfig.getProps() != null && !suiteConfig.getProps().isEmpty() && suiteConfig.getPropsFile() != null && !suiteConfig.getPropsFile().isBlank()){
-            throw new RuntimeException(
-                    "Either " + SuiteConfig.DEFAULTS_FIELD_PREFIX
-                            + "."
-                            + CodelessSuiteConfig.Fields.props
-                            + " or "
-                            + SuiteConfig.DEFAULTS_FIELD_PREFIX
-                            + "."
-                            + CodelessSuiteConfig.Fields.propsFile
-                            + " is allowed - please use only one option."
-            );
-        }
-        return suiteConfig;
-    }
-
     public static CodelessSuiteConfig validate(CodelessLoadGeneratorConfig loadGeneratorConfig, CodelessSuiteConfig suiteConfig) {
         String suiteName = suiteConfig.getName();
 

@@ -126,8 +126,7 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
                 throw new RuntimeException("Can't create new execution", e);
             }
         }
-
-        loadGeneratorConfig.setExecutionKey(executionKey);
+        
         loadGeneratorContext.setBrowserCloudContext(
                 new BrowserCloudContextImpl(projectKey, executionKey)
         );

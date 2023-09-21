@@ -10,14 +10,19 @@
  */
 package io.perforator.sdk.maven;
 
-import io.perforator.sdk.loadgenerator.core.configs.Configurable;
+import io.perforator.sdk.loadgenerator.core.configs.Config;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
+import io.perforator.sdk.loadgenerator.core.configs.StringConverter;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.descriptor.MojoDescriptor;
 import org.apache.maven.plugin.descriptor.Parameter;
@@ -32,8 +37,8 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 @TestInstance(Lifecycle.PER_CLASS)
 public abstract class AbstractMojoTest<T extends AbstractLoadGeneratorMojo> extends AbstractMojoTestCase {
     
-    protected static final LoadGeneratorConfig DEFAULT_LOAD_GENERATOR_CONFIG = new LoadGeneratorConfig(p -> null);
-    protected static final SuiteConfig DEFAULT_SUITE_CONFIG = new SuiteConfig(p -> null);
+    protected static final LoadGeneratorConfig DEFAULT_LOAD_GENERATOR_CONFIG = LoadGeneratorConfig.builder().build();
+    protected static final SuiteConfig DEFAULT_SUITE_CONFIG = SuiteConfig.builder().build();
     
     protected final Class<T> mojoClass;
     protected final String mojoName;
@@ -156,34 +161,35 @@ public abstract class AbstractMojoTest<T extends AbstractLoadGeneratorMojo> exte
     }
     
     protected void verifyDefaults(Object defaultInstance, String defaultsPrefix) throws Exception {
-        for (Field field : defaultInstance.getClass().getDeclaredFields()) {
-            if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())) {
+        Set<String> instanceFields = getFieldNamesFromConfigClass(defaultInstance.getClass());
+        for (String field : instanceFields) {
+            if(field.equalsIgnoreCase("id")) {
+                //skip id field intentionally
                 continue;
             }
-            
-            Parameter mojoParameter = mojoParameters.get(field.getName());
+            Parameter mojoParameter = mojoParameters.get(field);
             assertNotNull(
-                    mojoClass + "." + field.getName() + " is not defined",
+                    mojoClass + "." + field + " is not defined",
                     mojoParameter
             );
             
-            PlexusConfiguration mojoFieldConfig = mojoFieldConfigs.get(field.getName());
+            PlexusConfiguration mojoFieldConfig = mojoFieldConfigs.get(field);
             assertNotNull(
-                    mojoClass + "." + field.getName() + " doesn't have property binding",
+                    mojoClass + "." + field + " doesn't have property binding",
                     mojoParameter
             );
             
             assertEquals(
-                    mojoClass + "." + field.getName()
+                    mojoClass + "." + field
                     + " should have property defined as "
-                    + defaultsPrefix + "." + field.getName(),
-                    "${" + defaultsPrefix + "." + field.getName() + "}",
+                    + defaultsPrefix + "." + field,
+                    "${" + defaultsPrefix + "." + field + "}",
                     mojoFieldConfig.getValue()
             );
             
-            if(field.getName().equals("name")) {
+            if(field.equals("name")) {
                 assertEquals(
-                        mojoClass + "." + field.getName() + " has incorrect default value",
+                        mojoClass + "." + field + " has incorrect default value",
                         "${project.build.finalName}",
                         mojoFieldConfig.getAttribute("default-value")
                 );
@@ -191,14 +197,14 @@ public abstract class AbstractMojoTest<T extends AbstractLoadGeneratorMojo> exte
                 verifyFieldDefaults(
                         defaultInstance,
                         mojoFieldConfig.getAttribute("default-value"),
-                        field.getName()
+                        field
                 );
             }
         }
     }
     
     protected void verifyFieldDefaults(Object defaultConfigInstance, String mojoDefault , String fieldName) throws Exception {
-        Field configField = defaultConfigInstance.getClass().getDeclaredField(fieldName);
+        Field configField = getFieldsFromConfigClass(defaultConfigInstance.getClass()).get(fieldName);
         configField.setAccessible(true);
 
         Object fieldValue = configField.get(defaultConfigInstance);
@@ -206,8 +212,23 @@ public abstract class AbstractMojoTest<T extends AbstractLoadGeneratorMojo> exte
         if((mojoDefault == null || mojoDefault.isBlank()) && fieldValue == null) {
             return;
         }
+        
+        boolean mojoDefaultEmpty = mojoDefault == null || mojoDefault.isBlank();
+        boolean fieldValueEmpty = fieldValue == null;
+        
+        if(fieldValue != null) {
+            if(Map.class.isAssignableFrom(fieldValue.getClass())) {
+                fieldValueEmpty = ((Map)fieldValue).isEmpty();
+            } else if(List.class.isAssignableFrom(fieldValue.getClass())) {
+                fieldValueEmpty = ((List)fieldValue).isEmpty();
+            }
+        }
+        
+        if(mojoDefaultEmpty && fieldValueEmpty) {
+            return;
+        }
 
-        if ((mojoDefault == null && fieldValue != null) || (mojoDefault != null && fieldValue == null)) {
+        if (mojoDefaultEmpty != fieldValueEmpty) {
             fail(
                     mojoClass + "." + fieldName
                     + " should have default value = "
@@ -220,7 +241,7 @@ public abstract class AbstractMojoTest<T extends AbstractLoadGeneratorMojo> exte
                     mojoClass + "." + fieldName
                     + " should have default value = "
                     + fieldValue,
-                    Configurable.parseDuration(mojoDefault), 
+                    StringConverter.toDuration(mojoDefault), 
                     fieldValue
             );
         } else {
@@ -232,6 +253,72 @@ public abstract class AbstractMojoTest<T extends AbstractLoadGeneratorMojo> exte
                     fieldValue.toString()
             );
         }
+    }
+    
+    protected static Set<String> getFieldNamesFromConfigClass(Class configClass) throws Exception {
+        if (configClass == null || !Config.class.isAssignableFrom(configClass)) {
+            return Collections.EMPTY_SET;
+        }
+
+        Set<String> result = new HashSet<>();
+
+        while (configClass != null) {
+            if (Config.class.isAssignableFrom(configClass)) {
+                String fieldsClassName = configClass.getName() + "$Fields";
+                Class fieldsClass = Class.forName(fieldsClassName);
+                Field[] fields = fieldsClass.getDeclaredFields();
+
+                for (Field field : fields) {
+                    if (!Modifier.isStatic(field.getModifiers())) {
+                        continue;
+                    }
+                    if (!Modifier.isFinal(field.getModifiers())) {
+                        continue;
+                    }
+                    if (!field.getType().equals(String.class)) {
+                        continue;
+                    }
+
+                    result.add((String) field.get(null));
+                }
+            }
+
+            configClass = configClass.getSuperclass();
+        }
+
+        return Set.copyOf(result);
+    }
+    
+    protected static Map<String, Field> getFieldsFromConfigClass(Class configClass) throws Exception {
+        if (configClass == null || !Config.class.isAssignableFrom(configClass)) {
+            return Collections.EMPTY_MAP;
+        }
+
+        Map<String, Field> result = new HashMap<>();
+        
+        Set<String> fieldNames = getFieldNamesFromConfigClass(configClass);
+        for (String fieldName : fieldNames) {
+            Class classToCheck = configClass;
+            while(classToCheck != null && Config.class.isAssignableFrom(classToCheck)) {
+                Field[] fields = classToCheck.getDeclaredFields();
+                Field foundField = null;
+                for (Field field : fields) {
+                    if(field.getName().equals(fieldName)) {
+                        foundField = field;
+                        break;
+                    }
+                }
+                
+                if(foundField != null) {
+                    result.put(fieldName, foundField);
+                    break;
+                }
+                
+                classToCheck = classToCheck.getSuperclass();
+            }
+        }
+
+        return Map.copyOf(result);
     }
     
 }
