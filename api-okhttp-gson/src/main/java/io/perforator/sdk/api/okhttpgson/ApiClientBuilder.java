@@ -62,6 +62,7 @@ public class ApiClientBuilder {
         this.apiClient.setConnectTimeout((int)apiClientParams.getConnectTimeout().toMillis());
         this.apiClient.setReadTimeout((int)apiClientParams.getReadTimeout().toMillis());
         this.apiClient.setUserAgent(apiClientParams.getUserAgent());
+        this.apiClient.setBasePath(apiClientParams.getApiBaseUrl());
     }
     
     public <T> T getApi(Class<T> apiClass) {
