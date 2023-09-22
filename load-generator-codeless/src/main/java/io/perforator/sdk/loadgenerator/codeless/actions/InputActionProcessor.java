@@ -119,7 +119,7 @@ public class InputActionProcessor extends AbstractSelectorActionProcessor<InputA
     public void processActionInstance(RemoteWebDriver driver, InputActionInstance actionInstance) {
         WebElement element = new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 ExpectedConditions.elementToBeClickable(
                         getActionInstanceLocator(actionInstance)

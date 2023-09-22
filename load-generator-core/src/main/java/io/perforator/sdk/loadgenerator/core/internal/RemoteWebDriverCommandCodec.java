@@ -13,7 +13,7 @@ package io.perforator.sdk.loadgenerator.core.internal;
 import java.util.Map;
 import org.openqa.selenium.remote.DriverCommand;
 import org.openqa.selenium.remote.http.HttpMethod;
-import org.openqa.selenium.remote.http.W3CHttpCommandCodec;
+import org.openqa.selenium.remote.codec.w3c.W3CHttpCommandCodec;
 
 /**
  * Default W3CHttpCommandCodec implementation sends 48kb JS to remote browser to

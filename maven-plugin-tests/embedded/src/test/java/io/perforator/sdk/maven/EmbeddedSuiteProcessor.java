@@ -17,6 +17,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.List;
+import org.openqa.selenium.By;
 
 public class EmbeddedSuiteProcessor extends AbstractSuiteProcessor {
 
@@ -27,7 +28,7 @@ public class EmbeddedSuiteProcessor extends AbstractSuiteProcessor {
 
         transactionally("Visit page 1", () -> {
             driver.navigate().to(BASE_URL + "/?delay=500ms");
-            List<WebElement> links = driver.findElementsByCssSelector("nav ul li a.nav-link");
+            List<WebElement> links = driver.findElements(By.cssSelector("nav ul li a.nav-link"));
 
             if (links.isEmpty()) {
                 throw new RuntimeException("Links are not found");
@@ -36,7 +37,7 @@ public class EmbeddedSuiteProcessor extends AbstractSuiteProcessor {
 
         transactionally("Visit page 2", () -> {
             driver.navigate().to(BASE_URL + "/vobis?delay=1000ms");
-            List<WebElement> links = driver.findElementsByCssSelector("nav ul li a.nav-link");
+            List<WebElement> links = driver.findElements(By.cssSelector("nav ul li a.nav-link"));
 
             if (links.isEmpty()) {
                 throw new RuntimeException("Links are not found");

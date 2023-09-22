@@ -71,7 +71,7 @@ public class AwaitAlertToBePresentActionProcessor extends AbstractActionProcesso
     public void processActionInstance(RemoteWebDriver driver, AwaitAlertToBePresentActionInstance actionInstance) {
         new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 ExpectedConditions.alertIsPresent()
         );

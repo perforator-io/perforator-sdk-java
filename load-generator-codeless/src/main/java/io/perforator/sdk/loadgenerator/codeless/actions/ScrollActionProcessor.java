@@ -106,7 +106,7 @@ public class ScrollActionProcessor extends AbstractSelectorActionProcessor<Scrol
     public void processActionInstance(RemoteWebDriver driver, ScrollActionInstance actionInstance) {
         WebElement element = new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 ExpectedConditions.visibilityOfElementLocated(
                         getActionInstanceLocator(actionInstance)

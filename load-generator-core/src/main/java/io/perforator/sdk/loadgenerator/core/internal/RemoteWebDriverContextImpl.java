@@ -31,7 +31,7 @@ final class RemoteWebDriverContextImpl implements RemoteWebDriverContext {
         this.suiteInstanceContext = suiteInstanceContext;
         this.sessionID = remoteWebDriver.getSessionId().toString();
         this.browserName = remoteWebDriver.getCapabilities().getBrowserName();
-        this.browserVersion = remoteWebDriver.getCapabilities().getVersion();
+        this.browserVersion = remoteWebDriver.getCapabilities().getBrowserVersion();
         this.remoteWebDriver = remoteWebDriver;
     }
 

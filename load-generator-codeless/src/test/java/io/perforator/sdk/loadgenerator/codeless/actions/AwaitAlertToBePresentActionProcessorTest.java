@@ -95,7 +95,7 @@ public class AwaitAlertToBePresentActionProcessorTest extends AbstractActionProc
 
         WebElement button = new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 ExpectedConditions.elementToBeClickable(By.cssSelector(SHOW_ALERT_BTN_CSS_SELECTOR))
         );

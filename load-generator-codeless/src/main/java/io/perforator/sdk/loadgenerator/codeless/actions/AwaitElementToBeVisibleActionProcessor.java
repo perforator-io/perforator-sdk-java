@@ -105,7 +105,7 @@ public class AwaitElementToBeVisibleActionProcessor extends AbstractSelectorActi
     public void processActionInstance(RemoteWebDriver driver, AwaitElementToBeVisibleActionInstance actionInstance) {
         new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 ExpectedConditions.visibilityOfElementLocated(
                         getActionInstanceLocator(actionInstance)

@@ -10,7 +10,6 @@
  */
 package io.perforator.sdk.loadgenerator.core;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
 import io.perforator.sdk.loadgenerator.core.configs.ChromeMode;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
@@ -25,8 +24,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 //TODO: add javadoc
 public class RemoteWebDriverHelper {
-
-    private static boolean webDriverManagerInitialized = false;
 
     public static RemoteWebDriver createLocalChromeDriver() {
         return createLocalChromeDriver(null);
@@ -43,15 +40,6 @@ public class RemoteWebDriverHelper {
     }
 
     public static RemoteWebDriver createLocalChromeDriver(ChromeOptions chromeOptions, SuiteConfig suiteConfig) {
-        if (!webDriverManagerInitialized) {
-            synchronized (RemoteWebDriverHelper.class) {
-                if (!webDriverManagerInitialized) {
-                    WebDriverManager.chromedriver().setup();
-                    webDriverManagerInitialized = true;
-                }
-            }
-        }
-
         if(chromeOptions == null) {
             chromeOptions = new ChromeOptions();
         }

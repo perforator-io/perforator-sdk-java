@@ -106,7 +106,7 @@ public class FocusActionProcessor extends AbstractSelectorActionProcessor<FocusA
     public void processActionInstance(RemoteWebDriver driver, FocusActionInstance actionInstance) {
         WebElement element = new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 ExpectedConditions.visibilityOfElementLocated(
                         getActionInstanceLocator(actionInstance)

@@ -12,6 +12,7 @@ package io.perforator.sdk.loadgenerator.testng;
 
 import io.perforator.sdk.loadgenerator.core.Perforator;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
+import java.time.Duration;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -32,7 +33,7 @@ public class SuiteTestNG {
 
         WebElement element = new WebDriverWait(
                 remoteWebDriver,
-                15
+                Duration.ofSeconds(15)
         ).until(
                 ExpectedConditions.visibilityOfElementLocated(
                         By.cssSelector("#" + ASYNC_CONTAINER_ID)

@@ -25,7 +25,7 @@ public class RemoteWebDriverContextMock implements RemoteWebDriverContext {
         this.startedAt = System.currentTimeMillis();
         this.sessionID = remoteWebDriver.getSessionId().toString();
         this.browserName = remoteWebDriver.getCapabilities().getBrowserName();
-        this.browserVersion = remoteWebDriver.getCapabilities().getVersion();
+        this.browserVersion = remoteWebDriver.getCapabilities().getBrowserVersion();
         this.remoteWebDriver = remoteWebDriver;
     }
 

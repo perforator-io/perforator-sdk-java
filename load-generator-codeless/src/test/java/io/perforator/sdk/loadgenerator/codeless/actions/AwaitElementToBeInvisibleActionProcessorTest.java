@@ -134,14 +134,14 @@ public class AwaitElementToBeInvisibleActionProcessorTest extends AbstractAction
 
         WebElement checkedElement = new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 ExpectedConditions.presenceOfElementLocated(By.cssSelector(CHECKED_BTN_CSS_SELECTOR))
         );
         if (checkedElement.isDisplayed()) {
             WebElement button = new WebDriverWait(
                     driver,
-                    actionInstance.getTimeout().toSeconds()
+                    actionInstance.getTimeout()
             ).until(
                     ExpectedConditions.elementToBeClickable(By.cssSelector(HIDE_STATUS_SWITCHER_CSS_SELECTOR))
             );

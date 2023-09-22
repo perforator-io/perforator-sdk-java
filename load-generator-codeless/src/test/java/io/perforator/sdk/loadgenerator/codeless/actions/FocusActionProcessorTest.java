@@ -129,7 +129,7 @@ public class FocusActionProcessorTest extends AbstractActionProcessorTest<FocusA
         driver.navigate().to(VERIFICATIONS_APP_URL);
         WebElement checkedElement = new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 ExpectedConditions.presenceOfElementLocated(By.cssSelector(VERIFICATION_CSS_SELECTOR))
         );

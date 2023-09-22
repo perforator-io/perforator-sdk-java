@@ -134,7 +134,7 @@ public class AwaitElementToBeVisibleActionProcessorTest extends AbstractActionPr
 
         WebElement checkedElement = new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 ExpectedConditions.presenceOfElementLocated(By.cssSelector(CHECKED_BTN_CSS_SELECTOR))
         );
@@ -142,7 +142,7 @@ public class AwaitElementToBeVisibleActionProcessorTest extends AbstractActionPr
         if (!checkedElement.isDisplayed()) {
             WebElement button = new WebDriverWait(
                     driver,
-                    actionInstance.getTimeout().toSeconds()
+                    actionInstance.getTimeout()
             ).until(
                     ExpectedConditions.elementToBeClickable(By.cssSelector(HIDE_STATUS_SWITCHER_CSS_SELECTOR))
             );

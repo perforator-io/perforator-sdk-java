@@ -106,7 +106,7 @@ public class ClickActionProcessor extends AbstractSelectorActionProcessor<ClickA
     public void processActionInstance(RemoteWebDriver driver, ClickActionInstance actionInstance) {
         WebElement element = new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 ExpectedConditions.elementToBeClickable(
                         getActionInstanceLocator(actionInstance)

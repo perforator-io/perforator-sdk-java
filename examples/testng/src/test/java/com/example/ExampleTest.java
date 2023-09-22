@@ -39,7 +39,7 @@ public class ExampleTest {
     private static WebElement awaitToBeVisible(RemoteWebDriver driver, String cssSelector, Duration timeout) {
         return new WebDriverWait(
                 driver,
-                timeout.toSeconds()
+                timeout
         ).until(
                 ExpectedConditions.visibilityOfElementLocated(
                         By.cssSelector(cssSelector)
@@ -54,7 +54,7 @@ public class ExampleTest {
     private static WebElement click(RemoteWebDriver driver, String cssSelector, Duration timeout) {
         WebElement element = new WebDriverWait(
                 driver,
-                timeout.toSeconds()
+                timeout
         ).until(
                 ExpectedConditions.elementToBeClickable(
                         By.cssSelector(cssSelector)

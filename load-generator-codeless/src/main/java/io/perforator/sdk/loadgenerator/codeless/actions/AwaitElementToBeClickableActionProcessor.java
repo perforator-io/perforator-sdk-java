@@ -109,7 +109,7 @@ public class AwaitElementToBeClickableActionProcessor extends AbstractSelectorAc
     public void processActionInstance(RemoteWebDriver driver, AwaitElementToBeClickableActionInstance actionInstance) {
         new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 ExpectedConditions.elementToBeClickable(
                         getActionInstanceLocator(actionInstance)

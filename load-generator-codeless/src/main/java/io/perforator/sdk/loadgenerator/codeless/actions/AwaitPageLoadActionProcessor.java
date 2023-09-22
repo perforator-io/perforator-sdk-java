@@ -70,7 +70,7 @@ public class AwaitPageLoadActionProcessor extends AbstractActionProcessor<AwaitP
     public void processActionInstance(RemoteWebDriver driver, AwaitPageLoadActionInstance actionInstance) {
         new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 webDriver -> driver.executeScript("return document.readyState").equals("complete")
         );

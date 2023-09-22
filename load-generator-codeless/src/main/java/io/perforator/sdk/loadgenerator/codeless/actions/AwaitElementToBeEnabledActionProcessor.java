@@ -132,7 +132,7 @@ public class AwaitElementToBeEnabledActionProcessor extends AbstractSelectorActi
     public void processActionInstance(RemoteWebDriver driver, AwaitElementToBeEnabledActionInstance actionInstance) {
         new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 elementToBeEnabled(
                         getActionInstanceLocator(actionInstance)

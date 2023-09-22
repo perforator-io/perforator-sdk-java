@@ -105,7 +105,7 @@ public class AwaitElementToBeInvisibleActionProcessor extends AbstractSelectorAc
     public void processActionInstance(RemoteWebDriver driver, AwaitElementToBeInvisibleActionInstance actionInstance) {
         new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 ExpectedConditions.invisibilityOfElementLocated(
                         getActionInstanceLocator(actionInstance)

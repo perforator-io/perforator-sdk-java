@@ -124,7 +124,7 @@ public class CloseAlertActionProcessor extends AbstractActionProcessor<CloseAler
     public void processActionInstance(RemoteWebDriver driver, CloseAlertActionInstance actionInstance) {
         Alert alert = new WebDriverWait(
                 driver,
-                actionInstance.getTimeout().toSeconds()
+                actionInstance.getTimeout()
         ).until(
                 ExpectedConditions.alertIsPresent()
         );

@@ -11,6 +11,7 @@
 package io.perforator.sdk.loadgenerator.core.internal;
 
 import java.net.URL;
+import org.openqa.selenium.remote.http.ClientConfig;
 import org.openqa.selenium.remote.http.HttpClient;
 
 final class RemoteWebDriverHttpClientFactory implements HttpClient.Factory {
@@ -27,12 +28,8 @@ final class RemoteWebDriverHttpClientFactory implements HttpClient.Factory {
     }
 
     @Override
-    public HttpClient.Builder builder() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void cleanupIdleClients() {
+    public HttpClient createClient(ClientConfig config) {
+        return client;
     }
 
 }
