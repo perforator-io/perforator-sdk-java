@@ -10,7 +10,6 @@
  */
 package io.perforator.sdk.loadgenerator.core.service;
 
-//TODO: add javadoc
 public interface StatisticsService {
     
     long getActiveSuiteInstancesCount();

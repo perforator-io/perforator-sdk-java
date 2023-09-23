@@ -77,8 +77,7 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
         assertTrue(LoadGeneratorConfig.class.isAssignableFrom(loadGeneratorConfigClass));
         assertTrue(SuiteConfig.class.isAssignableFrom(suiteConfigClass));
     }
-
-    //TODO: implement test verifying javadocs
+    
     @BeforeAll
     public void setup() throws Exception {
         assumeTrue(hasRequiredProperty(API_BASE_URL_PROPERTY));

@@ -13,7 +13,6 @@ package io.perforator.sdk.loadgenerator.core.service;
 import io.perforator.sdk.loadgenerator.core.context.SuiteInstanceContext;
 import io.perforator.sdk.loadgenerator.core.context.TransactionContext;
 
-//TODO: add javadoc
 public interface TransactionsService<S extends SuiteInstanceContext, T extends TransactionContext> {
     
     T startTransaction(S suiteContext, String transactionName);

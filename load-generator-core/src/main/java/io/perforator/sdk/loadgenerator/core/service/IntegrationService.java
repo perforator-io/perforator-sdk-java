@@ -16,7 +16,6 @@ import io.perforator.sdk.loadgenerator.core.context.SuiteConfigContext;
 import io.perforator.sdk.loadgenerator.core.context.SuiteInstanceContext;
 import io.perforator.sdk.loadgenerator.core.context.TransactionContext;
 
-//TODO: add javadoc
 public interface IntegrationService<C extends SuiteConfigContext, S extends SuiteInstanceContext, T extends TransactionContext, R extends RemoteWebDriverContext>
         extends TransactionsService<S, T>,
         RemoteWebDriverService<S, R>,

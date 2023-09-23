@@ -12,7 +12,6 @@ package io.perforator.sdk.loadgenerator.core.context;
 
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 
-//TODO: add javadoc
 public interface SuiteConfigContext {
     SuiteConfig getSuiteConfig();
 }

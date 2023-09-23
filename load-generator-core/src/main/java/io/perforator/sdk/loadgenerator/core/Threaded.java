@@ -10,7 +10,6 @@
  */
 package io.perforator.sdk.loadgenerator.core;
 
-//TODO: add javadoc
 public final class Threaded {
 
     public static final boolean isInterrupted() {

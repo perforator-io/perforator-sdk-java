@@ -14,7 +14,6 @@ import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-//TODO: add javadoc
 public class Runner {
 
     public static void main(String[] args) throws Throwable {

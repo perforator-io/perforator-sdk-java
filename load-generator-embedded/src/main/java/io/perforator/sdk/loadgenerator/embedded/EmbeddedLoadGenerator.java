@@ -20,7 +20,6 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
 
-//TODO: add javadoc
 public class EmbeddedLoadGenerator extends AbstractLoadGenerator {
     
     private final HashMap<String, Class<EmbeddedSuiteProcessor>> processorClasses = new HashMap<>();

@@ -12,7 +12,6 @@ package io.perforator.sdk.loadgenerator.core.context;
 
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-//TODO: add javadoc
 public interface RemoteWebDriverContext {
     
     long getStartedAt();

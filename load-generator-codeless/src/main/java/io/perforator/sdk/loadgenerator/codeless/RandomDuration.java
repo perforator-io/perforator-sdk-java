@@ -13,7 +13,6 @@ package io.perforator.sdk.loadgenerator.codeless;
 import java.time.Duration;
 import java.util.SplittableRandom;
 
-//TODO: add javadoc
 public class RandomDuration {
 
     private final Duration from;

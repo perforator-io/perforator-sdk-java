@@ -37,8 +37,6 @@ public abstract class AbstractConfigTest<T extends Config> {
     
     protected abstract Map<String, String> buildFieldsForVerification() throws Exception;
     
-    //TODO: implement test verifying javadocs
-    
     @BeforeAll
     public void setup() throws Exception {
         assertNotNull(configClass);

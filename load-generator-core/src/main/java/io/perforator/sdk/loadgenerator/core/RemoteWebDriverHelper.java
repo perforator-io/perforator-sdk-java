@@ -22,7 +22,6 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-//TODO: add javadoc
 public class RemoteWebDriverHelper {
 
     public static RemoteWebDriver createLocalChromeDriver() {

@@ -10,7 +10,6 @@
  */
 package io.perforator.sdk.loadgenerator.core.context;
 
-//TODO: add javadoc
 public interface BrowserCloudContext {
     String getProjectKey();
 

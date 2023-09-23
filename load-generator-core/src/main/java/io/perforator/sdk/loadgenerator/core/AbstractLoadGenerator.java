@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
-//TODO: add javadoc
 public abstract class AbstractLoadGenerator implements Runnable, StatisticsService {
 
     public static final String TERMINATION_EXCEPTION_MESSAGE = "Process was terminated manually";
