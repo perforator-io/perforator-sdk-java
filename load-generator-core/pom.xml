@@ -121,6 +121,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <doclint>all,-missing</doclint>
                     <validateLinks>true</validateLinks>
                 </configuration>
             </plugin>
