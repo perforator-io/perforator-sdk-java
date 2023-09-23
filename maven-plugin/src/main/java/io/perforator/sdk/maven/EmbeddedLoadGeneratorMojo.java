@@ -96,9 +96,12 @@ public class EmbeddedLoadGeneratorMojo extends AbstractLoadGeneratorMojo<LinkedH
     protected void preprocessAutowiredParameters() throws MojoFailureException {
         String defaultProjectBuildName = project.getBuild().getFinalName();
         
-        if(name != null && name.equals(defaultProjectBuildName) && processorClass != null && !processorClass.isBlank()) {
-            name = processorClass;
+        if(processorClass != null && !processorClass.isBlank()) {
+            if(name == null || name.isBlank() || name.equals(defaultProjectBuildName)) {
+                name = processorClass;
+            }
         }
+        
         if(suites != null) {
             for (LinkedHashMap<String, String> suite : suites) {
                 String suiteProcessorClass = suite.get("processorClass");

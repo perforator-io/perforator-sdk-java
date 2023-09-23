@@ -12,6 +12,11 @@ package io.perforator.sdk.maven;
 
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.testng.TestNGSuiteConfig;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -76,7 +81,28 @@ public class TestNGLoadGeneratorMojo extends AbstractLoadGeneratorMojo<LinkedHas
 
     @Override
     protected void preprocessAutowiredParameters() throws MojoFailureException {
-        //do nothing
+        String defaultProjectBuildName = project.getBuild().getFinalName();
+        
+        if(suiteXmlFile != null && !suiteXmlFile.isBlank()) {
+            if(name == null || name.isBlank() || name.equals(defaultProjectBuildName)) {
+                name = getRelativeSuiteXmlPath(suiteXmlFile);
+            }
+        }
+        
+        if(suites != null) {
+            for (LinkedHashMap<String, String> suite : suites) {
+                String suiteSuiteXmlFile = suite.get("suiteXmlFile");
+                String suiteName = suite.get("name");
+
+                if (suiteSuiteXmlFile == null || suiteSuiteXmlFile.isEmpty()) {
+                    continue;
+                }
+
+                if (suiteName == null || suiteName.isBlank() || suiteName.equals(defaultProjectBuildName)) {
+                    suite.put("name", getRelativeSuiteXmlPath(suiteSuiteXmlFile));
+                }
+            }
+        }
     }
 
     @Override
@@ -104,6 +130,26 @@ public class TestNGLoadGeneratorMojo extends AbstractLoadGeneratorMojo<LinkedHas
     @Override
     protected Object buildSuiteConfigInstance(Class suiteConfigClass, LinkedHashMap<String, String> suiteParams) throws MojoFailureException {
         return buildMapBasedSuiteConfig(suiteConfigClass, suiteParams);
+    }
+    
+    private String getRelativeSuiteXmlPath(String suiteXmlFile) {
+        if(suiteXmlFile == null || suiteXmlFile.isBlank()) {
+            return suiteXmlFile;
+        }
+        
+        Path suiteXmlFilePath = Path.of(suiteXmlFile);
+        if(!Files.exists(suiteXmlFilePath)) {
+            return suiteXmlFile;
+        }
+        
+        try {
+            return suiteXmlFilePath.toRealPath().toString().replace(
+                    project.getBasedir().toPath().toRealPath().toString() + File.separator,
+                    ""
+            );
+        } catch(IOException e) {
+            return suiteXmlFile;
+        }
     }
 
 }
