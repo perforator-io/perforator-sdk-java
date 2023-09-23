@@ -11,6 +11,7 @@
 package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.auto.service.AutoService;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
@@ -18,6 +19,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+@SuppressWarnings("rawtypes")
+@AutoService(ActionProcessor.class)
 public class AwaitAlertToBePresentActionProcessor extends AbstractActionProcessor<AwaitAlertToBePresentActionConfig, AwaitAlertToBePresentActionInstance> {
 
     public AwaitAlertToBePresentActionProcessor() {

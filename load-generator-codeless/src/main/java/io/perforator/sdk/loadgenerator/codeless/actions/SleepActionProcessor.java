@@ -11,6 +11,7 @@
 package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.auto.service.AutoService;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.codeless.RandomDuration;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
@@ -19,6 +20,8 @@ import io.perforator.sdk.loadgenerator.core.Perforator;
 import java.util.List;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+@SuppressWarnings("rawtypes")
+@AutoService(ActionProcessor.class)
 public class SleepActionProcessor extends AbstractActionProcessor<SleepActionConfig, SleepActionInstance> {
 
     public SleepActionProcessor() {

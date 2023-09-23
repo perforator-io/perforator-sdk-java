@@ -11,11 +11,14 @@
 package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.auto.service.AutoService;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+@SuppressWarnings("rawtypes")
+@AutoService(ActionProcessor.class)
 public class IgnoreRemainingActionsActionProcessor extends AbstractActionProcessor<IgnoreRemainingActionsActionConfig, IgnoreRemainingActionsActionInstance> {
 
     public IgnoreRemainingActionsActionProcessor() {

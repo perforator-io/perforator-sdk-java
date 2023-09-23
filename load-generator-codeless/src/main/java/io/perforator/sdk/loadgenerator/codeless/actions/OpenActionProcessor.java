@@ -11,13 +11,15 @@
 package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.auto.service.AutoService;
 import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
+import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import java.util.concurrent.TimeUnit;
-
+@SuppressWarnings("rawtypes")
+@AutoService(ActionProcessor.class)
 public class OpenActionProcessor extends AbstractActionProcessor<OpenActionConfig, OpenActionInstance> {
 
     public OpenActionProcessor() {
