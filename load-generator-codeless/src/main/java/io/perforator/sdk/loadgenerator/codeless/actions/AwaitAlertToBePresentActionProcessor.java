@@ -57,7 +57,8 @@ public class AwaitAlertToBePresentActionProcessor extends AbstractActionProcesso
                                 AwaitAlertToBePresentActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
-                                formatter
+                                formatter,
+                                false
                         )
                 )
                 .enabled(

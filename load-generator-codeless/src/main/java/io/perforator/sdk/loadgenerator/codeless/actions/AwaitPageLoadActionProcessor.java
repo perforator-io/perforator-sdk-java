@@ -56,7 +56,8 @@ public class AwaitPageLoadActionProcessor extends AbstractActionProcessor<AwaitP
                                 AwaitPageLoadActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
-                                formatter
+                                formatter,
+                                false
                         )
                 )
                 .enabled(

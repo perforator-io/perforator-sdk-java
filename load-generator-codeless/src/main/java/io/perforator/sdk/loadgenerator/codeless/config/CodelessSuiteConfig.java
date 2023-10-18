@@ -66,7 +66,7 @@ public class CodelessSuiteConfig extends SuiteConfig {
     
     public static final String DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT_S = "30s";
     public static final Duration DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT = StringConverter.toDuration(DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT_S);
-    
+
     @Default
     Duration webDriverFluentWaitTimeout = DEFAULT_WEB_DRIVER_FLUENT_WAIT_TIMEOUT;
     

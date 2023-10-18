@@ -91,7 +91,8 @@ public class AwaitElementToBeVisibleActionProcessor extends AbstractSelectorActi
                                 AwaitElementToBeVisibleActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
-                                formatter
+                                formatter,
+                                false
                         )
                 )
                 .enabled(

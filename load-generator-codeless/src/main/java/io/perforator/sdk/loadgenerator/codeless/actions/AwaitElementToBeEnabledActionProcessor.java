@@ -118,7 +118,8 @@ public class AwaitElementToBeEnabledActionProcessor extends AbstractSelectorActi
                                 AwaitElementToBeEnabledActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
-                                formatter
+                                formatter,
+                                false
                         )
                 )
                 .enabled(

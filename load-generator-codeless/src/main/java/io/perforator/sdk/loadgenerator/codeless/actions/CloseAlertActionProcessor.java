@@ -110,7 +110,8 @@ public class CloseAlertActionProcessor extends AbstractActionProcessor<CloseAler
                                 CloseAlertActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
-                                formatter
+                                formatter,
+                                false
                         )
                 )
                 .enabled(

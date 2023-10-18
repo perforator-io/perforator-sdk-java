@@ -47,10 +47,20 @@ public abstract class AbstractSelectorActionProcessor<T extends SelectorActionCo
             T actionConfig,
             String selectorFieldName,
             FormattingMap formatter
+    ){
+        return buildRequiredStringSelectorForActionInstance(actionConfig, selectorFieldName, formatter, null);
+    }
+
+    protected String buildRequiredStringSelectorForActionInstance(
+            T actionConfig,
+            String selectorFieldName,
+            FormattingMap formatter,
+            String defaultValue
     ) {
         return buildStringForActionInstance(
                 selectorFieldName,
                 getTargetSelector(actionConfig),
+                defaultValue,
                 formatter,
                 true
         );

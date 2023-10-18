@@ -91,7 +91,8 @@ public class AwaitElementToBeInvisibleActionProcessor extends AbstractSelectorAc
                                 AwaitElementToBeInvisibleActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
-                                formatter
+                                formatter,
+                                false
                         )
                 )
                 .enabled(

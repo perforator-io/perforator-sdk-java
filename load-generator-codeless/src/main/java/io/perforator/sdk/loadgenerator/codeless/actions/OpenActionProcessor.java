@@ -70,7 +70,8 @@ public class OpenActionProcessor extends AbstractActionProcessor<OpenActionConfi
                                 OpenActionConfig.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverSessionPageLoadTimeout(),
-                                formatter
+                                formatter,
+                                false
                         )
                 )
                 .enabled(

@@ -105,7 +105,8 @@ public class InputActionProcessor extends AbstractSelectorActionProcessor<InputA
                                 InputActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
-                                formatter
+                                formatter,
+                                false
                         )
                 )
                 .enabled(

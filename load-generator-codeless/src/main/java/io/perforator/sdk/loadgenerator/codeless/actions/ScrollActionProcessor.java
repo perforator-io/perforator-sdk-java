@@ -92,7 +92,8 @@ public class ScrollActionProcessor extends AbstractSelectorActionProcessor<Scrol
                                 ScrollActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
-                                formatter
+                                formatter,
+                                false
                         )
                 )
                 .enabled(
