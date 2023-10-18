@@ -92,7 +92,8 @@ public class ClickActionProcessor extends AbstractSelectorActionProcessor<ClickA
                                 ClickActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
-                                formatter
+                                formatter,
+                                false
                         )
                 )
                 .enabled(

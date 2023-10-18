@@ -96,7 +96,8 @@ public class AwaitElementToBeDisabledActionProcessor extends AbstractSelectorAct
                                 AwaitElementToBeDisabledActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
-                                formatter
+                                formatter,
+                                false
                         )
                 )
                 .enabled(

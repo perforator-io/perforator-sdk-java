@@ -110,7 +110,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
     }
 
     @Override
-    protected void runSuite(SuiteInstanceContext suiteInstanceContext) {
+        protected void runSuite(SuiteInstanceContext suiteInstanceContext) {
         if (shouldBeFinished()) {
             return;
         }
@@ -231,7 +231,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
                 return ProceedingContext.SKIP_ACTIONS_AND_STEPS;
             }
         }
-        
+
         if(!actionInstance.isEnabled()) {
             return ProceedingContext.PROCEED_ALL;
         }

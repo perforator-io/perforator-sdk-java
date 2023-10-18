@@ -92,7 +92,8 @@ public class FocusActionProcessor extends AbstractSelectorActionProcessor<FocusA
                                 FocusActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
-                                formatter
+                                formatter,
+                                false
                         )
                 )
                 .enabled(

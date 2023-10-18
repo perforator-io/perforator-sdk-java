@@ -95,7 +95,8 @@ public class AwaitElementToBeClickableActionProcessor extends AbstractSelectorAc
                                 AwaitElementToBeClickableActionInstance.Fields.timeout,
                                 actionConfig.getTimeout(),
                                 suiteConfig.getWebDriverFluentWaitTimeout(),
-                                formatter
+                                formatter,
+                                false
                         )
                 )
                 .enabled(

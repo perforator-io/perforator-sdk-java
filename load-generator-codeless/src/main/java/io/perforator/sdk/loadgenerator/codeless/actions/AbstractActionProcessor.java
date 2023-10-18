@@ -20,6 +20,8 @@ import java.lang.reflect.ParameterizedType;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public abstract class AbstractActionProcessor<T extends ActionConfig, V extends ActionInstance<T>> implements ActionProcessor<T, V> {
@@ -196,14 +198,50 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
         return result.trim();
     }
 
+    protected List<String> getOptionalNestedFields(String fieldName, JsonNode node, List<String> defaultValue) {
+        if (node == null || node.isNull() || node.isValueNode() || node.isArray() || !node.has(fieldName)) {
+            return defaultValue;
+        }
+
+        List<String> elementsList = new ArrayList<>();
+
+        JsonNode innerNode = node.get(fieldName);
+        if (innerNode == null || innerNode.isNull()) {
+            return defaultValue;
+        }
+
+        if (innerNode.isValueNode()) {
+            elementsList.add(asText(fieldName, innerNode));
+        } else if(innerNode.isArray()){
+            Iterator<JsonNode> elements = innerNode.elements();
+            while(elements.hasNext()){
+                JsonNode element = elements.next();
+                String listItem = asText(element);
+                if(listItem != null && !listItem.isBlank()){
+                    elementsList.add(listItem);
+                }
+            }
+        }
+
+        if(elementsList.isEmpty()){
+            return defaultValue;
+        }
+
+        return elementsList;
+    }
+
     protected String buildStringForActionInstance(String fieldName, String configValue, FormattingMap formatter) {
-        return buildStringForActionInstance(fieldName, configValue, formatter, true);
+        return buildStringForActionInstance(fieldName, configValue, formatter,true);
     }
 
     protected String buildStringForActionInstance(String fieldName, String configValue, FormattingMap formatter, boolean required) {
+        return buildStringForActionInstance(fieldName, configValue, null, formatter, required);
+    }
+
+    protected String buildStringForActionInstance(String fieldName, String configValue, String defaultValue, FormattingMap formatter, boolean required) {
 
         if (!required && configValue == null) {
-            return null;
+            return defaultValue;
         }
 
         String formattedValue = formatter.format(configValue);
@@ -228,10 +266,63 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
         return formattedValue;
     }
 
-    protected Duration buildDurationForActionInstance(String fieldName, String configDuration, Duration defaultDuration, FormattingMap formatter) {
-        return buildDurationForActionInstance(fieldName, configDuration, defaultDuration, formatter, true);
+    protected Integer buildIntegerForActionInstance(String fieldName, String configValue, FormattingMap formatter) {
+        return buildIntegerForActionInstance(fieldName, configValue, null, formatter, true);
     }
 
+    protected Integer buildIntegerForActionInstance(String fieldName, String configValue, Integer defaultValue, FormattingMap formatter, boolean required) {
+        String formattedValue = buildStringForActionInstance(fieldName, configValue, formatter, required);
+        try {
+            return Integer.parseInt(formattedValue);
+        } catch (NumberFormatException ex){
+            if(defaultValue != null){
+                return defaultValue;
+            }
+            throw new RuntimeException(
+                    actionName
+                            + "."
+                            + fieldName
+                            + " = "
+                            + configValue
+                            + " => "
+                            + formattedValue
+                            + " should be Integer type"
+            );
+        }
+    }
+
+    protected List<String> buildStringListForActionInstance(String fieldName, List<String> configValue, FormattingMap formatter, boolean required){
+        if (!required && configValue == null) {
+            return null;
+        }
+
+
+        List<String> formatedList = new ArrayList<>();
+
+        for(String s: configValue){
+            String formattedValue = formatter.format(s);
+            if(formattedValue != null && !formattedValue.isBlank()) {
+                formatedList.add(formattedValue);
+            }
+        }
+
+        if(required && formatedList.isEmpty()){
+            throw new RuntimeException(
+                    actionName
+                            + "."
+                            + fieldName
+                            + " = "
+                            + configValue
+                            + " => "
+                            + " should be not empty"
+            );
+        }
+
+        return formatedList;
+    }
+    protected Duration buildDurationForActionInstance(String fieldName, String configDuration, FormattingMap formatter) {
+        return buildDurationForActionInstance(fieldName, configDuration, null, formatter, true);
+    }
     protected Duration buildDurationForActionInstance(String fieldName, String configDuration, Duration defaultDuration, FormattingMap formatter, boolean required) {
         Duration result = defaultDuration;
         
@@ -272,10 +363,15 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
     }
 
     protected RandomDuration buildRandomDurationForActionInstance(String fieldName, String configDuration, FormattingMap formatter) {
-        return buildRandomDurationForActionInstance(fieldName, configDuration, formatter, true);
+        return buildRandomDurationForActionInstance(fieldName, configDuration, null, formatter, true);
     }
 
-    protected RandomDuration buildRandomDurationForActionInstance(String fieldName, String configDuration, FormattingMap formatter, boolean required) {
+    protected RandomDuration buildRandomDurationForActionInstance(String fieldName, String configDuration, String defaultValue, FormattingMap formatter, boolean required) {
+
+        if(!required && configDuration == null){
+            return buildRandomDurationForActionInstance(fieldName, defaultValue, null, formatter, true);
+        }
+
         String formattedTimeout = formatter.format(configDuration);
 
         if (formattedTimeout.contains("-")) {
@@ -294,26 +390,41 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
             );
         }
     }
-    
-    protected boolean buildEnabledForActionInstance(String fieldName, String configEnabled, FormattingMap formatter) {
-        String formattedResult = formatter.format(configEnabled);
-        
+
+    protected boolean buildBooleanForActionInstance(String fieldName, String configBoolean, FormattingMap formatter){
+        return buildBooleanForActionInstance(fieldName, configBoolean, null, formatter, true);
+    }
+
+    protected boolean buildBooleanForActionInstance(String fieldName, String configBoolean, Boolean defaultBoolean, FormattingMap formatter, boolean required) {
+
+        if(!required && configBoolean == null){
+            return defaultBoolean;
+        }
+
+        String formattedResult = formatter.format(configBoolean);
+
         if(formattedResult == null || formattedResult.isBlank()) {
             return true;
         } else if(formattedResult.equalsIgnoreCase("true")) {
             return true;
         } else if(formattedResult.equalsIgnoreCase("false")) {
             return false;
+        } else if(defaultBoolean != null){
+            return defaultBoolean;
         } else {
             throw new RuntimeException(
                     actionName
                             + "."
                             + fieldName
                             + " = "
-                            + configEnabled
+                            + configBoolean
                             + " is invalid => only true or false values are suported"
             );
         }
+    }
+    
+    protected boolean buildEnabledForActionInstance(String fieldName, String configEnabled, FormattingMap formatter) {
+        return buildBooleanForActionInstance(fieldName, configEnabled, null, formatter, true);
     }
 
     protected String buildUrlForActionInstance(String fieldName, String configUrl, FormattingMap formatter) {
