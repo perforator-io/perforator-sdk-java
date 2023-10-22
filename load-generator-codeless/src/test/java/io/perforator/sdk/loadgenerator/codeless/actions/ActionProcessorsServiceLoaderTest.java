@@ -12,16 +12,19 @@ package io.perforator.sdk.loadgenerator.codeless.actions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.reflect.ClassPath;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -134,6 +137,18 @@ public class ActionProcessorsServiceLoaderTest {
                             JsonNode.class,
                             field.getType(),
                             current + "." + field.getName() + " should be JsonNode"
+                    );
+                } else if(field.getName().equals("urls")) {
+                    assertEquals(
+                            List.class,
+                            field.getType(),
+                            current + "." + field.getName() + " should be List"
+                    );
+                } else if(field.getName().equals("domains")) {
+                    assertEquals(
+                            List.class,
+                            field.getType(),
+                            current + "." + field.getName() + " should be List"
                     );
                 } else {
                     assertEquals(
