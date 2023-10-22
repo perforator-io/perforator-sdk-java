@@ -33,22 +33,22 @@ public class CrawlerActionConfig implements ActionConfig {
     private final List<String> domains;
 
     @FieldNameConstants.Include
-    private final String linksSelector;
+    private final String linksExtractorScript;
 
     @FieldNameConstants.Include
-    private final String randomizeVisits;
+    private final String randomize;
 
     @FieldNameConstants.Include
-    private final String pageAnalysisDelay;
+    private final String delay;
 
     @FieldNameConstants.Include
-    private final String linkVisitorDelay;
+    private final String maxVisitsPerUrl;
 
     @FieldNameConstants.Include
-    private final String maxVisitsPerLink;
-
+    private final String maxVisitsOverall;
+    
     @FieldNameConstants.Include
-    private final String maxPages;
+    private final String maxQueueSize;
 
     @FieldNameConstants.Include
     private final String maxDuration;

@@ -14,10 +14,4 @@ suites:
       Open and run crawler:
         - sleep: 0.1s
         - crawler:
-            urls: https://verifications.perforator.io
-            domains:
-              - www.perforator.io
-              - verifications.perforator.io
-            randomize: false
-            delay: 1s-2s
-            maxDuration: 10s-20s
+            urls: invalid

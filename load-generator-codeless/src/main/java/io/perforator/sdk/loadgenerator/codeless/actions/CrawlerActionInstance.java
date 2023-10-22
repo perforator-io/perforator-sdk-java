@@ -32,22 +32,22 @@ public class CrawlerActionInstance implements ActionInstance<CrawlerActionConfig
     private final List<String> domains;
 
     @FieldNameConstants.Include
-    private final String linksSelector;
+    private final String linksExtractorScript;
 
     @FieldNameConstants.Include
-    private final boolean randomizeVisits;
+    private final boolean randomize;
 
     @FieldNameConstants.Include
-    private final Duration pageAnalysisDelay;
+    private final Duration delay;
 
     @FieldNameConstants.Include
-    private final Duration linkVisitorDelay;
+    private final int maxVisitsPerUrl;
 
     @FieldNameConstants.Include
-    private final int maxVisitsPerLink;
-
+    private final int maxVisitsOverall;
+    
     @FieldNameConstants.Include
-    private final int maxPages;
+    private final int maxQueueSize;
 
     @FieldNameConstants.Include
     private final Duration maxDuration;
@@ -62,17 +62,17 @@ public class CrawlerActionInstance implements ActionInstance<CrawlerActionConfig
                 .append(", ")
                 .append(CrawlerActionInstance.Fields.domains).append(" = ").append(domains == null ? "" : "[" + String.join(",", domains) + "]")
                 .append(", ")
-                .append(CrawlerActionInstance.Fields.linksSelector).append(" = ").append(linksSelector)
+                .append(CrawlerActionInstance.Fields.linksExtractorScript).append(" = ").append(linksExtractorScript)
                 .append(", ")
-                .append(CrawlerActionInstance.Fields.randomizeVisits).append(" = ").append(randomizeVisits)
+                .append(CrawlerActionInstance.Fields.randomize).append(" = ").append(randomize)
                 .append(", ")
-                .append(CrawlerActionInstance.Fields.pageAnalysisDelay).append(" = ").append(pageAnalysisDelay)
+                .append(CrawlerActionInstance.Fields.delay).append(" = ").append(delay)
                 .append(", ")
-                .append(CrawlerActionInstance.Fields.linkVisitorDelay).append(" = ").append(linkVisitorDelay)
+                .append(CrawlerActionInstance.Fields.maxVisitsPerUrl).append(" = ").append(maxVisitsPerUrl)
                 .append(", ")
-                .append(CrawlerActionInstance.Fields.maxVisitsPerLink).append(" = ").append(maxVisitsPerLink)
+                .append(CrawlerActionInstance.Fields.maxVisitsOverall).append(" = ").append(maxVisitsOverall)
                 .append(", ")
-                .append(CrawlerActionInstance.Fields.maxPages).append(" = ").append(maxPages)
+                .append(CrawlerActionInstance.Fields.maxQueueSize).append(" = ").append(maxQueueSize)
                 .append(", ")
                 .append(CrawlerActionInstance.Fields.maxDuration).append(" = ").append(maxDuration)
                 .toString();

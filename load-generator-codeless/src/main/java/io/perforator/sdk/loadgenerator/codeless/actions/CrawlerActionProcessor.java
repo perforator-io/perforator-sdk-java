@@ -16,30 +16,40 @@ import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
 import io.perforator.sdk.loadgenerator.core.Perforator;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.RemoteWebDriver;
-
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.Duration;
-import java.util.*;
-import java.util.regex.Matcher;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 @SuppressWarnings("rawtypes")
 @AutoService(ActionProcessor.class)
 public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActionConfig, CrawlerActionInstance> {
 
-    private final static String DOMAIN_REGEX = "^((?!-)[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}(?<!-)\\.)+[a-z]{2,6}";
-
-    public static final String DEFAULT_LINKS_SELECTOR = "a[href]:not([href^='javascript']):not([href^='void']):not([href='#'])";
-    public static final String DEFAULT_RANDOMIZE_VISITS = "true";
-    public static final String DEFAULT_PAGE_ANALYSIS_DELAY = "5s";
-    public static final String DEFAULT_MAX_DURATION = "15m";
-    public static final String DEFAULT_MAX_PAGES = "1000";
-    public static final String DEFAULT_MAX_VISITS_PER_LINK = "1";
-    public static final String DEFAULT_LINK_VISITOR_DELAY = "5s-10s";
+    private static final String DOMAIN_REGEX = "^((?!-)[a-zA-Z0-9@:%._\\+~#?&//=]{1,256}(?<!-)\\.)+[a-z]{2,6}";
+    private static final Pattern DOMAIN_PATTERN = Pattern.compile(DOMAIN_REGEX);
+    
+    public static final String DEFAULT_RANDOMIZE = "true";
+    public static final String DEFAULT_MAX_VISITS_OVERALL = "1024";
+    public static final String DEFAULT_MAX_VISITS_PER_URL = "1";
+    public static final String DEFAULT_MAX_QUEUE_SIZE = "4096";
+    public static final String DEFAULT_MAX_DURATION = "5m";
+    public static final String DEFAULT_DELAY = "5s";
+    
+    public static final String DEFAULT_LINKS_EXTRACTOR_SCRIPT = ""
+            + "const result = [];"
+            + "const links = document.querySelectorAll(\"a[href]:not([href^='javascript']):not([href^='void']):not([href='#'])\");"
+            + "for(var i=0; i < links.length; i++){"
+            + "    result.push(links[i].href);"
+            + "}"
+            + "return result;";
 
     public CrawlerActionProcessor() {
         super(CrawlerActionConfig.DEFAULT_ACTION_NAME);
@@ -65,11 +75,15 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
             );
             if (urls != null) {
                 for (String url : urls) {
-                    boolean urlIsValid = isValidUrl(url);
-                    if (!urlIsValid) {
+                    if (url == null || url.isBlank()) {
+                        continue;
+                    }
+
+                    try {
+                        new URI(url.trim()).toURL();
+                    } catch (URISyntaxException | MalformedURLException e) {
                         throw new RuntimeException(
-                                "Action '" + actionConfig.getActionName() + "' should have a valid all values in the 'urls' parameter. " +
-                                        "Url " + url + " is invalid!"
+                                "Action '" + actionConfig.getActionName() + "' has invalid url => " + url
                         );
                     }
                 }
@@ -84,11 +98,13 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
 
             if (domains != null) {
                 for (String domain : domains) {
-                    boolean domainIsValid = isValidDomain(domain);
-                    if (!domainIsValid) {
+                    if (domain == null || domain.isBlank()) {
+                        continue;
+                    }
+
+                    if (!DOMAIN_PATTERN.matcher(domain.trim()).matches()) {
                         throw new RuntimeException(
-                                "Action '" + actionConfig.getActionName() + "' should have a valid all values in the 'domains' parameter.  " +
-                                        "Domain " + domain + " is invalid!"
+                                "Action '" + actionConfig.getActionName() + "' has invalid domain => " + domain
                         );
                     }
                 }
@@ -113,46 +129,46 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                                 null
                         )
                 )
-                .linksSelector(
+                .linksExtractorScript(
                         getOptionalNestedField(
-                                CrawlerActionConfig.Fields.linksSelector,
+                                CrawlerActionConfig.Fields.linksExtractorScript,
                                 actionValue,
-                                DEFAULT_LINKS_SELECTOR
+                                DEFAULT_LINKS_EXTRACTOR_SCRIPT
                         )
                 )
-                .randomizeVisits(
+                .randomize(
                         getOptionalNestedField(
-                                CrawlerActionConfig.Fields.randomizeVisits,
+                                CrawlerActionConfig.Fields.randomize,
                                 actionValue,
-                                DEFAULT_RANDOMIZE_VISITS
+                                DEFAULT_RANDOMIZE
                         )
                 )
-                .pageAnalysisDelay(
+                .delay(
                         getOptionalNestedField(
-                                CrawlerActionConfig.Fields.pageAnalysisDelay,
+                                CrawlerActionConfig.Fields.delay,
                                 actionValue,
-                                DEFAULT_PAGE_ANALYSIS_DELAY
+                                DEFAULT_DELAY
                         )
                 )
-                .linkVisitorDelay(
+                .maxVisitsPerUrl(
                         getOptionalNestedField(
-                                CrawlerActionConfig.Fields.linkVisitorDelay,
+                                CrawlerActionConfig.Fields.maxVisitsPerUrl,
                                 actionValue,
-                                DEFAULT_LINK_VISITOR_DELAY
+                                DEFAULT_MAX_VISITS_PER_URL
                         )
                 )
-                .maxVisitsPerLink(
+                .maxVisitsOverall(
                         getOptionalNestedField(
-                                CrawlerActionConfig.Fields.maxVisitsPerLink,
+                                CrawlerActionConfig.Fields.maxVisitsOverall,
                                 actionValue,
-                                DEFAULT_MAX_VISITS_PER_LINK
+                                DEFAULT_MAX_VISITS_OVERALL
                         )
                 )
-                .maxPages(
+                .maxQueueSize(
                         getOptionalNestedField(
-                                CrawlerActionConfig.Fields.maxPages,
+                                CrawlerActionConfig.Fields.maxQueueSize,
                                 actionValue,
-                                DEFAULT_MAX_PAGES
+                                DEFAULT_MAX_QUEUE_SIZE
                         )
                 )
                 .maxDuration(
@@ -194,54 +210,54 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                                 false
                         )
                 )
-                .linksSelector(
+                .linksExtractorScript(
                         buildStringForActionInstance(
-                                CrawlerActionInstance.Fields.linksSelector,
-                                actionConfig.getLinksSelector(),
+                                CrawlerActionInstance.Fields.linksExtractorScript,
+                                actionConfig.getLinksExtractorScript(),
                                 formatter
                         )
                 )
-                .randomizeVisits(
+                .randomize(
                         buildBooleanForActionInstance(
-                                CrawlerActionInstance.Fields.randomizeVisits,
-                                actionConfig.getRandomizeVisits(),
+                                CrawlerActionInstance.Fields.randomize,
+                                actionConfig.getRandomize(),
                                 formatter
                         )
                 )
-                .pageAnalysisDelay(
-                        buildDurationForActionInstance(
-                                CrawlerActionInstance.Fields.pageAnalysisDelay,
-                                actionConfig.getPageAnalysisDelay(),
-                                formatter
-                        )
-                )
-                .linkVisitorDelay(
+                .delay(
                         buildRandomDurationForActionInstance(
-                                CrawlerActionInstance.Fields.linkVisitorDelay,
-                                actionConfig.getLinkVisitorDelay(),
+                                CrawlerActionInstance.Fields.delay,
+                                actionConfig.getDelay(),
                                 formatter
                         ).random()
                 )
-                .maxVisitsPerLink(
+                .maxVisitsPerUrl(
                         buildIntegerForActionInstance(
-                                CrawlerActionInstance.Fields.maxVisitsPerLink,
-                                actionConfig.getMaxVisitsPerLink(),
+                                CrawlerActionInstance.Fields.maxVisitsPerUrl,
+                                actionConfig.getMaxVisitsPerUrl(),
                                 formatter
                         )
                 )
-                .maxPages(
+                .maxVisitsOverall(
                         buildIntegerForActionInstance(
-                                CrawlerActionInstance.Fields.maxPages,
-                                actionConfig.getMaxPages(),
+                                CrawlerActionInstance.Fields.maxVisitsOverall,
+                                actionConfig.getMaxVisitsOverall(),
+                                formatter
+                        )
+                )
+                .maxQueueSize(
+                        buildIntegerForActionInstance(
+                                CrawlerActionInstance.Fields.maxQueueSize,
+                                actionConfig.getMaxQueueSize(),
                                 formatter
                         )
                 )
                 .maxDuration(
-                        buildDurationForActionInstance(
+                        buildRandomDurationForActionInstance(
                                 CrawlerActionInstance.Fields.maxDuration,
                                 actionConfig.getMaxDuration(),
                                 formatter
-                        )
+                        ).random()
                 )
                 .enabled(
                         buildEnabledForActionInstance(
@@ -255,180 +271,100 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
 
     @Override
     public void processActionInstance(RemoteWebDriver driver, CrawlerActionInstance actionInstance) {
-        List<String> preparedStartingUrls = prepareStartingUrls(
-                driver,
-                actionInstance.getUrls()
-        );
-
-        List<String> preparedAllowedDomains = prepareAllowedDomains(
-                preparedStartingUrls,
-                actionInstance.getDomains()
-        );
-
-        Queue<String> notVisitedUrls = new LinkedList<>(preparedStartingUrls);
-        crawlPages(
-                driver,
-                notVisitedUrls,
-                preparedAllowedDomains,
-                actionInstance
-        );
-    }
-
-    private void crawlPages(
-            RemoteWebDriver driver,
-            Queue<String> notVisitedUrls,
-            List<String> allowedDomains,
-            CrawlerActionInstance actionInstance
-    ) {
-        long startProcessTimestamp = System.currentTimeMillis();
-        int visitsPageCount = 0;
-        Map<String, Integer> openedPageHistory = new HashMap<>();
-
-        while (!notVisitedUrls.isEmpty()) {
-            if (startProcessTimestamp + actionInstance.getMaxDuration().toMillis() < System.currentTimeMillis()) {
-                return;
-            }
-
-            if (visitsPageCount >= actionInstance.getMaxPages()) {
-                return;
-            }
-
-            String url = notVisitedUrls.poll();
-            openedPageHistory.putIfAbsent(url, 0);
-            if (openedPageHistory.get(url) >= actionInstance.getMaxVisitsPerLink()) {
-                continue;
-            }
-
-            List<String> collectedUrls = openPageAndCollectUrls(
-                    driver,
-                    url,
-                    actionInstance.getPageAnalysisDelay(),
-                    actionInstance.getLinkVisitorDelay(),
-                    actionInstance.getLinksSelector()
+        long endTime = System.currentTimeMillis() + actionInstance.getMaxDuration().toMillis();
+        
+        List<String> urls = new ArrayList<>();
+        if (actionInstance.getUrls() == null || actionInstance.getUrls().isEmpty()) {
+            Perforator.sleep(actionInstance.getDelay().toMillis());
+            urls.addAll(
+                    collectUrlsFromThePage(
+                            driver,
+                            actionInstance.getLinksExtractorScript()
+                    )
             );
-            openedPageHistory.merge(url, 1, Integer::sum);
-            visitsPageCount++;
-
-            List<String> preparedUrls = prepareUrlList(
-                    collectedUrls,
-                    allowedDomains,
-                    actionInstance.isRandomizeVisits()
-            );
-
-            if (!preparedUrls.isEmpty()) {
-                notVisitedUrls.addAll(preparedUrls);
-            }
-        }
-    }
-
-    private List<String> prepareStartingUrls(RemoteWebDriver driver, List<String> urls) {
-        List<String> result = new ArrayList<>();
-        if (urls == null) {
-            result.add(driver.getCurrentUrl());
         } else {
-            result.addAll(urls);
+            urls.addAll(actionInstance.getUrls());
         }
 
-        return result;
-    }
-
-    private List<String> prepareAllowedDomains(List<String> startingUrls, List<String> domains) {
-        List<String> results = new ArrayList<>();
-
-        if (domains == null) {
-            for (String url : startingUrls) {
-                String urlsHost = getHostFromUrl(url);
-                if (urlsHost != null) {
-                    results.add(urlsHost);
+        Set<String> domains = new HashSet<>();
+        if (actionInstance.getDomains() == null || actionInstance.getDomains().isEmpty()) {
+            for (String url : urls) {
+                try {
+                    String domain = new URI(url).toURL().getHost();
+                    if (domain != null && !domain.isBlank()) {
+                        domains.add(domain);
+                    }
+                } catch (URISyntaxException | MalformedURLException e) {
+                    //ignore
                 }
             }
         } else {
-            results.addAll(domains);
+            domains.addAll(actionInstance.getDomains());
         }
 
-        return results;
+        CrawlerQueue crawlerQueue = CrawlerQueue.newInstance(
+                domains,
+                actionInstance.isRandomize(),
+                actionInstance.getMaxQueueSize(),
+                actionInstance.getMaxVisitsOverall(),
+                actionInstance.getMaxVisitsPerUrl()
+        );
+        crawlerQueue.pushAll(urls);
+
+        String url;
+        while ((url = crawlerQueue.poll()) != null) {
+            if (endTime <= System.currentTimeMillis()) {
+                crawlerQueue.destroy();
+                return;
+            }
+
+            driver.navigate().to(url);
+            Perforator.sleep(actionInstance.getDelay().toMillis());
+
+            if (endTime <= System.currentTimeMillis()) {
+                crawlerQueue.destroy();
+                return;
+            }
+
+            crawlerQueue.pushAll(
+                    collectUrlsFromThePage(
+                            driver,
+                            actionInstance.getLinksExtractorScript()
+                    )
+            );
+        }
     }
 
-    private List<String> prepareUrlList(
-            List<String> urls,
-            List<String> allowedDomain,
-            boolean randomizeVisits
-    ) {
-        List<String> result = new ArrayList<>();
-
-        for (String url : urls) {
-            url = trimUrl(url);
-
-            String urlHost = getHostFromUrl(url);
-            if (urlHost == null) {
-                continue;
-            }
-            if (allowedDomain.contains(urlHost)) {
-                result.add(url);
-            }
-        }
-
-        if (randomizeVisits) {
-            Collections.shuffle(result);
-        }
-
-        return result;
-    }
-
-    private List<String> openPageAndCollectUrls(
+    private Set<String> collectUrlsFromThePage(
             RemoteWebDriver driver,
-            String url,
-            Duration pageAnalysisDelay,
-            Duration linkVisitorDelay,
-            String linksSelector
+            String linksExtractorScript
     ) {
-        Perforator.sleep(linkVisitorDelay.toMillis());
-
-        driver.navigate().to(url);
-
-        Perforator.sleep(pageAnalysisDelay.toMillis());
-
-        List<String> results = new ArrayList<>();
-        List<WebElement> linkElements = driver.findElements(By.cssSelector(linksSelector));
-        for (WebElement webElement : linkElements) {
-            String strUrl = webElement.getAttribute("href");
-            if (isValidUrl(strUrl)) {
-                results.add(strUrl);
+        Object scriptResult = driver.executeScript(linksExtractorScript);
+        
+        if(scriptResult == null) {
+            return Collections.EMPTY_SET;
+        } else if(scriptResult.getClass() == String.class) {
+            return Set.of(scriptResult.toString());
+        } else if(scriptResult instanceof Collection) {
+            Collection items = (Collection)scriptResult;
+            
+            if(items.isEmpty()) {
+                return Collections.EMPTY_SET;
             }
+            
+            Set<String> result = new LinkedHashSet<>();
+            for (Object item : items) {
+                if(item == null) {
+                    continue;
+                }
+                
+                result.add(item.toString().trim());
+            }
+            
+            return result;
         }
-        return results;
+        
+        return Collections.EMPTY_SET;
     }
 
-    private String getHostFromUrl(String url) {
-        try {
-            return new URL(url).getHost();
-        } catch (MalformedURLException e) {
-            return null;
-        }
-    }
-
-    private boolean isValidDomain(String domain) {
-        Pattern p = Pattern.compile(DOMAIN_REGEX);
-
-        if (domain == null) {
-            return false;
-        }
-
-        Matcher m = p.matcher(domain);
-
-        return m.matches();
-    }
-
-    private boolean isValidUrl(String url) {
-        try {
-            new URL(url);
-            return true;
-        } catch (MalformedURLException e) {
-            return false;
-        }
-    }
-
-    private String trimUrl(String url) {
-        return url.trim();
-    }
 }
