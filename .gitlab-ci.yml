@@ -48,7 +48,7 @@ variables:
     -DdeployAtEnd=true
     -Dsuite.chromeMode=headless
 
-image: markhobson/maven-chrome:jdk-11
+image: maven:3.9-amazoncorretto-11-debian
 
 cache:
   paths:
@@ -72,6 +72,8 @@ build:
   
 test:
   stage: test
+  before_script:
+    - apt-get update && apt-get install -y chromium-browser
   script:
     - mvn verify -s .gitlab-mvn-settings.xml -Dmaven.test.redirectTestOutputToFile=true $MAVEN_CLI_OPTS
   artifacts:
