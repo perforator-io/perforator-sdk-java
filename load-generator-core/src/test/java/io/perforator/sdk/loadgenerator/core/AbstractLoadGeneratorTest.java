@@ -37,7 +37,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -47,7 +46,6 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
     
     private static final String SUITE_MIN_DURATION_PROPERTY = "io.perforator.sdk.loadgenerator.core.internal.SuiteManagerImpl.minDuration";
     
-    protected static final boolean CHROME_BROWSER_AVAILABLE = isChromeBrowserAvailable();
     protected static final String API_BASE_URL_PROPERTY = (LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "_" + LoadGeneratorConfig.Fields.apiBaseUrl).toUpperCase();
     protected static final String API_CLIENT_ID_PROPERTY = (LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "_" + LoadGeneratorConfig.Fields.apiClientId).toUpperCase();
     protected static final String API_CLIENT_SECRET_PROPERTY = (LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX + "_" + LoadGeneratorConfig.Fields.apiClientSecret).toUpperCase();
@@ -128,7 +126,6 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
 
     @Test
     public void verifyLocalLoadGeneratorWithMockedServices() throws Exception {
-        assumeTrue(CHROME_BROWSER_AVAILABLE);
         int concurrency = getDefaultConcurrency();
 
         Map<String, String> suiteParams = Map.of(
@@ -185,7 +182,6 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
 
     @Test
     public void verifyLocalLoadGeneratorWithDefaultMediator() throws Exception {
-        assumeTrue(CHROME_BROWSER_AVAILABLE);
         int concurrency = getDefaultConcurrency();
 
         Map<String, String> suiteParams = Map.of(
@@ -592,26 +588,6 @@ public abstract class AbstractLoadGeneratorTest<L extends AbstractLoadGenerator,
                 .stream()
                 .map(BrowserCloud::getUuid)
                 .collect(Collectors.toList());
-    }
-
-    private static boolean isChromeBrowserAvailable() {
-        RemoteWebDriver driver = null;
-        try {
-            driver = RemoteWebDriverHelper.createLocalChromeDriver(
-                    null, 
-                    SuiteConfig.builder()
-                            .webDriverMode(WebDriverMode.local)
-                            .chromeMode(ChromeMode.headless)
-                            .build()
-            );
-            return true;
-        } catch(Exception e) {
-            return false;
-        } finally {
-            if(driver != null) {
-                driver.quit();
-            }
-        }
     }
     
     protected class LoadGeneratorRunContext {

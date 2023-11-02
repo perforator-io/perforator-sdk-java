@@ -32,13 +32,11 @@ import org.junit.jupiter.api.TestInstance;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractActionProcessorTest<T extends ActionConfig, V extends ActionInstance<T>, P extends AbstractActionProcessor<T, V>> {
     
     protected static final String VERIFICATIONS_APP_URL = LoadGeneratorConfig.builder().buildWithDefaults().getApiBaseUrl().replace("api", "verifications");
-    protected static final boolean CHROME_BROWSER_AVAILABLE = isChromeBrowserAvailable();
     protected static final String SELECTOR_TYPE_KEY = "selectorType";
 
     protected final ObjectMapper objectMapper = new ObjectMapper();
@@ -66,20 +64,6 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
                         .chromeMode(ChromeMode.headless)
                         .build()
         );
-    }
-
-    private static boolean isChromeBrowserAvailable() {
-        RemoteWebDriver driver = null;
-        try {
-            driver = createHeadlessLocalChromeDriver();
-            return true;
-        } catch (Exception e) {
-            return false;
-        } finally {
-            if (driver != null) {
-                driver.quit();
-            }
-        }
     }
 
     protected abstract List<Map<String, String>> buildInvalidSuiteProps() throws Exception;
@@ -291,8 +275,6 @@ public abstract class AbstractActionProcessorTest<T extends ActionConfig, V exte
 
     @Test
     public final void verifyActionInstanceProcessing() throws Exception {
-        assumeTrue(CHROME_BROWSER_AVAILABLE);
-        
         P actionProcessor = newActionProcessorInstance();
         assertNotNull(actionProcessor);
         
