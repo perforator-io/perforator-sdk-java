@@ -73,7 +73,7 @@ build:
 test:
   stage: test
   before_script:
-    - apt-get update && apt-get install -y chromium-browser
+    - apt-get update && apt-get install -y chromium
   script:
     - mvn verify -s .gitlab-mvn-settings.xml -Dmaven.test.redirectTestOutputToFile=true $MAVEN_CLI_OPTS
   artifacts:
