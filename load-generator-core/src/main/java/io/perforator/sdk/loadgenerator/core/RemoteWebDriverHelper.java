@@ -44,7 +44,6 @@ public class RemoteWebDriverHelper {
         }
 
         if (suiteConfig.getChromeMode() == ChromeMode.headless) {
-            chromeOptions.setHeadless(false);
             chromeOptions.addArguments(
                     "--headless=new",
                     "--no-sandbox",

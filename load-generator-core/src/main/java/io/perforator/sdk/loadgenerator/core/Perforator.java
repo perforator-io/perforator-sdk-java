@@ -65,8 +65,7 @@ public final class Perforator {
      *   <li>
      *     A new instance of {@link org.openqa.selenium.chrome.ChromeDriver ChromeDriver} 
      *     is created if the invoker is executed outside of the load generator 
-     *     context. It can be automatically started as 
-     *     {@link org.openqa.selenium.chrome.ChromeOptions#setHeadless(boolean) headless}
+     *     context. It can be automatically started as headless
      *     if a system has a {@link System#getProperty(java.lang.String) property}
      *     <br>
      *     <b>
@@ -109,8 +108,7 @@ public final class Perforator {
      *   <li>
      *     A new instance of {@link org.openqa.selenium.chrome.ChromeDriver ChromeDriver} 
      *     is created if the invoker is executed outside of the load generator 
-     *     context. It can be automatically started as 
-     *     {@link org.openqa.selenium.chrome.ChromeOptions#setHeadless(boolean) headless}
+     *     context. It can be automatically started as headless
      *     if a system has a {@link System#getProperty(java.lang.String) property}
      *     <br>
      *     <b>

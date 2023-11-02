@@ -16,7 +16,7 @@
         
         <!-- dependency versions -->
         <perforator.version>1.4.0-SNAPSHOT</perforator.version>
-        <log4j.version>2.20.0</log4j.version>
+        <log4j.version>2.21.0</log4j.version>
         
         <suiteXmlFile>${project.basedir}/src/test/resources/load_test.xml</suiteXmlFile>
     </properties>
