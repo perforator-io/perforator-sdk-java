@@ -48,6 +48,7 @@ variables:
     -DdeployAtEnd=true
     -Dsuite.chromeMode=headless
     -Dwebdriver.chrome.logfile=/dev/stdout
+    -Dwebdriver.chrome.loglevel=FINE
 
 image: maven:3.9-amazoncorretto-11-debian
 
