@@ -31,6 +31,10 @@ variables:
   EXAMPLES_CODELESS_ZIP: "$EXAMPLES_CODELESS_NAME.zip"
   EXAMPLES_CODELESS_DST: "$EXAMPLES_ARTIFACTS/$EXAMPLES_CODELESS_ZIP"
   EXAMPLES_CODELESS_URL: "$EXAMPLES_PACKAGE_REGISTRY_URL/$EXAMPLES_CODELESS_ZIP"
+  
+  # Selenium options
+  SE_BROWSER: chrome
+  SE_BROWSER_VERSION: 116
  
   # General options for maven
   MAVEN_OPTS: >-
@@ -77,8 +81,6 @@ test:
   tags:
     - saas-linux-medium-amd64
   stage: test
-  before_script:
-    - apt-get update && apt-get install -y chromium chromium-driver
   script:
     - mvn verify -s .gitlab-mvn-settings.xml $MAVEN_CLI_OPTS
   artifacts:
