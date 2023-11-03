@@ -72,6 +72,8 @@ build:
       dotenv: build.env
   
 test:
+  tags:
+    - saas-linux-medium-amd64
   stage: test
   before_script:
     - apt-get update && apt-get install -y chromium chromium-driver
