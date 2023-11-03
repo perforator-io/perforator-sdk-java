@@ -77,9 +77,9 @@ final class TransactionsManagerImpl implements TransactionsManager {
         
         if(transactionError != null && transactionContext.getSuiteContext().isLogFailedTransactions()) {
             LOGGER.error(
-                    "Transaction {}, {} failed with error", 
-                    transactionContext.getTransactionName(),
+                    "Failed transaction - '{}' : '{}' => ", 
                     transactionContext.getTransactionID(),
+                    transactionContext.getTransactionName(),
                     transactionError
             );
         }
