@@ -32,10 +32,13 @@ variables:
   EXAMPLES_CODELESS_DST: "$EXAMPLES_ARTIFACTS/$EXAMPLES_CODELESS_ZIP"
   EXAMPLES_CODELESS_URL: "$EXAMPLES_PACKAGE_REGISTRY_URL/$EXAMPLES_CODELESS_ZIP"
   
-  # Selenium options
-  SE_BROWSER: chrome
-  SE_BROWSER_VERSION: 116
- 
+  # Chrome options
+  CHROME_ARCH: "amd64"
+  CHROME_VERSION: "116.0.5845.187-1"
+  CHROME_DEB_BASE_URL: "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable"
+  CHROME_DEB_NAME: "google-chrome-stable"
+  CHROME_DEB_URL: "${CHROME_DEB_BASE_URL}/${CHROME_DEB_NAME}_${CHROME_VERSION}_${CHROME_ARCH}.deb"
+   
   # General options for maven
   MAVEN_OPTS: >-
     -Dhttps.protocols=TLSv1.2
@@ -81,6 +84,10 @@ test:
   tags:
     - saas-linux-medium-amd64
   stage: test
+  before_script:
+    - apt-get update && apt-get install -y wget
+    - wget --no-verbose -O /tmp/chrome.deb $CHROME_DEB_URL
+    - apt-get install -y /tmp/chrome.deb
   script:
     - mvn verify -s .gitlab-mvn-settings.xml $MAVEN_CLI_OPTS
   artifacts:
