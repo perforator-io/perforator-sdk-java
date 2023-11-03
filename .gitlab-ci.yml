@@ -47,6 +47,7 @@ variables:
     -DinstallAtEnd=true
     -DdeployAtEnd=true
     -Dsuite.chromeMode=headless
+    -Dwebdriver.chrome.logfile=/dev/stdout
 
 image: maven:3.9-amazoncorretto-11-debian
 
@@ -75,7 +76,7 @@ test:
   before_script:
     - apt-get update && apt-get install -y chromium chromium-driver
   script:
-    - mvn verify -s .gitlab-mvn-settings.xml -Dmaven.test.redirectTestOutputToFile=true $MAVEN_CLI_OPTS
+    - mvn verify -s .gitlab-mvn-settings.xml $MAVEN_CLI_OPTS
   artifacts:
     when: always
     paths: 
