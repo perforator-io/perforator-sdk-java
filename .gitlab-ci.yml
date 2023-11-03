@@ -47,6 +47,7 @@ variables:
     -DinstallAtEnd=true
     -DdeployAtEnd=true
     -Dsuite.chromeMode=headless
+    -Dsuite.logFailedTransactions=true
     -Dwebdriver.chrome.logfile=/dev/stdout
     -Dwebdriver.chrome.loglevel=FINE
 

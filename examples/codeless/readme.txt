@@ -825,6 +825,16 @@ a look at the below docs describing available options for the config.yml
     #logTransactionID: false
 
     ############################################################################
+    # Should a transaction be logged in case of a failure?                     #
+    #                                                                          #
+    # This is an optional property.                                            #
+    # Overrides:                                                               #
+    # - System property name: suite.logFailedTransactions                      #
+    # - Environment variable name: SUITE_LOGFAILEDTRANSACTIONS                 #
+    ############################################################################
+    #logFailedTransactions: false
+
+    ############################################################################
     # Should we log every step when it is executed by the load generator?      #
     #                                                                          #
     # This is an optional property.                                            #

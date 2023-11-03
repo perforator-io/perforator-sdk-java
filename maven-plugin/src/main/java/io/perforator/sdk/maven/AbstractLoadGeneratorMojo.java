@@ -436,6 +436,17 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
     protected String logTransactionID;
     
     /**
+     * Should a transaction be logged in case of a failure?
+     */
+    @Parameter(
+            required = false,
+            defaultValue = SuiteConfig.DEFAULT_LOG_FAILED_TRANSACTIONS_S,
+            alias = SuiteConfig.Fields.logFailedTransactions,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.logFailedTransactions
+    )
+    protected String logFailedTransactions;
+    
+    /**
      * Should a performance test fail at the end of the execution in case of any
      * suite errors?
      */

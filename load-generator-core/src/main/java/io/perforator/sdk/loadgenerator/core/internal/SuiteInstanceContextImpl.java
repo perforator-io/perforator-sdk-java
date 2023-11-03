@@ -26,6 +26,7 @@ final class SuiteInstanceContextImpl implements SuiteInstanceContext {
     private final boolean logSuiteInstanceID;
     private final boolean logRemoteWebDriverSessionID;
     private final boolean logTransactionID;
+    private final boolean logFailedTransactions;
     private final boolean rebuildLoggingContext;
     private final boolean slowDownEnabled;
     private final String suiteInstanceID;
@@ -46,6 +47,7 @@ final class SuiteInstanceContextImpl implements SuiteInstanceContext {
         this.logSuiteInstanceID = suiteConfigContext.getSuiteConfig().isLogSuiteInstanceID();
         this.logRemoteWebDriverSessionID = suiteConfigContext.getSuiteConfig().isLogRemoteWebDriverSessionID();
         this.logTransactionID = suiteConfigContext.getSuiteConfig().isLogTransactionID();
+        this.logFailedTransactions = suiteConfigContext.getSuiteConfig().isLogFailedTransactions();
         this.rebuildLoggingContext = this.logWorkerID || this.logSuiteInstanceID || this.logRemoteWebDriverSessionID || this.logTransactionID;
     }
 
@@ -103,6 +105,10 @@ final class SuiteInstanceContextImpl implements SuiteInstanceContext {
 
     public boolean isLogTransactionID() {
         return logTransactionID;
+    }
+
+    public boolean isLogFailedTransactions() {
+        return logFailedTransactions;
     }
 
     public boolean isRebuildLoggingContext() {

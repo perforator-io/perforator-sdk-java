@@ -12,8 +12,12 @@ package io.perforator.sdk.loadgenerator.core.internal;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 final class TransactionsManagerImpl implements TransactionsManager {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionsManagerImpl.class);
 
     private final TimeProvider timeProvider;
     private final EventsRouter eventsRouter;
@@ -67,6 +71,15 @@ final class TransactionsManagerImpl implements TransactionsManager {
             eventsRouter.onTransactionFinished(
                     timeProvider.getCurrentTime(),
                     transactionContext,
+                    transactionError
+            );
+        }
+        
+        if(transactionError != null && transactionContext.getSuiteContext().isLogFailedTransactions()) {
+            LOGGER.error(
+                    "Transaction {}, {} failed with error", 
+                    transactionContext.getTransactionName(),
+                    transactionContext.getTransactionID(),
                     transactionError
             );
         }
