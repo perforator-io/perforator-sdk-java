@@ -216,21 +216,6 @@ public class SuiteConfig implements Config {
      * property.
      */
     public static final ChromeMode DEFAULT_CHROME_MODE = ChromeMode.valueOf(DEFAULT_CHROME_MODE_S);
-    
-    /**
-     * String representation of default value for 
-     * <b>{@link SuiteConfig#chromeDriverSilent}</b>
-     * property.
-     */
-    public static final String DEFAULT_CHROME_DRIVER_SILENT_S = "true";
-    
-    /**
-     * Default value(<b>{@value SuiteConfig#DEFAULT_CHROME_DRIVER_SILENT_S}</b>) 
-     * for 
-     * <b>{@link SuiteConfig#chromeDriverSilent}</b>
-     * property.
-     */
-    public static final boolean DEFAULT_CHROME_DRIVER_SILENT = StringConverter.toBoolean(DEFAULT_CHROME_DRIVER_SILENT_S);
 
     /**
      * String representation of default value for 
@@ -591,12 +576,6 @@ public class SuiteConfig implements Config {
      */
     @Default
     ChromeMode chromeMode = DEFAULT_CHROME_MODE;
-    
-    /**
-     * Should a chrome driver be started in silent mode?
-     */
-    @Default
-    boolean chromeDriverSilent = DEFAULT_CHROME_DRIVER_SILENT;
 
     /**
      * The system automatically retries to create a new selenium session, 

@@ -635,20 +635,6 @@ a look at the below docs describing available options for the config.yml
     #chromeMode: headful
     
     ############################################################################
-    # Should a chrome driver be started in silent mode?                        #
-    # Chrome driver service sends all output by default to System::out stream, #
-    # and its output is not necessary in a majority of the cases.              #
-    # Please turn off this flag if you would like to see output from Chrome    #
-    # driver service.                                                          #
-    #                                                                          #
-    # This is an optional property.                                            # 
-    # Overrides:                                                               #
-    # - System property name: suite.chromeDriverSilent                         #
-    # - Environment variable name: SUITE_CHROMEDRIVERSILENT                    #
-    ############################################################################
-    #chromeDriverSilent: true
-    
-    ############################################################################
     # The system automatically retries to create a new selenium session,       #
     # in case of an error(s), starting from the timestamp of the initial       #
     # attempt up until 'webDriverCreateSessionRetryTimeout' is reached.        #

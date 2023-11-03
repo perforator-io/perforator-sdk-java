@@ -772,17 +772,6 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
             property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.chromeMode
     )
     protected String chromeMode;
-    
-    /**
-     * Should a chrome driver be started in silent mode?
-     */
-    @Parameter(
-            required = false,
-            defaultValue = SuiteConfig.DEFAULT_CHROME_DRIVER_SILENT_S,
-            alias = SuiteConfig.Fields.chromeDriverSilent,
-            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.chromeDriverSilent
-    )
-    protected String chromeDriverSilent;
 
     /**
      * The system automatically retries to create a new selenium session, 

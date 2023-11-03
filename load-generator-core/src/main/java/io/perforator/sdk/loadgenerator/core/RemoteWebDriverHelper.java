@@ -13,11 +13,9 @@ package io.perforator.sdk.loadgenerator.core;
 import io.perforator.sdk.loadgenerator.core.configs.ChromeMode;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
-import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -57,10 +55,7 @@ public class RemoteWebDriverHelper {
         );
 
         return applyDefaults(
-                new ChromeDriver(
-                        buildChromeDriverService(suiteConfig.isChromeDriverSilent()), 
-                        chromeOptions
-                ),
+                new ChromeDriver(chromeOptions),
                 suiteConfig
         );
     }
@@ -109,23 +104,6 @@ public class RemoteWebDriverHelper {
         }
 
         return remoteWebDriver;
-    }
-    
-    private static ChromeDriverService buildChromeDriverService(boolean silent) {
-        if(silent) {
-            System.setProperty(
-                    ChromeDriverService.CHROME_DRIVER_SILENT_OUTPUT_PROPERTY,
-                    "true"
-            );
-        }
-        
-        ChromeDriverService result = ChromeDriverService.createDefaultService();
-        
-        if(silent) {
-            result.sendOutputTo(OutputStream.nullOutputStream());
-        }
-        
-        return result;
     }
 
 }
