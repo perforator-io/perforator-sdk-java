@@ -14,6 +14,7 @@ import io.perforator.sdk.loadgenerator.core.configs.ChromeMode;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -21,6 +22,8 @@ import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class RemoteWebDriverHelper {
+    
+    private static final ReentrantLock LOCAL_DRIVER_START_LOCK = new ReentrantLock();
 
     public static RemoteWebDriver createLocalChromeDriver() {
         return createLocalChromeDriver(null);
@@ -53,11 +56,16 @@ public class RemoteWebDriverHelper {
         chromeOptions.setAcceptInsecureCerts(
                 suiteConfig.isWebDriverAcceptInsecureCerts()
         );
-
-        return applyDefaults(
-                new ChromeDriver(chromeOptions),
-                suiteConfig
-        );
+        
+        LOCAL_DRIVER_START_LOCK.lock();
+        try {
+            return applyDefaults(
+                    new ChromeDriver(chromeOptions),
+                    suiteConfig
+            );
+        } finally {
+            LOCAL_DRIVER_START_LOCK.unlock();
+        }
     }
 
     public static RemoteWebDriver applyDefaults(RemoteWebDriver remoteWebDriver, SuiteConfig suiteConfig) {
