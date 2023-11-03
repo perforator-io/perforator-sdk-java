@@ -10,6 +10,7 @@
  */
 package io.perforator.sdk.loadgenerator.core;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import io.perforator.sdk.loadgenerator.core.configs.ChromeMode;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
@@ -22,8 +23,9 @@ import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class RemoteWebDriverHelper {
-    
+
     private static final ReentrantLock LOCAL_DRIVER_START_LOCK = new ReentrantLock();
+    private static boolean webDriverManagerInitialized = false;
 
     public static RemoteWebDriver createLocalChromeDriver() {
         return createLocalChromeDriver(null);
@@ -31,7 +33,7 @@ public class RemoteWebDriverHelper {
 
     public static RemoteWebDriver createLocalChromeDriver(ChromeOptions chromeOptions) {
         return createLocalChromeDriver(
-                chromeOptions, 
+                chromeOptions,
                 SuiteConfig.builder()
                         .applyDefaults()
                         .webDriverMode(WebDriverMode.local)
@@ -40,7 +42,7 @@ public class RemoteWebDriverHelper {
     }
 
     public static RemoteWebDriver createLocalChromeDriver(ChromeOptions chromeOptions, SuiteConfig suiteConfig) {
-        if(chromeOptions == null) {
+        if (chromeOptions == null) {
             chromeOptions = new ChromeOptions();
         }
 
@@ -52,11 +54,23 @@ public class RemoteWebDriverHelper {
                     "--disable-dev-shm-usage"
             );
         }
-        
+
         chromeOptions.setAcceptInsecureCerts(
                 suiteConfig.isWebDriverAcceptInsecureCerts()
         );
-        
+
+        if (!webDriverManagerInitialized) {
+            LOCAL_DRIVER_START_LOCK.lock();
+            try {
+                if (!webDriverManagerInitialized) {
+                    WebDriverManager.chromedriver().setup();
+                    webDriverManagerInitialized = true;
+                }
+            } finally {
+                LOCAL_DRIVER_START_LOCK.unlock();
+            }
+        }
+
         LOCAL_DRIVER_START_LOCK.lock();
         try {
             return applyDefaults(
