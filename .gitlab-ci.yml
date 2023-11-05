@@ -101,7 +101,8 @@ test:
           - "11"
           - "17"
           - "21"
-      - CHROME_VERSION: 
+        # google-chrome-stable versions listing is available here: https://www.ubuntuupdates.org/package/google_chrome/stable/main/base/google-chrome-stable
+        CHROME_VERSION: 
           - "119.0.6045.105-1"
           - "118.0.5993.117-1"
           - "117.0.5938.149-1"
