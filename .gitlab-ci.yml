@@ -33,8 +33,9 @@ variables:
   EXAMPLES_CODELESS_URL: "$EXAMPLES_PACKAGE_REGISTRY_URL/$EXAMPLES_CODELESS_ZIP"
   
   # Chrome options
+  # google-chrome-stable versions are listed here: https://www.ubuntuupdates.org/package/google_chrome/stable/main/base/google-chrome-stable
   CHROME_ARCH: "amd64"
-  CHROME_VERSION: "114.0.5735.198-1"
+  CHROME_VERSION: "119.0.6045.105-1"
   CHROME_DEB_BASE_URL: "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable"
   CHROME_DEB_NAME: "google-chrome-stable"
   CHROME_DEB_URL: "${CHROME_DEB_BASE_URL}/${CHROME_DEB_NAME}_${CHROME_VERSION}_${CHROME_ARCH}.deb"
@@ -81,9 +82,9 @@ build:
       dotenv: build.env
   
 test:
-  tags:
-    - saas-linux-medium-amd64
   stage: test
+  tags:
+    - saas-linux-small-amd64
   before_script:
     - apt-get update && apt-get install -y wget
     - wget --no-verbose -O /tmp/chrome.deb $CHROME_DEB_URL
