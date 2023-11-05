@@ -67,7 +67,6 @@ build:
   script:
     - mvn clean package -s .gitlab-mvn-settings.xml -DskipTests $MAVEN_CLI_OPTS
     - echo "PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> build.env
-  resource_group: one_at_time
   artifacts:
     reports:
       dotenv: build.env
@@ -92,7 +91,7 @@ test:
       junit:
         - ./**/target/surefire-reports/TEST-*.xml
         - ./**/target/failsafe-reports/TEST-*.xml
-  resource_group: one_at_time
+  resource_group: "test-${JDK_VERSION}-${CHROME_VERSION}"
   only:
     - main
   parallel:
@@ -141,7 +140,6 @@ deploy:
     - cp -R $EXAMPLES_CODELESS_SRC $EXAMPLES_ARTIFACTS/$EXAMPLES_CODELESS_NAME
     - cd $EXAMPLES_ARTIFACTS && zip -r -9 $EXAMPLES_CODELESS_ZIP $EXAMPLES_CODELESS_NAME && cd $BUILD_DIR
     - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file $EXAMPLES_CODELESS_DST $EXAMPLES_CODELESS_URL'
-  resource_group: one_at_time
   rules:
     - if: '$CI_COMMIT_TAG =~ /^release-*/'
 
@@ -172,6 +170,5 @@ release:
           url: $EXAMPLES_CODELESS_URL
           filepath: /examples/$EXAMPLES_CODELESS_ZIP
           link_type: package
-  resource_group: one_at_time
   rules:
     - if: '$CI_COMMIT_TAG =~ /^release-*/'
