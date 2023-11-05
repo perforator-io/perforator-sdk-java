@@ -31,14 +31,6 @@ variables:
   EXAMPLES_CODELESS_ZIP: "$EXAMPLES_CODELESS_NAME.zip"
   EXAMPLES_CODELESS_DST: "$EXAMPLES_ARTIFACTS/$EXAMPLES_CODELESS_ZIP"
   EXAMPLES_CODELESS_URL: "$EXAMPLES_PACKAGE_REGISTRY_URL/$EXAMPLES_CODELESS_ZIP"
-  
-  # Chrome options
-  # google-chrome-stable versions are listed here: https://www.ubuntuupdates.org/package/google_chrome/stable/main/base/google-chrome-stable
-  CHROME_ARCH: "amd64"
-  CHROME_VERSION: "119.0.6045.105-1"
-  CHROME_DEB_BASE_URL: "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable"
-  CHROME_DEB_NAME: "google-chrome-stable"
-  CHROME_DEB_URL: "${CHROME_DEB_BASE_URL}/${CHROME_DEB_NAME}_${CHROME_VERSION}_${CHROME_ARCH}.deb"
    
   # General options for maven
   MAVEN_OPTS: >-
@@ -59,8 +51,6 @@ variables:
     -Dwebdriver.chrome.logfile=/dev/stdout
     -Dwebdriver.chrome.loglevel=FINE
 
-image: maven:3.9-amazoncorretto-11-debian
-
 cache:
   paths:
     - .m2/repository
@@ -73,6 +63,7 @@ stages:
   
 build:
   stage: build
+  image: maven:3.9-amazoncorretto-11-debian
   script:
     - mvn clean package -s .gitlab-mvn-settings.xml -DskipTests $MAVEN_CLI_OPTS
     - echo "PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> build.env
@@ -83,11 +74,12 @@ build:
   
 test:
   stage: test
+  image: "maven:3.9-amazoncorretto-${JDK_VERSION}-debian"
   tags:
     - saas-linux-small-amd64
   before_script:
     - apt-get update && apt-get install -y wget
-    - wget --no-verbose -O /tmp/chrome.deb $CHROME_DEB_URL
+    - wget --no-verbose -O /tmp/chrome.deb "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb"
     - apt-get install -y /tmp/chrome.deb
   script:
     - mvn verify -s .gitlab-mvn-settings.xml $MAVEN_CLI_OPTS
@@ -103,9 +95,14 @@ test:
   resource_group: one_at_time
   only:
     - main
+  parallel:
+    matrix:
+      - JDK_VERSION: [11, 17, 21]
+      - CHROME_VERSION: [119.0.6045.105-1, 118.0.5993.117-1, 117.0.5938.149-1, 116.0.5845.187-1, 115.0.5790.170-1, 114.0.5735.198-1]
 
 deploy:
   stage: deploy
+  image: maven:3.9-amazoncorretto-11-debian
   script:
     - export BUILD_DIR=$(pwd)
     - apt-get update -qqy && apt-get install zip -qqy
