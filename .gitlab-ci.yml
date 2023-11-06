@@ -77,10 +77,12 @@ test:
   tags:
     - saas-linux-small-amd64
   before_script:
-    - apt-get update && apt-get install -y wget
+    - apt-get update && apt-get install -y wget curl yq
     - wget --no-verbose -O /tmp/chrome.deb "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb"
     - apt-get install -y /tmp/chrome.deb
   script:
+    - chmod +x getOrCreateProjectID.sh
+    - export LOADGENERATOR_PROJECTKEY=`./getOrCreateProjectID.sh "perforator-sdk-${PROJECT_VERSION}-jdk-${JDK_VERSION}-chrome-${CHROME_VERSION}"`
     - mvn verify -s .gitlab-mvn-settings.xml $MAVEN_CLI_OPTS
   artifacts:
     when: always
