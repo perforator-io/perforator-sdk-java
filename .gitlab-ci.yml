@@ -76,6 +76,7 @@ test:
   image: "maven:3.9-amazoncorretto-${JDK_VERSION}-debian"
   tags:
     - saas-linux-small-amd64
+  retry: 2
   before_script:
     - apt-get update && apt-get install -y wget curl
     - wget --no-verbose https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
@@ -99,11 +100,9 @@ test:
     - main
   parallel:
     matrix:
+      # google-chrome-stable versions listing is available here: https://www.ubuntuupdates.org/package/google_chrome/stable/main/base/google-chrome-stable
       - JDK_VERSION: 
           - "11"
-          - "17"
-          - "21"
-        # google-chrome-stable versions listing is available here: https://www.ubuntuupdates.org/package/google_chrome/stable/main/base/google-chrome-stable
         CHROME_VERSION: 
           - "119.0.6045.105-1"
           - "118.0.5993.117-1"
@@ -111,6 +110,11 @@ test:
           - "116.0.5845.187-1"
           - "115.0.5790.170-1"
           - "114.0.5735.198-1"
+      - JDK_VERSION: 
+          - "17"
+          - "21"
+        CHROME_VERSION: 
+          - "119.0.6045.105-1"
 
 deploy:
   stage: deploy
