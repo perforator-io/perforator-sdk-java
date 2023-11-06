@@ -77,7 +77,8 @@ test:
   tags:
     - saas-linux-small-amd64
   before_script:
-    - apt-get update && apt-get install -y wget curl yq
+    - apt-get update && apt-get install -y wget curl
+    - wget --no-verbose https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
     - wget --no-verbose -O /tmp/chrome.deb "https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb"
     - apt-get install -y /tmp/chrome.deb
   script:
