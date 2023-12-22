@@ -14,7 +14,9 @@ suites:
       Open and run crawler:
         - sleep: 0.1s
         - crawler:
-            urls: https://verifications.perforator.io
+            url: https://verifications.perforator.io
+            scriptTimeout: 30s
+            pageLoadTimeout: 30s
             linksExtractorScript: |
               const result = [];
               const links = document.querySelectorAll("a[href]:not([href^='javascript']):not([href^='void']):not([href='#'])");

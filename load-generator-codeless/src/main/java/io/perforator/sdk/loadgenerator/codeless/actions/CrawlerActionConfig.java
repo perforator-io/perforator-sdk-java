@@ -27,7 +27,7 @@ public class CrawlerActionConfig implements ActionConfig {
     private final String actionName = DEFAULT_ACTION_NAME;
 
     @FieldNameConstants.Include
-    private final List<String> urls;
+    private final String url;
 
     @FieldNameConstants.Include
     private final List<String> domains;
@@ -52,6 +52,12 @@ public class CrawlerActionConfig implements ActionConfig {
 
     @FieldNameConstants.Include
     private final String maxDuration;
+    
+    @FieldNameConstants.Include
+    private final String pageLoadTimeout;
+    
+    @FieldNameConstants.Include
+    private final String scriptTimeout;
 
     @FieldNameConstants.Include
     private final String enabled;

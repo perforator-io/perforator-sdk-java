@@ -968,6 +968,75 @@ a look at the below docs describing available options for the config.yml
         #     timeout: 15.5s                                                   #
         ########################################################################
         #- open: https://verifications.perforator.io/?delay=250ms
+
+        ########################################################################
+        # Action to automatically crawl the website and visit all links/pages  #
+        # uncovered during automatic navigation.                               #
+        #                                                                      #
+        # You can adjust the following settings to control crawler behavior:   #
+        #                                                                      #
+        # - url - entry point for the bot to start automatic crawling.         #
+        # You can omit this configuration, and the bot should start navigating #
+        # from the currently open page.                                        #
+        #                                                                      #
+        # - domains - list of the domains to allow crawling. The crawler skips #
+        # visiting link if its domain isn't whitelisted.                       #
+        # You can omit this field, and the default domain will be determined   #
+        # based on the URL field or the URL of the currently opened page       #
+        # (in case the URL field is omitted as well).                          #
+        #                                                                      #
+        # - randomize - flag controlling the order of links to visit.          #
+        # Randomization is enabled by default, meaning that when the crawler   #
+        # decides to visit the next link, it will pick a random one from       #
+        # the queue of uncovered links. The crawler will visit uncovered links #
+        # in natural order if you disable this flag.                           #
+        #                                                                      #
+        # - delay - delay to wait before visiting the next link available      #
+        # in the crawling queue. The default value is 5s                       #
+        #                                                                      #
+        # - maxVisitsPerUrl - setting controlling how many times the crawler   #
+        # should visit uncovered link/url. The default value is 1              #
+        #                                                                      #
+        # - maxVisitsOverall - setting controlling how many links should be    #
+        # visited overall. The default value is 1024                           #
+        #                                                                      #
+        # - maxQueueSize - setting controlling the upper bound of how many     #
+        # links can be available in the crawling queue at any given moment.    #
+        # The default value is 4096                                            #
+        #                                                                      #
+        # - maxDuration - the maximum duration of the crawling action.         #
+        # The default value is 5m                                              #
+        #                                                                      #
+        # - pageLoadTimeout - timeout to await for any page to be loaded during#
+        # crawling action. The default value is 30s                            #
+        #                                                                      #
+        # - scriptTimeout - timeout to await for JS script execution extracting#
+        # links from the currently opened page. The default value is 30s       #
+        #                                                                      #
+        # - linksExtractorScript - JS script to extract links/URLs available   #
+        # for crawling from the currently opened page. This script is executed #
+        # on every visited page to add new items into the crawling queue.      #
+        # The default script is below:                                         #
+        #                                                                      #
+        # const result = [];                                                   #
+        # const links = document.querySelectorAll("a[href]:not([href^='javascript']):not([href^='void']):not([href='#'])");
+        # for(var i=0; i < links.length; i++){                                 #
+        #   result.push(links[i].href);                                        #
+        # }                                                                    #
+        # return result;                                                       #
+        #                                                                      #
+        # Examples:                                                            #
+        #                                                                      #
+        # - crawler: https://verifications.perforator.io/                      #
+        # - crawler:                                                           #
+        #     url: https://verifications.perforator.io/                        #
+        # - crawler:                                                           #
+        #     url: https://verifications.perforator.io/                        #
+        #     delay: 30s                                                       #
+        #     maxVisitsOverall: 15                                             #
+        #     maxDuration: 15m                                                 #
+        ########################################################################
+        #- crawler: https://verifications.perforator.io/?delay=250ms
         
         ########################################################################
         # Action to await page load event in the current browser window.       #

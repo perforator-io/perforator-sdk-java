@@ -14,4 +14,5 @@ suites:
       Open and run crawler:
         - sleep: 0.1s
         - crawler:
-            url: invalid
+            url: https://verifications.perforator.io
+            pageLoadTimeout: invalid

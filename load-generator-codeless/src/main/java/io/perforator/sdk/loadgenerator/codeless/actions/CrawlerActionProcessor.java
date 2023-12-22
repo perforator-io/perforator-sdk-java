@@ -19,7 +19,6 @@ import io.perforator.sdk.loadgenerator.core.Perforator;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -67,25 +66,19 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
         }
 
         for (FormattingMap formatter : formatters) {
-            List<String> urls = buildStringListForActionInstance(
-                    CrawlerActionConfig.Fields.urls,
-                    actionConfig.getUrls(),
+            String url = buildStringForActionInstance(
+                    CrawlerActionConfig.Fields.url,
+                    actionConfig.getUrl(),
                     formatter,
                     false
             );
-            if (urls != null) {
-                for (String url : urls) {
-                    if (url == null || url.isBlank()) {
-                        continue;
-                    }
-
-                    try {
-                        new URI(url.trim()).toURL();
-                    } catch (URISyntaxException | MalformedURLException e) {
-                        throw new RuntimeException(
-                                "Action '" + actionConfig.getActionName() + "' has invalid url => " + url
-                        );
-                    }
+            if (url != null && !url.isBlank()) {
+                try {
+                    new URI(url.trim()).toURL();
+                } catch (URISyntaxException | MalformedURLException e) {
+                    throw new RuntimeException(
+                            "Action '" + actionConfig.getActionName() + "' has invalid url => " + url
+                    );
                 }
             }
 
@@ -115,11 +108,10 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
     @Override
     public CrawlerActionConfig buildActionConfig(String actionName, JsonNode actionValue) {
         return CrawlerActionConfig.builder()
-                .urls(
-                        getOptionalNestedFields(
-                                CrawlerActionConfig.Fields.urls,
-                                actionValue,
-                                null
+                .url(
+                        getOptionalValueOrNestedField(
+                                CrawlerActionConfig.Fields.url,
+                                actionValue
                         )
                 )
                 .domains(
@@ -178,6 +170,20 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                                 DEFAULT_MAX_DURATION
                         )
                 )
+                .pageLoadTimeout(
+                        getOptionalNestedField(
+                                CrawlerActionConfig.Fields.pageLoadTimeout,
+                                actionValue,
+                                null
+                        )
+                )
+                .scriptTimeout(
+                        getOptionalNestedField(
+                                CrawlerActionConfig.Fields.scriptTimeout,
+                                actionValue,
+                                null
+                        )
+                )
                 .enabled(
                         getOptionalNestedField(
                                 CrawlerActionConfig.Fields.enabled,
@@ -194,10 +200,10 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                 .config(
                         actionConfig
                 )
-                .urls(
-                        buildStringListForActionInstance(
-                                CrawlerActionInstance.Fields.urls,
-                                actionConfig.getUrls(),
+                .url(
+                        buildStringForActionInstance(
+                                CrawlerActionInstance.Fields.url,
+                                actionConfig.getUrl(),
                                 formatter,
                                 false
                         )
@@ -259,6 +265,24 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                                 formatter
                         ).random()
                 )
+                .pageLoadTimeout(
+                        buildDurationForActionInstance(
+                                CrawlerActionInstance.Fields.pageLoadTimeout,
+                                actionConfig.getPageLoadTimeout(),
+                                suiteConfig.getWebDriverSessionPageLoadTimeout(),
+                                formatter,
+                                false
+                        )
+                )
+                .scriptTimeout(
+                        buildDurationForActionInstance(
+                                CrawlerActionInstance.Fields.scriptTimeout,
+                                actionConfig.getScriptTimeout(),
+                                suiteConfig.getWebDriverSessionScriptTimeout(),
+                                formatter,
+                                false
+                        )
+                )
                 .enabled(
                         buildEnabledForActionInstance(
                                 CrawlerActionInstance.Fields.enabled,
@@ -273,30 +297,41 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
     public void processActionInstance(RemoteWebDriver driver, CrawlerActionInstance actionInstance) {
         long endTime = System.currentTimeMillis() + actionInstance.getMaxDuration().toMillis();
         
-        List<String> urls = new ArrayList<>();
-        if (actionInstance.getUrls() == null || actionInstance.getUrls().isEmpty()) {
-            Perforator.sleep(actionInstance.getDelay().toMillis());
-            urls.addAll(
-                    collectUrlsFromThePage(
-                            driver,
-                            actionInstance.getLinksExtractorScript()
-                    )
+        if(actionInstance.getPageLoadTimeout() != null) {
+            driver.manage().timeouts().pageLoadTimeout(
+                    actionInstance.getPageLoadTimeout()
             );
+        }
+        
+        if(actionInstance.getScriptTimeout() != null) {
+            driver.manage().timeouts().scriptTimeout(
+                    actionInstance.getScriptTimeout()
+            );
+        }
+        
+        String startingUrl;
+        if (actionInstance.getUrl() == null || actionInstance.getUrl().isBlank()) {
+            startingUrl = driver.getCurrentUrl();
+            if (startingUrl == null || startingUrl.isBlank()) {
+                throw new RuntimeException(
+                        "Action '" + actionInstance.getConfig().getActionName() + "' can't be started - there is no page openned"
+                );
+            }
         } else {
-            urls.addAll(actionInstance.getUrls());
+            startingUrl = actionInstance.getUrl();
         }
 
         Set<String> domains = new HashSet<>();
         if (actionInstance.getDomains() == null || actionInstance.getDomains().isEmpty()) {
-            for (String url : urls) {
-                try {
-                    String domain = new URI(url).toURL().getHost();
-                    if (domain != null && !domain.isBlank()) {
-                        domains.add(domain);
-                    }
-                } catch (URISyntaxException | MalformedURLException e) {
-                    //ignore
+            try {
+                String domain = new URI(startingUrl).toURL().getHost();
+                if (domain != null && !domain.isBlank()) {
+                    domains.add(domain);
                 }
+            } catch (URISyntaxException | MalformedURLException e) {
+                throw new RuntimeException(
+                        "Action '" + actionInstance.getConfig().getActionName() + "' can't be started - domain is invalid: " + startingUrl
+                );
             }
         } else {
             domains.addAll(actionInstance.getDomains());
@@ -309,7 +344,7 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                 actionInstance.getMaxVisitsOverall(),
                 actionInstance.getMaxVisitsPerUrl()
         );
-        crawlerQueue.pushAll(urls);
+        crawlerQueue.push(startingUrl);
 
         String url;
         while ((url = crawlerQueue.poll()) != null) {
@@ -318,12 +353,18 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                 return;
             }
 
+            long navigationStartedTimestamp = System.currentTimeMillis();
             driver.navigate().to(url);
-            Perforator.sleep(actionInstance.getDelay().toMillis());
-
+            long navigationDuration = System.currentTimeMillis() - navigationStartedTimestamp;
+            long remainingTimeToSleep = actionInstance.getDelay().toMillis() - navigationDuration;
+            
             if (endTime <= System.currentTimeMillis()) {
                 crawlerQueue.destroy();
                 return;
+            }
+            
+            if(remainingTimeToSleep > 0) {
+                Perforator.sleep(remainingTimeToSleep);
             }
 
             crawlerQueue.pushAll(

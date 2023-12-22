@@ -13,5 +13,4 @@ suites:
     steps:
       Open and run crawler:
         - sleep: 0.1s
-        - crawler:
-            url: invalid
+        - crawler: https://verifications.perforator.io

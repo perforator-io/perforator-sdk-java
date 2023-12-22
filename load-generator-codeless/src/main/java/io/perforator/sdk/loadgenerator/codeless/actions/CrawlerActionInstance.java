@@ -26,7 +26,7 @@ public class CrawlerActionInstance implements ActionInstance<CrawlerActionConfig
     private final CrawlerActionConfig config;
 
     @FieldNameConstants.Include
-    private final List<String> urls;
+    private final String url;
 
     @FieldNameConstants.Include
     private final List<String> domains;
@@ -51,6 +51,12 @@ public class CrawlerActionInstance implements ActionInstance<CrawlerActionConfig
 
     @FieldNameConstants.Include
     private final Duration maxDuration;
+    
+    @FieldNameConstants.Include
+    private final Duration pageLoadTimeout;
+    
+    @FieldNameConstants.Include
+    private final Duration scriptTimeout;
 
     @FieldNameConstants.Include
     private final boolean enabled;
@@ -58,7 +64,7 @@ public class CrawlerActionInstance implements ActionInstance<CrawlerActionConfig
     @Override
     public String toLoggingDetails() {
         return new StringBuilder()
-                .append(CrawlerActionInstance.Fields.urls).append(" = ").append(urls == null ? "" : "[" + String.join(",", urls) + "]")
+                .append(CrawlerActionInstance.Fields.url).append(" = ").append(url)
                 .append(", ")
                 .append(CrawlerActionInstance.Fields.domains).append(" = ").append(domains == null ? "" : "[" + String.join(",", domains) + "]")
                 .append(", ")
@@ -75,6 +81,10 @@ public class CrawlerActionInstance implements ActionInstance<CrawlerActionConfig
                 .append(CrawlerActionInstance.Fields.maxQueueSize).append(" = ").append(maxQueueSize)
                 .append(", ")
                 .append(CrawlerActionInstance.Fields.maxDuration).append(" = ").append(maxDuration)
+                .append(", ")
+                .append(CrawlerActionInstance.Fields.pageLoadTimeout).append(" = ").append(pageLoadTimeout)
+                .append(", ")
+                .append(CrawlerActionInstance.Fields.scriptTimeout).append(" = ").append(scriptTimeout)
                 .toString();
     }
 }

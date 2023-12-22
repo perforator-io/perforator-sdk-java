@@ -124,6 +124,36 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
 
         return result.trim();
     }
+    
+    protected String getOptionalValueOrNestedField(String fieldName, JsonNode node) {
+        if (node == null || node.isNull()) {
+            throw new RuntimeException(
+                    actionName
+                            + "."
+                            + fieldName
+                            + " is required"
+            );
+        }
+
+        if (node.isArray()) {
+            throw new RuntimeException(
+                    actionName
+                            + "."
+                            + fieldName
+                            + " should not be array"
+            );
+        }
+
+        String result = null;
+        
+        if (node.isValueNode()) {
+            result = asText(fieldName, node);
+        } else if (node.isObject() && node.has(fieldName)) {
+            result = asText(fieldName, node.get(fieldName));
+        }
+
+        return result != null ? result.trim() : null;
+    }
 
     protected String getRequiredNestedField(String fieldName, JsonNode node) {
         if (node == null || node.isNull() || node.isValueNode() || node.isArray() || !node.has(fieldName)) {

@@ -16,7 +16,7 @@ public class CrawlerActionProcessorTest extends AbstractActionProcessorTest<Craw
     protected List<Map<String, String>> buildInvalidSuiteProps() throws Exception {
         return List.of(
                 Map.of(
-                        CrawlerActionConfig.Fields.urls, "invalid-url",
+                        CrawlerActionConfig.Fields.url, "invalid-url",
                         CrawlerActionConfig.Fields.domains, "invalid-domain",
                         CrawlerActionConfig.Fields.randomize, "invalid-randomize",
                         CrawlerActionConfig.Fields.delay, "invalid-duration",
@@ -24,6 +24,7 @@ public class CrawlerActionProcessorTest extends AbstractActionProcessorTest<Craw
                         CrawlerActionConfig.Fields.maxVisitsPerUrl, "invalid-integer",
                         CrawlerActionConfig.Fields.maxVisitsOverall, "invalid-integer",
                         CrawlerActionConfig.Fields.maxDuration, "invalid-duration",
+                        CrawlerActionConfig.Fields.pageLoadTimeout, "invalid-duration",
                         CrawlerActionConfig.Fields.enabled, "invalid-enabled"
                 )
         );
@@ -33,7 +34,7 @@ public class CrawlerActionProcessorTest extends AbstractActionProcessorTest<Craw
     protected List<Map<String, String>> buildValidSuiteProps() throws Exception {
         return List.of(
                 Map.of(
-                        CrawlerActionConfig.Fields.urls, "https://verifications.perforator.io",
+                        CrawlerActionConfig.Fields.url, "https://verifications.perforator.io",
                         CrawlerActionConfig.Fields.domains, "verifications.perforator.io",
                         CrawlerActionConfig.Fields.linksExtractorScript, CrawlerActionProcessor.DEFAULT_LINKS_EXTRACTOR_SCRIPT,
                         CrawlerActionConfig.Fields.randomize, "true",
@@ -51,10 +52,7 @@ public class CrawlerActionProcessorTest extends AbstractActionProcessorTest<Craw
     protected List<JsonNode> buildInvalidActionConfigs() throws Exception {
         return List.of(
                 newObjectNode(Map.of(
-                        CrawlerActionConfig.Fields.urls, new ArrayNode(
-                                JsonNodeFactory.instance,
-                                List.of(new TextNode("invalid-url"))
-                        )
+                        CrawlerActionConfig.Fields.url, new TextNode("invalid-url")
                 )),
                 newObjectNode(Map.of(
                         CrawlerActionConfig.Fields.domains, new ArrayNode(
@@ -69,10 +67,7 @@ public class CrawlerActionProcessorTest extends AbstractActionProcessorTest<Craw
     protected List<JsonNode> buildValidActionConfigs() throws Exception {
         return List.of(
                 newObjectNode(Map.of(
-                        CrawlerActionConfig.Fields.urls, new ArrayNode(
-                                JsonNodeFactory.instance,
-                                List.of(new TextNode("${" + CrawlerActionConfig.Fields.urls + "}"))
-                        ),
+                        CrawlerActionConfig.Fields.url, new TextNode("${" + CrawlerActionConfig.Fields.url + "}"),
                         CrawlerActionConfig.Fields.domains, new ArrayNode(
                                 JsonNodeFactory.instance,
                                 List.of(new TextNode("${" + CrawlerActionConfig.Fields.domains + "}"))
@@ -89,6 +84,6 @@ public class CrawlerActionProcessorTest extends AbstractActionProcessorTest<Craw
 
     @Override
     protected void onAfterActionInstanceProcessing(RemoteWebDriver driver, CrawlerActionProcessor actionProcessor, CrawlerActionInstance actionInstance) throws Exception {
-        assertNotEquals(actionInstance.getUrls().get(0), driver.getCurrentUrl());
+        assertNotEquals(actionInstance.getUrl(), driver.getCurrentUrl());
     }
 }

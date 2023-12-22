@@ -14,5 +14,5 @@ suites:
       Open and run crawler:
         - sleep: 0.1s
         - crawler:
-            urls: https://verifications.perforator.io
+            url: https://verifications.perforator.io
             domains: broken domain
