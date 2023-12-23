@@ -120,7 +120,7 @@ deploy:
   image: maven:3.9-amazoncorretto-11-debian
   script:
     - export BUILD_DIR=$(pwd)
-    - apt-get update -qqy && apt-get install zip -qqy
+    - apt-get update -qqy && apt-get install zip curl -qqy
     - mvn deploy -P-examples -s .gitlab-mvn-settings.xml -DskipTests $MAVEN_CLI_OPTS
     - mkdir $EXAMPLES_ARTIFACTS
     # API client
