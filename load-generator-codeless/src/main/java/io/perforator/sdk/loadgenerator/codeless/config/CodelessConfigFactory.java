@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.DurationDeserializer;
+import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.core.configs.StringConverter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -39,13 +40,13 @@ public final class CodelessConfigFactory {
     }
 
     public CodelessConfig getCodelessConfig(Path configPath) throws IOException {
-        CodelessConfig result = objectMapper.readValue(
+        CodelessConfig codelessConfig = objectMapper.readValue(
                 configPath.toFile(),
                 CodelessConfig.class
         );
         
-        List<CodelessSuiteConfig> suiteConfigs = result.getSuiteConfigs();
-        CodelessLoadGeneratorConfig loadGeneratorConfig = result.getLoadGeneratorConfig();
+        List<CodelessSuiteConfig> suiteConfigs = codelessConfig.getSuiteConfigs();
+        CodelessLoadGeneratorConfig loadGeneratorConfig = codelessConfig.getLoadGeneratorConfig();
         
         if(loadGeneratorConfig == null) {
             loadGeneratorConfig = CodelessLoadGeneratorConfig.builder().buildWithDefaults();
@@ -55,12 +56,14 @@ public final class CodelessConfigFactory {
         
         if (suiteConfigs != null && !suiteConfigs.isEmpty()) {
             suiteConfigs = new ArrayList<>();
-            for (CodelessSuiteConfig suiteConfig : result.getSuiteConfigs()) {
+            for (CodelessSuiteConfig suiteConfig : codelessConfig.getSuiteConfigs()) {
+                List<FormattingMap> formatters = buildFormatters(suiteConfig, codelessConfig.getVariables());
+                
                 suiteConfigs.add(
-                        suiteConfig.toBuilder().buildWithDefaults(
+                        suiteConfig.toBuilder().props(formatters).buildWithDefaults(
                                 System::getProperty,
                                 System::getenv,
-                                loadGeneratorConfig.getConstants()::get
+                                codelessConfig.getVariables()::get
                         )
                 );
             }
@@ -70,6 +73,42 @@ public final class CodelessConfigFactory {
                 .loadGeneratorConfig(loadGeneratorConfig)
                 .suiteConfigs(suiteConfigs)
                 .build();
+    }
+    
+    private static List<FormattingMap> buildFormatters(CodelessSuiteConfig suite, FormattingMap constants) {
+        if(suite == null) {
+            return null;
+        }
+        
+        List<FormattingMap> formattersFromProps = suite.getProps();
+        List<FormattingMap> formattersFromFile = CSVUtils.parseToFormattingMapList(suite.getPropsFile());
+        List<FormattingMap> formattersToReturn = new ArrayList<>();
+        
+        if(formattersFromProps != null && !formattersFromProps.isEmpty()) {
+            for (FormattingMap formatter : formattersFromProps) {
+                if(constants != null && !constants.isEmpty()) {
+                    formattersToReturn.add(new FormattingMap(constants, formatter));
+                } else {
+                    formattersToReturn.add(formatter);
+                }
+            }
+        }
+        
+        if(formattersFromFile != null && !formattersFromFile.isEmpty()) {
+            for (FormattingMap formatter : formattersFromFile) {
+                if(constants != null && !constants.isEmpty()) {
+                    formattersToReturn.add(new FormattingMap(constants, formatter));
+                } else {
+                    formattersToReturn.add(formatter);
+                }
+            }
+        }
+        
+        if(formattersToReturn.isEmpty() && constants != null && !constants.isEmpty()) {
+            formattersToReturn.add(constants);
+        }
+        
+        return formattersToReturn;
     }
 
     private static class CustomDurationDeserializer extends DurationDeserializer {

@@ -8,22 +8,21 @@
 #  by the Apache License, Version 2.0.
 
 ---
-loadGenerator:
-  constants:
-    suite.webDriverFluentWaitTimeout: 55s
-    suite.webDriverSessionPageLoadTimeout: 55s
-    defaultOpenTimeout: ${suite.webDriverSessionPageLoadTimeout}
-    domain: verifications.perforator.io
-    protocol: https
-    port: 443
-    context: ''
-    baseUrl: '${protocol}://${domain}:${port}/${context}'
-    pom.nav: 'nav#main'
-    pom.nav.items: '${pom.nav} ul li'
-    pom.nav.items.home: '${pom.nav.items}:nth-child(1)'
-    enablingCondition: true
-    ignoreRemainingSteps: false
-    ignoreRemainingActions: false
+variables:
+  suite.webDriverFluentWaitTimeout: 55s
+  suite.webDriverSessionPageLoadTimeout: 55s
+  defaultOpenTimeout: ${suite.webDriverSessionPageLoadTimeout}
+  domain: verifications.perforator.io
+  protocol: https
+  port: 443
+  context: ''
+  baseUrl: '${protocol}://${domain}:${port}/${context}'
+  pom.nav: 'nav#main'
+  pom.nav.items: '${pom.nav} ul li'
+  pom.nav.items.home: '${pom.nav.items}:nth-child(1)'
+  enablingCondition: true
+  ignoreRemainingSteps: false
+  ignoreRemainingActions: false
 suites:
   Suite One:
     steps:

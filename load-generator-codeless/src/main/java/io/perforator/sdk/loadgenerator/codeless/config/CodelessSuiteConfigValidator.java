@@ -24,6 +24,10 @@ public final class CodelessSuiteConfigValidator {
     }
 
     public static List<CodelessSuiteConfig> validate(CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suiteConfigs) {
+        if(loadGeneratorConfig == null) {
+            throw new RuntimeException("loadGenerator is required");
+        }
+        
         if (suiteConfigs == null || suiteConfigs.isEmpty()) {
             throw new RuntimeException("suites are required");
         }

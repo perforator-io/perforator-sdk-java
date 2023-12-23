@@ -400,21 +400,21 @@ a look at the below docs describing available options for the config.yml
   #  localhost: 127.0.0.1
   #  example.com: 1.2.3.4
 
-  ##############################################################################
-  # You can set the 'constants' key-value map to allow common values reuse     #
-  # across different suites and actions.                                       #
-  #                                                                            #
-  # Suite actions can refer to a value from a constants map using the following#
-  # syntax: ${key_name}                                                        #
-  #                                                                            #
-  # This is an optional property.                                              #
-  ##############################################################################
-  #constants:
-  #  suite.webDriverFluentWaitTimeout: 30s
-  #  baseUrl: 'https://example.com'
-  #  dashboardUrl: '${baseUrl}/dashboard'
-  #  pom.nav: 'nav#main'
-  #  pom.nav.home: '${pom.nav} ul li:nth-child(1)'
+##############################################################################
+# You can set the 'variables' key-value map to allow common values reuse     #
+# across different suites and actions.                                       #
+#                                                                            #
+# Suite actions can refer to a value from a variables map using the following#
+# syntax: ${key_name}                                                        #
+#                                                                            #
+# This is an optional property.                                              #
+##############################################################################
+#variables:
+#  suite.webDriverFluentWaitTimeout: 30s
+#  baseUrl: 'https://example.com'
+#  dashboardUrl: '${baseUrl}/dashboard'
+#  pom.nav: 'nav#main'
+#  pom.nav.home: '${pom.nav} ul li:nth-child(1)'
 
 ################################################################################
 # Every load test has a set of one or more named suites.                       #

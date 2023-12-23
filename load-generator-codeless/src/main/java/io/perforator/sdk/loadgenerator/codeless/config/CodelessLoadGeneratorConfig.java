@@ -11,18 +11,8 @@
 package io.perforator.sdk.loadgenerator.codeless.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import io.perforator.sdk.loadgenerator.codeless.FormattingMap;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
-import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder.Default;
 import lombok.EqualsAndHashCode;
@@ -42,43 +32,15 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CodelessLoadGeneratorConfig extends LoadGeneratorConfig {
-
+    
     @Default
-    @JsonDeserialize(using = ConstantsDeserializer.class)
-    FormattingMap constants = FormattingMap.EMPTY;
+    String id = UUID.randomUUID().toString();
     
     public static abstract class CodelessLoadGeneratorConfigBuilder<C extends CodelessLoadGeneratorConfig, B extends CodelessLoadGeneratorConfigBuilder<C, B>> extends LoadGeneratorConfigBuilder<C, B> {
 
         @Override
         public String getDefaultsPrefix() {
             return DEFAULTS_FIELD_PREFIX;
-        }
-
-    }
-
-    public static class ConstantsDeserializer extends JsonDeserializer<FormattingMap> {
-
-        @Override
-        public FormattingMap deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
-            ObjectCodec oc = jp.getCodec();
-
-            if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
-                LinkedHashMap<String, String> item = oc.readValue(
-                        jp,
-                        new TypeReference<LinkedHashMap<String, String>>() {}
-                );
-
-                if (item == null || item.isEmpty()) {
-                    return FormattingMap.EMPTY;
-                }
-
-                return new FormattingMap(item);
-            }
-
-            throw JsonMappingException.from(
-                    dc,
-                    "'constants' should be an object"
-            );
         }
 
     }

@@ -8,11 +8,10 @@
 #  by the Apache License, Version 2.0.
 
 ---
-loadGenerator:
-  constants:
-    - a
-    - b
-    - c
+variables:
+  - a
+  - b
+  - c
 suites:
   Suite One:
     steps:

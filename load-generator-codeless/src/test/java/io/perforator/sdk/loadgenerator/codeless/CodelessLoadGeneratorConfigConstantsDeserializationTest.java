@@ -11,63 +11,61 @@
 package io.perforator.sdk.loadgenerator.codeless;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import io.perforator.sdk.loadgenerator.codeless.config.CodelessConfig;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CodelessLoadGeneratorConfigConstantsDeserializationTest {
 
     @Test
     public void validateConstantsAsObject() throws Exception {
-        CodelessLoadGeneratorConfig config = new ObjectMapper().readValue(
-                "{\"constants\":{\"a\":5}}",
-                CodelessLoadGeneratorConfig.class
+        CodelessConfig config = new ObjectMapper().readValue(
+                "{\"variables\":{\"a\":5}}",
+                CodelessConfig.class
         );
 
         assertNotNull(config);
-        assertNotNull(config.getConstants());
-        assertFalse(config.getConstants().isEmpty());
-        assertEquals(1, config.getConstants().size());
-        assertEquals("5", config.getConstants().get("a"));
+        assertNotNull(config.getVariables());
+        assertFalse(config.getVariables().isEmpty());
+        assertEquals(1, config.getVariables().size());
+        assertEquals("5", config.getVariables().get("a"));
     }
 
     @Test
     public void validateEmptyConstants() throws Exception {
-        CodelessLoadGeneratorConfig config = new ObjectMapper().readValue(
+        CodelessConfig config = new ObjectMapper().readValue(
                 "{}",
-                CodelessLoadGeneratorConfig.class
+                CodelessConfig.class
         );
 
         assertNotNull(config);
-        assertNotNull(config.getConstants());
-        assertTrue(config.getConstants().isEmpty());
+        assertNotNull(config.getVariables());
+        assertTrue(config.getVariables().isEmpty());
 
         config = new ObjectMapper().readValue(
-                "{\"constants\":{}}",
-                CodelessLoadGeneratorConfig.class
+                "{\"variables\":{}}",
+                CodelessConfig.class
         );
 
         assertNotNull(config);
-        assertNotNull(config.getConstants());
-        assertTrue(config.getConstants().isEmpty());
+        assertNotNull(config.getVariables());
+        assertTrue(config.getVariables().isEmpty());
     }
 
     @Test
     public void validateComplexConstants() throws Exception {
-        CodelessLoadGeneratorConfig config = new ObjectMapper().readValue(
-                "{\"constants\":{\"a\":5,\"b\":\"ref - ${a}\"}}",
-                CodelessLoadGeneratorConfig.class
+        CodelessConfig config = new ObjectMapper().readValue(
+                "{\"variables\":{\"a\":5,\"b\":\"ref - ${a}\"}}",
+                CodelessConfig.class
         );
 
         assertNotNull(config);
-        assertNotNull(config.getConstants());
-        assertFalse(config.getConstants().isEmpty());
-        assertEquals(2, config.getConstants().size());
-        assertEquals("5", config.getConstants().get("a"));
-        assertEquals("ref - 5", config.getConstants().get("b"));
+        assertNotNull(config.getVariables());
+        assertFalse(config.getVariables().isEmpty());
+        assertEquals(2, config.getVariables().size());
+        assertEquals("5", config.getVariables().get("a"));
+        assertEquals("ref - 5", config.getVariables().get("b"));
     }
 
 }

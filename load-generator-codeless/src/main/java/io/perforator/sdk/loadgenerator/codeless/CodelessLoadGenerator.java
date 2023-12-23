@@ -16,7 +16,6 @@ import io.perforator.sdk.loadgenerator.codeless.actions.ActionProcessor;
 import io.perforator.sdk.loadgenerator.codeless.actions.ActionProcessorsRegistry;
 import io.perforator.sdk.loadgenerator.codeless.actions.IgnoreRemainingActionsActionInstance;
 import io.perforator.sdk.loadgenerator.codeless.actions.IgnoreRemainingStepsActionInstance;
-import io.perforator.sdk.loadgenerator.codeless.config.CSVUtils;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessConfig;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessConfigFactory;
 import io.perforator.sdk.loadgenerator.codeless.config.CodelessLoadGeneratorConfig;
@@ -32,7 +31,6 @@ import io.perforator.sdk.loadgenerator.core.context.TransactionContext;
 import io.perforator.sdk.loadgenerator.core.service.IntegrationService;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -51,62 +49,7 @@ public class CodelessLoadGenerator extends AbstractLoadGenerator {
     }
 
     private CodelessLoadGenerator(IntegrationService<SuiteConfigContext, SuiteInstanceContext, TransactionContext, RemoteWebDriverContext> mediator, CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suites) {
-        super(mediator, loadGeneratorConfig, (List) preprocessConfigs(loadGeneratorConfig, suites));
-    }
-    
-    private static List<CodelessSuiteConfig> preprocessConfigs(CodelessLoadGeneratorConfig loadGeneratorConfig, List<CodelessSuiteConfig> suites) {
-        if(loadGeneratorConfig == null) {
-            throw new RuntimeException("loadGenerator is required");
-        }
-        
-        if(suites == null || suites.isEmpty()) {
-            throw new RuntimeException("suites are required");
-        }
-        
-        List<CodelessSuiteConfig> result = new ArrayList<>(suites.size());
-        for (CodelessSuiteConfig suite : suites) {
-            result.add(preprocessSuite(suite, loadGeneratorConfig.getConstants()));
-        }
-
-        CodelessSuiteConfigValidator.validate(loadGeneratorConfig, result);
-        
-        return List.copyOf(result);
-    }
-    
-    private static CodelessSuiteConfig preprocessSuite(CodelessSuiteConfig suite, FormattingMap constants) {
-        if(suite == null) {
-            return null;
-        }
-        
-        List<FormattingMap> formattersFromProps = suite.getProps();
-        List<FormattingMap> formattersFromFile = CSVUtils.parseToFormattingMapList(suite.getPropsFile());
-        List<FormattingMap> formattersToReturn = new ArrayList<>();
-        
-        if(formattersFromProps != null && !formattersFromProps.isEmpty()) {
-            for (FormattingMap formatter : formattersFromProps) {
-                if(constants != null && !constants.isEmpty()) {
-                    formattersToReturn.add(new FormattingMap(constants, formatter));
-                } else {
-                    formattersToReturn.add(formatter);
-                }
-            }
-        }
-        
-        if(formattersFromFile != null && !formattersFromFile.isEmpty()) {
-            for (FormattingMap formatter : formattersFromFile) {
-                if(constants != null && !constants.isEmpty()) {
-                    formattersToReturn.add(new FormattingMap(constants, formatter));
-                } else {
-                    formattersToReturn.add(formatter);
-                }
-            }
-        }
-        
-        if(formattersToReturn.isEmpty() && constants != null && !constants.isEmpty()) {
-            formattersToReturn.add(constants);
-        }
-        
-        return suite.toBuilder().props(formattersToReturn).build();
+        super(mediator, loadGeneratorConfig, (List) CodelessSuiteConfigValidator.validate(loadGeneratorConfig, suites));
     }
 
     @Override
