@@ -980,7 +980,7 @@ a look at the below docs describing available options for the config.yml
         # from the currently open page.                                        #
         #                                                                      #
         # - domains - list of the domains to allow crawling. The crawler skips #
-        # visiting link if its domain isn't whitelisted.                       #
+        # visiting link if its domain isn't in allow list.                     #
         # You can omit this field, and the default domain will be determined   #
         # based on the URL field or the URL of the currently opened page       #
         # (in case the URL field is omitted as well).                          #
