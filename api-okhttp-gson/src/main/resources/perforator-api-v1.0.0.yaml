@@ -2044,6 +2044,17 @@ paths:
                         - starts_with
                         - not_starts_with
                         - not_contains
+                    - name: frame_id
+                      type: string
+                      filters:
+                        - '!='
+                        - '='
+                        - ends_with
+                        - contains
+                        - not_ends_with
+                        - starts_with
+                        - not_starts_with
+                        - not_contains
                     - name: request_url
                       type: string
                       filters:
@@ -2263,6 +2274,60 @@ paths:
                       filters:
                         - '='
                     - name: dom_content_load
+                      type: long
+                      filters:
+                        - '>'
+                        - '>='
+                        - '!='
+                        - <=
+                        - <
+                        - '='
+                    - name: cwv_ttfb
+                      type: long
+                      filters:
+                        - '>'
+                        - '>='
+                        - '!='
+                        - <=
+                        - <
+                        - '='
+                    - name: cwv_fcp
+                      type: long
+                      filters:
+                        - '>'
+                        - '>='
+                        - '!='
+                        - <=
+                        - <
+                        - '='
+                    - name: cwv_lcp
+                      type: long
+                      filters:
+                        - '>'
+                        - '>='
+                        - '!='
+                        - <=
+                        - <
+                        - '='
+                    - name: cwv_fid
+                      type: long
+                      filters:
+                        - '>'
+                        - '>='
+                        - '!='
+                        - <=
+                        - <
+                        - '='
+                    - name: cwv_cls
+                      type: long
+                      filters:
+                        - '>'
+                        - '>='
+                        - '!='
+                        - <=
+                        - <
+                        - '='
+                    - name: cwv_inp
                       type: long
                       filters:
                         - '>'
@@ -9092,6 +9157,114 @@ paths:
                   value:
                     - name: count
                       type: long
+                    - name: cwv_ttfb_avg
+                      type: long
+                    - name: cwv_ttfb_max
+                      type: long
+                    - name: cwv_ttfb_min
+                      type: long
+                    - name: cwv_ttfb_p50
+                      type: long
+                    - name: cwv_ttfb_p75
+                      type: long
+                    - name: cwv_ttfb_p90
+                      type: long
+                    - name: cwv_ttfb_p95
+                      type: long
+                    - name: cwv_ttfb_p99
+                      type: long
+                    - name: cwv_ttfb_sd
+                      type: long
+                    - name: cwv_fcp_avg
+                      type: long
+                    - name: cwv_fcp_max
+                      type: long
+                    - name: cwv_fcp_min
+                      type: long
+                    - name: cwv_fcp_p50
+                      type: long
+                    - name: cwv_fcp_p75
+                      type: long
+                    - name: cwv_fcp_p90
+                      type: long
+                    - name: cwv_fcp_p95
+                      type: long
+                    - name: cwv_fcp_p99
+                      type: long
+                    - name: cwv_fcp_sd
+                      type: long
+                    - name: cwv_lcp_avg
+                      type: long
+                    - name: cwv_lcp_max
+                      type: long
+                    - name: cwv_lcp_min
+                      type: long
+                    - name: cwv_lcp_p50
+                      type: long
+                    - name: cwv_lcp_p75
+                      type: long
+                    - name: cwv_lcp_p90
+                      type: long
+                    - name: cwv_lcp_p95
+                      type: long
+                    - name: cwv_lcp_p99
+                      type: long
+                    - name: cwv_lcp_sd
+                      type: long
+                    - name: cwv_fid_avg
+                      type: long
+                    - name: cwv_fid_max
+                      type: long
+                    - name: cwv_fid_min
+                      type: long
+                    - name: cwv_fid_p50
+                      type: long
+                    - name: cwv_fid_p75
+                      type: long
+                    - name: cwv_fid_p90
+                      type: long
+                    - name: cwv_fid_p95
+                      type: long
+                    - name: cwv_fid_p99
+                      type: long
+                    - name: cwv_fid_sd
+                      type: long
+                    - name: cwv_cls_avg
+                      type: long
+                    - name: cwv_cls_max
+                      type: long
+                    - name: cwv_cls_min
+                      type: long
+                    - name: cwv_cls_p50
+                      type: long
+                    - name: cwv_cls_p75
+                      type: long
+                    - name: cwv_cls_p90
+                      type: long
+                    - name: cwv_cls_p95
+                      type: long
+                    - name: cwv_cls_p99
+                      type: long
+                    - name: cwv_cls_sd
+                      type: long
+                    - name: cwv_inp_avg
+                      type: long
+                    - name: cwv_inp_max
+                      type: long
+                    - name: cwv_inp_min
+                      type: long
+                    - name: cwv_inp_p50
+                      type: long
+                    - name: cwv_inp_p75
+                      type: long
+                    - name: cwv_inp_p90
+                      type: long
+                    - name: cwv_inp_p95
+                      type: long
+                    - name: cwv_inp_p99
+                      type: long
+                    - name: cwv_inp_sd
+                      type: long
                     - name: dom_content_load_avg
                       type: long
                     - name: dom_content_load_max
@@ -10714,6 +10887,7 @@ paths:
                         - count
                         - page_load_p95
                         - dom_content_load_p95
+                        - cwv_ttfb_p95
               Sessions:
                 value:
                   granularity: THIRTY_SECONDS
@@ -10791,6 +10965,7 @@ paths:
                         - count
                         - page_load_p95
                         - dom_content_load_p95
+                        - cwv_ttfb_p95
         required: true
       responses:
         '200':
@@ -10925,6 +11100,7 @@ paths:
                     - count
                     - page_load_p90
                     - dom_content_load_p90
+                    - cwv_ttfb_p95
                   groupBy:
                     - page_url
                   orderBy:
@@ -11004,14 +11180,17 @@ paths:
                         count: 100
                         dom_content_load_p90: 378
                         page_load_p90: 403
+                        cwv_ttfb_p95: 298
                       - page_url: 'https://b.b/page_b'
                         count: 95
                         dom_content_load_p90: 305
                         page_load_p90: 355
+                        cwv_ttfb_p95: 299
                       - page_url: 'https://c.c/page_c'
                         count: 90
                         dom_content_load_p90: 312
                         page_load_p90: 388
+                        cwv_ttfb_p95: 301
                 Transactions:
                   value:
                     namespace: transactions
@@ -11340,6 +11519,7 @@ paths:
                     - page_id
                     - page_url
                     - protocol
+                    - frame_id
                     - request_url
                     - request_type
                     - request_method
@@ -11384,6 +11564,12 @@ paths:
                     - finish_time
                     - duration
                     - page_load
+                    - cwv_ttfb
+                    - cwv_fcp
+                    - cwv_lcp
+                    - cwv_fid
+                    - cwv_cls
+                    - cwv_inp
                     - dom_content_load
                     - requests_count
                     - requests_duration_min
@@ -11685,6 +11871,7 @@ paths:
                         server_processing_duration: 3
                         session_id: 3c3549308daac6a408e50e64a53e6189
                         failed: false
+                        frame_id: 4217b69f-3f26-41b3-a1b4-44c615cb3614
                         request_url: 'https://example.com/a'
                         browser_name: chrome
                         ttfb_duration: 3
@@ -11708,6 +11895,7 @@ paths:
                         server_processing_duration: 3
                         session_id: f02dca5123a789d4194203ac4e60194f
                         failed: false
+                        frame_id: 1d14565a-de02-45eb-b931-5a47cf90c544
                         request_url: 'https://example.com/b'
                         browser_name: chrome
                         ttfb_duration: 3
@@ -12472,6 +12660,60 @@ components:
       type: string
       enum:
         - count
+        - cwv_ttfb_avg
+        - cwv_ttfb_max
+        - cwv_ttfb_min
+        - cwv_ttfb_p50
+        - cwv_ttfb_p75
+        - cwv_ttfb_p90
+        - cwv_ttfb_p95
+        - cwv_ttfb_p99
+        - cwv_ttfb_sd
+        - cwv_fcp_avg
+        - cwv_fcp_max
+        - cwv_fcp_min
+        - cwv_fcp_p50
+        - cwv_fcp_p75
+        - cwv_fcp_p90
+        - cwv_fcp_p95
+        - cwv_fcp_p99
+        - cwv_fcp_sd
+        - cwv_lcp_avg
+        - cwv_lcp_max
+        - cwv_lcp_min
+        - cwv_lcp_p50
+        - cwv_lcp_p75
+        - cwv_lcp_p90
+        - cwv_lcp_p95
+        - cwv_lcp_p99
+        - cwv_lcp_sd
+        - cwv_fid_avg
+        - cwv_fid_max
+        - cwv_fid_min
+        - cwv_fid_p50
+        - cwv_fid_p75
+        - cwv_fid_p90
+        - cwv_fid_p95
+        - cwv_fid_p99
+        - cwv_fid_sd
+        - cwv_cls_avg
+        - cwv_cls_max
+        - cwv_cls_min
+        - cwv_cls_p50
+        - cwv_cls_p75
+        - cwv_cls_p90
+        - cwv_cls_p95
+        - cwv_cls_p99
+        - cwv_cls_sd
+        - cwv_inp_avg
+        - cwv_inp_max
+        - cwv_inp_min
+        - cwv_inp_p50
+        - cwv_inp_p75
+        - cwv_inp_p90
+        - cwv_inp_p95
+        - cwv_inp_p99
+        - cwv_inp_sd
         - dom_content_load_avg
         - dom_content_load_max
         - dom_content_load_min
@@ -12779,6 +13021,12 @@ components:
         - contains_static_requests
         - contains_static_successful_requests
         - contains_successful_requests
+        - cwv_ttfb
+        - cwv_fcp
+        - cwv_lcp
+        - cwv_fid
+        - cwv_cls
+        - cwv_inp
         - dom_content_load
         - duration
         - dynamic_errored_requests_count
@@ -13488,6 +13736,7 @@ components:
         - request_send_duration
         - request_type
         - request_url
+        - frame_id
         - response_body
         - response_code
         - response_content_type
