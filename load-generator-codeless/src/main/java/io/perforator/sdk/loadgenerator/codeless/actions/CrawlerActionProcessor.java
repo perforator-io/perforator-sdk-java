@@ -352,19 +352,12 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                 crawlerQueue.destroy();
                 return;
             }
-
-            long navigationStartedTimestamp = System.currentTimeMillis();
+            
             driver.navigate().to(url);
-            long navigationDuration = System.currentTimeMillis() - navigationStartedTimestamp;
-            long remainingTimeToSleep = actionInstance.getDelay().toMillis() - navigationDuration;
             
             if (endTime <= System.currentTimeMillis()) {
                 crawlerQueue.destroy();
                 return;
-            }
-            
-            if(remainingTimeToSleep > 0) {
-                Perforator.sleep(remainingTimeToSleep);
             }
 
             crawlerQueue.pushAll(
@@ -373,6 +366,8 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                             actionInstance.getLinksExtractorScript()
                     )
             );
+            
+            Perforator.sleep(actionInstance.getDelay().toMillis());
         }
     }
 
