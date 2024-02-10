@@ -772,6 +772,16 @@ a look at the below docs describing available options for the config.yml
     #webDriverHttpsUpgrades: true
 
     ############################################################################
+    # Customized user-agent string for the launched browser                    #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverUserAgent                         #
+    # - Environment variable name: SUITE_WEBDRIVERUSERAGENT                    #
+    ############################################################################
+    #webDriverUserAgent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36
+
+    ############################################################################
     # The mode controlling selector type to use while searching elements on the#
     # page.                                                                    #
     #                                                                          #

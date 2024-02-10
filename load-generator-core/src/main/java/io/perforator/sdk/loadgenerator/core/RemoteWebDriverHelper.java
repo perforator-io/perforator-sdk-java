@@ -64,6 +64,11 @@ public class RemoteWebDriverHelper {
         } else {
             chromeOptions.addArguments("--disable-features=HttpsUpgrades");
         }
+        
+        String webDriverUserAgent = suiteConfig.getWebDriverUserAgent();
+        if(webDriverUserAgent != null && !webDriverUserAgent.isBlank()) {
+            chromeOptions.addArguments("--user-agent=" + webDriverUserAgent.trim());
+        }
 
         if (!webDriverManagerInitialized) {
             LOCAL_DRIVER_START_LOCK.lock();

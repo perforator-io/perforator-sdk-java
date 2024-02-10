@@ -958,6 +958,17 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
     )
     protected String webDriverHttpsUpgrades;
     
+    /**
+     * Customized user-agent string for the launched browser
+     */
+    @Parameter(
+            required = false,
+            defaultValue = SuiteConfig.DEFAULT_WEB_DRIVER_USER_AGENT_S,
+            alias = SuiteConfig.Fields.webDriverUserAgent,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverUserAgent
+    )
+    protected String webDriverUserAgent;
+    
     protected abstract List<SUITE_PARAMS_TYPE> getSuitesParams() throws MojoFailureException;
 
     protected abstract Class buildLoadGeneratorClass(ClassLoader classLoader) throws MojoFailureException;

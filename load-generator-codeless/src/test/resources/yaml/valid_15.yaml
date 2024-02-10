@@ -1,0 +1,17 @@
+#  Copyright Perforator, Inc. and contributors. All rights reserved.
+#
+#  Use of this software is governed by the Business Source License
+#  included in the LICENSE file.
+#
+#  As of the Change Date specified in that file, in accordance with
+#  the Business Source License, use of this software will be governed
+#  by the Apache License, Version 2.0.
+
+---
+suites:
+  Suite One:
+    webDriverUserAgent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36
+    steps:
+      Open and run crawler:
+        - sleep: 0.1s
+        - crawler: https://verifications.perforator.io

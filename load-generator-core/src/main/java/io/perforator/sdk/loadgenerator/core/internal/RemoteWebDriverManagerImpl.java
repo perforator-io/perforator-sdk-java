@@ -79,6 +79,11 @@ final class RemoteWebDriverManagerImpl implements RemoteWebDriverManager {
             } else {
                 chromeOptions.addArguments("--disable-features=HttpsUpgrades");
             }
+            
+            String webDriverUserAgent = suiteConfig.getWebDriverUserAgent();
+            if (webDriverUserAgent != null && !webDriverUserAgent.isBlank()) {
+                chromeOptions.addArguments("--user-agent=" + webDriverUserAgent.trim());
+            }
 
             remoteWebDriver = new RemoteWebDriver(
                     commandExecutor,
