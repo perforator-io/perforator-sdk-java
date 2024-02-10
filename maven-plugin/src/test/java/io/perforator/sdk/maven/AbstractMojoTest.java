@@ -163,8 +163,8 @@ public abstract class AbstractMojoTest<T extends AbstractLoadGeneratorMojo> exte
     protected void verifyDefaults(Object defaultInstance, String defaultsPrefix) throws Exception {
         Set<String> instanceFields = getFieldNamesFromConfigClass(defaultInstance.getClass());
         for (String field : instanceFields) {
-            if(field.equalsIgnoreCase("id")) {
-                //skip id field intentionally
+            if(field.equalsIgnoreCase("id") || field.equalsIgnoreCase(SuiteConfig.Fields.webDriverUserAgent)) {
+                //skip fields validation intentionally
                 continue;
             }
             Parameter mojoParameter = mojoParameters.get(field);
