@@ -761,6 +761,17 @@ a look at the below docs describing available options for the config.yml
     #webDriverAcceptInsecureCerts: false
 
     ############################################################################
+    # Automatically and optimistically upgrade all main-frame navigations      #
+    # to HTTPS, with fast fallback to HTTP.                                    #
+    #                                                                          #
+    # This is an optional property.                                            # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverHttpsUpgrades                     #
+    # - Environment variable name: SUITE_WEBDRIVERHTTPSUPGRADES                #
+    ############################################################################
+    #webDriverHttpsUpgrades: true
+
+    ############################################################################
     # The mode controlling selector type to use while searching elements on the#
     # page.                                                                    #
     #                                                                          #

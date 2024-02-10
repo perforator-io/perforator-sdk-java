@@ -73,6 +73,12 @@ final class RemoteWebDriverManagerImpl implements RemoteWebDriverManager {
             chromeOptions.setAcceptInsecureCerts(
                     suiteConfig.isWebDriverAcceptInsecureCerts()
             );
+            
+            if (suiteConfig.isWebDriverHttpsUpgrades()) {
+                chromeOptions.addArguments("--enable-features=HttpsUpgrades");
+            } else {
+                chromeOptions.addArguments("--disable-features=HttpsUpgrades");
+            }
 
             remoteWebDriver = new RemoteWebDriver(
                     commandExecutor,

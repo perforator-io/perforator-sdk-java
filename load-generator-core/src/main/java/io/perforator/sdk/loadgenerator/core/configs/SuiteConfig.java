@@ -369,6 +369,21 @@ public class SuiteConfig implements Config {
     
     /**
      * String representation of default value for 
+     * <b>{@link SuiteConfig#webDriverHttpsUpgrades}</b>
+     * property.
+     */
+    public static final String DEFAULT_WEB_DRIVER_HTTPS_UPGRADES_S = "true";
+    
+    /**
+     * Default value(<b>{@value SuiteConfig#DEFAULT_WEB_DRIVER_HTTPS_UPGRADES_S}</b>) 
+     * for 
+     * <b>{@link SuiteConfig#webDriverHttpsUpgrades}</b>
+     * property.
+     */
+    public static final boolean DEFAULT_WEB_DRIVER_HTTPS_UPGRADES = StringConverter.toBoolean(DEFAULT_WEB_DRIVER_HTTPS_UPGRADES_S);
+    
+    /**
+     * String representation of default value for 
      * <b>{@link SuiteConfig#logWorkerID}</b>
      * property.
      */
@@ -669,6 +684,13 @@ public class SuiteConfig implements Config {
      */
     @Default
     boolean webDriverAcceptInsecureCerts = DEFAULT_WEB_DRIVER_ACCEPT_INSECURE_CERTS;
+    
+    /**
+     * Automatically and optimistically upgrade all main-frame navigations to HTTPS, with fast fallback to HTTP.
+     * @see <a href="https://chromestatus.com/feature/6056181032812544">Feature: HTTPS Upgrades</a>
+     */
+    @Default
+    boolean webDriverHttpsUpgrades = DEFAULT_WEB_DRIVER_HTTPS_UPGRADES;
     
     /**
      * All the suites are processed concurrently via multiple thread workers.

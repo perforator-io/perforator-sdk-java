@@ -946,6 +946,18 @@ abstract class AbstractLoadGeneratorMojo<SUITE_PARAMS_TYPE> extends AbstractMojo
     )
     protected String webDriverAcceptInsecureCerts;
     
+    /**
+     * Automatically and optimistically upgrade all main-frame navigations to HTTPS, with fast fallback to HTTP.
+     * @see <a href="https://chromestatus.com/feature/6056181032812544">Feature: HTTPS Upgrades</a>
+     */
+    @Parameter(
+            required = false,
+            defaultValue = SuiteConfig.DEFAULT_WEB_DRIVER_HTTPS_UPGRADES_S,
+            alias = SuiteConfig.Fields.webDriverHttpsUpgrades,
+            property = SuiteConfig.DEFAULTS_FIELD_PREFIX + "." + SuiteConfig.Fields.webDriverHttpsUpgrades
+    )
+    protected String webDriverHttpsUpgrades;
+    
     protected abstract List<SUITE_PARAMS_TYPE> getSuitesParams() throws MojoFailureException;
 
     protected abstract Class buildLoadGeneratorClass(ClassLoader classLoader) throws MojoFailureException;

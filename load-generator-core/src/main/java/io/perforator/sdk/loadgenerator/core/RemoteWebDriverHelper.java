@@ -58,6 +58,12 @@ public class RemoteWebDriverHelper {
         chromeOptions.setAcceptInsecureCerts(
                 suiteConfig.isWebDriverAcceptInsecureCerts()
         );
+        
+        if (suiteConfig.isWebDriverHttpsUpgrades()) {
+            chromeOptions.addArguments("--enable-features=HttpsUpgrades");
+        } else {
+            chromeOptions.addArguments("--disable-features=HttpsUpgrades");
+        }
 
         if (!webDriverManagerInitialized) {
             LOCAL_DRIVER_START_LOCK.lock();
