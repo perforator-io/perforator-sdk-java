@@ -399,6 +399,21 @@ public class SuiteConfig implements Config {
     
     /**
      * String representation of default value for 
+     * <b>{@link SuiteConfig#webDriverContentScript}</b>
+     * property.
+     */
+    public static final String DEFAULT_WEB_DRIVER_CONTENT_SCRIPT_S = "";
+    
+    /**
+     * Default value(<b>{@value SuiteConfig#DEFAULT_WEB_DRIVER_CONTENT_SCRIPT_S}</b>) 
+     * for 
+     * <b>{@link SuiteConfig#webDriverContentScript}</b>
+     * property.
+     */
+    public static final String DEFAULT_WEB_DRIVER_CONTENT_SCRIPT = DEFAULT_WEB_DRIVER_CONTENT_SCRIPT_S;
+    
+    /**
+     * String representation of default value for 
      * <b>{@link SuiteConfig#logWorkerID}</b>
      * property.
      */
@@ -712,6 +727,12 @@ public class SuiteConfig implements Config {
      */
     @Default
     String webDriverUserAgent = DEFAULT_WEB_DRIVER_USER_AGENT;
+    
+    /**
+     * JS content script to be injected on every page
+     */
+    @Default
+    String webDriverContentScript = DEFAULT_WEB_DRIVER_CONTENT_SCRIPT;
     
     /**
      * All the suites are processed concurrently via multiple thread workers.

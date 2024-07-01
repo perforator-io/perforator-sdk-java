@@ -14,11 +14,14 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import io.perforator.sdk.loadgenerator.core.configs.ChromeMode;
 import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
+import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.Command;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -100,6 +103,27 @@ public class RemoteWebDriverHelper {
 
         if (suiteConfig == null) {
             return remoteWebDriver;
+        }
+        
+        String contentScript = suiteConfig.getWebDriverContentScript();
+        if (contentScript != null && !contentScript.isBlank()) {
+            Command cdpCommand = new Command(
+                    remoteWebDriver.getSessionId(),
+                    "executeCdpCommand",
+                    Map.of(
+                            "cmd", "Page.addScriptToEvaluateOnNewDocument",
+                            "params", Map.of("source", contentScript)
+                    )
+            );
+
+            try {
+                remoteWebDriver.getCommandExecutor().execute(cdpCommand);
+            } catch (IOException e) {
+                throw new RuntimeException(
+                        "Can't execute " + SuiteConfig.Fields.webDriverContentScript + ": " + contentScript,
+                        e
+                );
+            }
         }
 
         if (suiteConfig.isWebDriverUseLocalFileDetector() && suiteConfig.getWebDriverMode() == WebDriverMode.cloud) {

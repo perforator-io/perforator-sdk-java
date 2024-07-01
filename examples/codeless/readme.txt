@@ -782,6 +782,23 @@ a look at the below docs describing available options for the config.yml
     #webDriverUserAgent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36
 
     ############################################################################
+    # JS content script to be injected on every page                           #
+    #                                                                          #
+    # This is an optional property - no additional JS is injected by default   # 
+    # Overrides:                                                               #
+    # - System property name: suite.webDriverContentScript                     #
+    # - Environment variable name: SUITE_WEBDRIVERCONTENTSCRIPT                #
+    ############################################################################
+    #webDriverContentScript: |
+    #  window.addEventListener('load', (event) => {
+    #    const host = document.location.host;
+    #    const iframeSrc = "https://verifications.perforator.io/public-ip";
+    #    if(!host.startsWith("verifications")) {
+    #      document.body.innerHTML += `<iframe src="${iframeSrc}" id="public-ip"/>`;
+    #    }
+    #  });
+
+    ############################################################################
     # The mode controlling selector type to use while searching elements on the#
     # page.                                                                    #
     #                                                                          #

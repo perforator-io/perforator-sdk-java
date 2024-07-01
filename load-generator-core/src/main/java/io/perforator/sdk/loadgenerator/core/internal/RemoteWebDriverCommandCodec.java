@@ -44,6 +44,11 @@ final class RemoteWebDriverCommandCodec extends W3CHttpCommandCodec {
                 HttpMethod.GET,
                 "/session/:sessionId/element/:id/attribute/:name"
         );
+        super.defineCommand(
+                "executeCdpCommand",
+                HttpMethod.POST,
+                "/session/:sessionId/goog/cdp/execute"
+        );
     }
 
     @Override
