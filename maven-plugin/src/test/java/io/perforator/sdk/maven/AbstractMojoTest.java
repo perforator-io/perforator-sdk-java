@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.descriptor.MojoDescriptor;
 import org.apache.maven.plugin.descriptor.Parameter;
@@ -162,11 +163,22 @@ public abstract class AbstractMojoTest<T extends AbstractLoadGeneratorMojo> exte
     
     protected void verifyDefaults(Object defaultInstance, String defaultsPrefix) throws Exception {
         Set<String> instanceFields = getFieldNamesFromConfigClass(defaultInstance.getClass());
+        Set<String> ignores = Set.of(
+                SuiteConfig.Fields.id,
+                SuiteConfig.Fields.webDriverUserAgent,
+                SuiteConfig.Fields.webDriverContentScript
+        ).stream().map(
+                String::toLowerCase
+        ).collect(
+                Collectors.toSet()
+        );
+        
         for (String field : instanceFields) {
-            if(field.equalsIgnoreCase("id") || field.equalsIgnoreCase(SuiteConfig.Fields.webDriverUserAgent)) {
+            if(ignores.contains(field.toLowerCase())) {
                 //skip fields validation intentionally
                 continue;
             }
+            
             Parameter mojoParameter = mojoParameters.get(field);
             assertNotNull(
                     mojoClass + "." + field + " is not defined",
