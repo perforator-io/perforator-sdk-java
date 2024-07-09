@@ -138,7 +138,6 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
                     projectKey,
                     executionKey,
                     concurrency,
-                    durationHours,
                     usePreAllocatedIPs,
                     dataCapturingExcludes,
                     browserCloudHttpHeaders,
@@ -281,12 +280,10 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
                 if (details.getStatus().equalsIgnoreCase("operational")) {
                     LOGGER.info(
                             "Browser cloud is ready: "
-                                    + "duration = {} hour(s), "
                                     + "concurrent browsers = {}, "
                                     + "browser name = {}, "
                                     + "browser version = {}, "
                                     + "selenium hub = {}",
-                            details.getDuration(),
                             details.getBrowsersReadyCount(),
                             details.getBrowserName(),
                             details.getBrowserVersion(),
@@ -486,10 +483,9 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
         );
     }
 
-    private BrowserCloud createBrowserCloud(LoadGeneratorContextImpl loadGeneratorContext, String projectKey, String executionKey, int concurrency, int duration, boolean usePreAllocatedIPs, List<String> dataCapturingExcludes, Map<String, String> browserCloudHttpHeaders, Map<String, String> browserCloudHosts) throws ApiException {
+    private BrowserCloud createBrowserCloud(LoadGeneratorContextImpl loadGeneratorContext, String projectKey, String executionKey, int concurrency, boolean usePreAllocatedIPs, List<String> dataCapturingExcludes, Map<String, String> browserCloudHttpHeaders, Map<String, String> browserCloudHosts) throws ApiException {
         BrowserCloud payload = new BrowserCloud();
         payload.setConcurrency(concurrency);
-        payload.duration(duration);
         payload.setUsePreAllocatedIPs(usePreAllocatedIPs);
         payload.setDataCapturingExcludes(dataCapturingExcludes);
         payload.setHttpHeaders(browserCloudHttpHeaders);

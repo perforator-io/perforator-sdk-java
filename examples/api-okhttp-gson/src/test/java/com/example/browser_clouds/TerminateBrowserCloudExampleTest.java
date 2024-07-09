@@ -21,7 +21,6 @@ public class TerminateBrowserCloudExampleTest extends AbstractExampleTest<Termin
         
         browserCloud = new BrowserCloud();
         browserCloud.setConcurrency(1);
-        browserCloud.setDuration(1);
         browserCloud = browserCloudsApi.createBrowserCloud(
                 projectKey, 
                 execution.getUuid(), 

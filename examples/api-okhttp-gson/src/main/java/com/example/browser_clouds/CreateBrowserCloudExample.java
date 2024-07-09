@@ -39,7 +39,6 @@ public class CreateBrowserCloudExample {
 
         BrowserCloud browserCloud = new BrowserCloud();
         browserCloud.setConcurrency(30); // 30 concurrent browser slots
-        browserCloud.setDuration(1); // 1 hour
 
         browserCloud = browserCloudsApi.createBrowserCloud(
                 projectKey,
@@ -51,13 +50,11 @@ public class CreateBrowserCloudExample {
                 "Browser cloud: "
                 + "key={}, "
                 + "concurrency={}, "
-                + "duration={}, "
                 + "status={}, "
                 + "createdAt={}, "
                 + "updatedAt={}, ",
                 browserCloud.getUuid(),
                 browserCloud.getConcurrency(),
-                browserCloud.getDuration(),
                 browserCloud.getStatus(),
                 browserCloud.getCreatedAt(),
                 browserCloud.getUpdatedAt()

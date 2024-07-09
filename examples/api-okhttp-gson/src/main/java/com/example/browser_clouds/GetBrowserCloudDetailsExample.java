@@ -54,16 +54,14 @@ public class GetBrowserCloudDetailsExample {
                 + "browsersRequestedCount={}, "
                 + "browsersStartingCount={}, "
                 + "browsersReadyCount={}, "
-                + "readyAt={}, "
-                + "expirationAt={}, ",
+                + "readyAt={}",
                 details.getUuid(),
                 details.getStatus(),
                 details.getSeleniumHubURL(),
                 details.getBrowsersRequestedCount(),
                 details.getBrowsersStartingCount(),
                 details.getBrowsersReadyCount(),
-                details.getReadyAt(),
-                details.getExpirationAt()
+                details.getReadyAt()
         );
     }
 

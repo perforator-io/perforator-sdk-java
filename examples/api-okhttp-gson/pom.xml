@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.perforator.sdk.examples</groupId>
     <artifactId>perforator-sdk-examples-api-okhttp-gson</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     
     <description>
@@ -19,7 +19,7 @@
         <maven.surefire.plugin.version>3.1.2</maven.surefire.plugin.version>
         
         <!-- dependency versions -->
-        <perforator.version>1.5.1-SNAPSHOT</perforator.version>
+        <perforator.version>1.6.0-SNAPSHOT</perforator.version>
         <log4j.version>2.22.0</log4j.version>
         <junit.version>5.10.1</junit.version>
         <guava.version>33.0.0-jre</guava.version>

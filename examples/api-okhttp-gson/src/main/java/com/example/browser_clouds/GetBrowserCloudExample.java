@@ -50,13 +50,11 @@ public class GetBrowserCloudExample {
                 "Browser cloud: "
                 + "key={}, "
                 + "concurrency={}, "
-                + "duration={}, "
                 + "status={}, "
                 + "createdAt={}, "
                 + "updatedAt={}, ",
                 browserCloud.getUuid(),
                 browserCloud.getConcurrency(),
-                browserCloud.getDuration(),
                 browserCloud.getStatus(),
                 browserCloud.getCreatedAt(),
                 browserCloud.getUpdatedAt()

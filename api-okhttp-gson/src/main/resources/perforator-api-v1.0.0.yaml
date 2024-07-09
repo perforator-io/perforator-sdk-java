@@ -52,12 +52,11 @@ tags:
       Browser Cloud is a container of compute resources(browsers) allocated for a performance test run.
       All browser clouds are created within parent execution.
       Browser cloud is [Selenium](https://www.selenium.dev) compatible, and access to provisioned browsers is provided via [WebDriver W3C Protocol](https://w3c.github.io/webdriver/).
-      Once the browser cloud is created on-demand and becomes operational, it can be accessed via a dedicated selenium hub URL, accessible according to the requested duration.
-      Once browser cloud is terminated or expired according to duration, all compute resources are destroyed, and you can't access the selenium hub URL anymore.
+      Once the browser cloud is created on-demand and becomes operational, it can be accessed via a dedicated selenium hub URL.
+      Once browser cloud is terminated, all compute resources are destroyed, and you can't access the selenium hub URL anymore.
 
-      Essential characteristics of the browser cloud are `concurrency` and `duration`:
+      Essential characteristics of the browser cloud is `concurrency`:
       - `concurrency` - how many **concurrent** browser sessions you would like to have in the cloud at any given.
-      - `duration` - how many hours browser cloud should be available for you.
 
       Please keep in mind that you can create as many **concurrent** WebDriver sessions as requested via `concurrency`.
       For example, if you created a browser cloud with concurrency 200, then established 200 active WebDriver sessions, and then you try to create one(or more) session on top of **currently active** 200 sessions - such request will be rejected and returned with an error.
@@ -91,22 +90,13 @@ tags:
       3. Once the infrastructure has enough hardware capacity to create all requested browsers, the browser cloud is moved to a `PROVISIONING` state.
       4. `PROVISIONING` state is kept while all VMs are starting. Usually, it takes 2-3 minutes for smaller clouds and up to 10 minutes for large clouds with 5k+ browsers.
       5. Browser cloud is moved to `OPERATIONAL` state once all VMs have successfully started and passed all required health checks.
-      6. Browser cloud is kept in `OPERATIONAL` state according to the requested duration.
-      7. If the user requests termination of the browser cloud, or it expires according to the requested duration, the browser cloud is moved to `TERMINATING` state. Such a state is used as an indicator that decommissioning of the resources has begun.
-      8. The final state of the browser cloud is `TERMINATED` - it indicates that all resources allocated to the browser cloud have been successfully deleted.
+      6. If the user requests termination of the browser cloud, the browser cloud is moved to `TERMINATING` state. Such a state is used as an indicator that decommissioning of the resources has begun.
+      7. The final state of the browser cloud is `TERMINATED` - it indicates that all resources allocated to the browser cloud have been successfully deleted.
       ***
       **[1-to-N](https://en.wikipedia.org/wiki/One-to-many_(data_model)) relationship between Execution and Browser Clouds**:
       - In the majority of the cases, there is a 1-to-1 relationship between execution and browser cloud.
       - One browser cloud is created per one load generator, where a single load generator covers concurrent execution of 1 or more performance testing suites.
       - More than one browser cloud is usually a case when you need to run multiple load generators in parallel but combine all analytical data to get a 360 view of the results.
-      ***
-      **Billing**:
-      - Allocation of every new browser cloud automatically charges credits from your account.
-      - Charging is done in *Browser/Hours* units using the following formula: `concurrency X duration`.
-      - For example, if you start browser cloud with concurrency = 200 and duration = 2 hours, the final price will be `200 X 2 = 400` *Browser/Hours*.
-      - Credits to start browser cloud should be bought in advance, so if you don't have enough credits to cover the new browser cloud, the request to create such a browser cloud will be rejected with an error.
-      - *Browser/Hours* credits don't have any expiration date/time.
-      - We are returning browser cloud credits to your account automatically if, for any reason, the browser cloud can't be started.
       ***
       **Limitations**:
       - Browser cloud concurrency can't exceed concurrency limits applied on your account.
@@ -185,11 +175,11 @@ tags:
     description: |
       You should have enough credits to pay for the provisioned duration of the browser cloud whenever you would like to launch it.
       Please use the following formula to estimate how many credits you need to launch a new browser cloud: **Concurrency**(in browsers) x **Duration**(in hours).
-      For example, if you need to launch a browser cloud with 500 concurrent browsers for 2 hours - the total cost is 1000 Browser/Hours, calculated as 500x2.
+      For example, if you need to launch a browser cloud with 500 concurrent browsers for 2 hours - the total cost is 1000 Compute/Hours, calculated as 500x2.
       All the changes in balance credits are reflected as a part of balance transactions - you can quickly review all such transactions for your reference.
-      You should receive 1,000 Browser/Hours as a free one-time bonus when you sign up for Perforator platform.
+      You should receive 1,280 Compute/Hours as a free one-time bonus when you sign up for Perforator platform.
       There are no requirements or limitations to such a bonus - you can use it as a one-shot browser cloud launch with 1000 browsers or multiple launches with smaller clouds spread over time.
-      Creation of the browser clouds is put on hold whenever your credits balance approaches zero value, and any request to launch a new browser cloud will be returned with an error.
+      Creation of the browser clouds is put on hold whenever your credits balance approaches `CREDITS_DEBT_SOFT_LIMIT`(1000 Compute/Hours debt), and any request to launch a new browser cloud will be returned with an error.
       To continue creating new browser clouds, you should top-up your balance via buying additional credits using your credit card.
       Please check the following [link](https://www.perforator.io/pricing) to see actual pricing.
   - name: Limits
@@ -203,6 +193,10 @@ tags:
       A better practice is to start with the smaller browser clouds and increase the load once you verify that your system can handle even smaller-level traffic.
       Default limits are pretty conservative, but you can increase them once you hit the boundaries - please shoot us an email at support@perforator.io to increase the limits applied on your account.
       Usually, limits increase takes a few days, so please consider it before running load tests with extended capacity.
+  - name: Cloud Providers
+    description: |
+      Cloud Providers allow precise control of different integrations with providers like AWS.
+      You can enable or disable certain providers, as well as enable/disable remote regions.
 paths:
   /v1/projects:
     get:
@@ -1060,7 +1054,6 @@ paths:
         **Special Notes**:
         - Terminating cloud runner is only allowed if it is in `QUEUED`, `PROVISIONING`, and `OPERATIONAL` states.
         - Call to terminate cloud runner in state `TERMINATING` or `TERMINATED` will be rejected with an error.
-        - Terminating the cloud runner in `QUEUED` state will automatically refund credits charged for creating such a cloud runner.
       operationId: terminateCloudRunner
       parameters:
         - name: project_key
@@ -1154,28 +1147,28 @@ paths:
                   $ref: '#/components/schemas/BrowserCloud'
               example:
                 - uuid: b553dc6c-4fef-4a9f-bc16-ee2c88664dd0
+                  correlationKey: 8502cff5-199a-465a-a1e2-165d82bc30f0
                   createdAt: 1608012000000
                   updatedAt: 1608015600000
                   concurrency: 200
-                  duration: 2
                   status: QUEUED
                 - uuid: 1af84de8-f9b6-4964-9b24-b9dee489529e
+                  correlationKey: 221679df-7f5c-4674-821a-1b9825b33dc1
                   createdAt: 1608012000000
                   updatedAt: 1608015600000
                   concurrency: 400
-                  duration: 1
                   status: PROVISIONING
                 - uuid: bb04d3e4-e9b4-47d6-ae8f-371bd0d68fc0
+                  correlationKey: ef450569-45fe-448c-b010-09f0eaf5ee2f
                   createdAt: 1608012000000
                   updatedAt: 1608015600000
                   concurrency: 150
-                  duration: 1
                   status: OPERATIONAL
                 - uuid: 23c39165-89c1-4afb-80b6-e994cb96a482
+                  correlationKey: 4c68fb3a-b8c7-48ee-b7b3-206e5e1a46d9
                   createdAt: 1608012000000
                   updatedAt: 1608015600000
                   concurrency: 250
-                  duration: 1
                   status: TERMINATING
         '401':
           $ref: '#/components/responses/401'
@@ -1228,35 +1221,29 @@ paths:
             schema:
               $ref: '#/components/schemas/BrowserCloud'
             examples:
-              Create browser cloud with 50 browsers for 2 hours:
+              Create browser cloud with 50 browsers:
                 value:
                   concurrency: 50
-                  duration: 2
-              Create browser cloud with 50 browsers for 2 hours with pre allocated IPs:
+              Create browser cloud with 50 browsers with pre allocated IPs:
                 value:
                   concurrency: 50
-                  duration: 2
                   usePreAllocatedIPs: true
-              Create browser cloud with 100 browsers for 1 hour:
+              Create browser cloud with 100 browsers:
                 value:
                   concurrency: 100
-                  duration: 1
-              Create browser cloud with 100 browsers for 1 hour with pre allocated IPs:
+              Create browser cloud with 100 browsers with pre allocated IPs:
                 value:
                   concurrency: 100
-                  duration: 1
                   usePreAllocatedIPs: true
               Create browser cloud with data capturing excludes:
                 value:
                   concurrency: 50
-                  duration: 2
                   dataCapturingExcludes:
                     - 'https://example.com/font.ttf'
                     - 'https://example.com/page/*'
               Create browser cloud with controlled data capturing includes:
                 value:
                   concurrency: 50
-                  duration: 2
                   dataCapturingIncludeRequestHeaders: true
                   dataCapturingIncludeRequestBody: true
                   dataCapturingIncludeResponseHeaders: true
@@ -1264,14 +1251,12 @@ paths:
               Create browser cloud with http headers:
                 value:
                   concurrency: 50
-                  duration: 2
                   httpHeaders:
                     Authorization: Basic YOUR_AUTHORIZATION_TOKEN
                     Host: 'example.com:8080, example.com'
               Create browser cloud with additional hosts:
                 value:
                   concurrency: 50
-                  duration: 2
                   hosts:
                     localhost: 127.0.0.1
                     example.com: 1.2.3.4
@@ -1288,7 +1273,6 @@ paths:
                 createdAt: 1608012000000
                 updatedAt: 1608015600000
                 concurrency: 50
-                duration: 2
                 status: QUEUED
         '401':
           $ref: '#/components/responses/401'
@@ -1340,10 +1324,10 @@ paths:
                 $ref: '#/components/schemas/BrowserCloud'
               example:
                 uuid: b553dc6c-4fef-4a9f-bc16-ee2c88664dd0
+                correlationKey: 8502cff5-199a-465a-a1e2-165d82bc30f0
                 createdAt: 1608012000000
                 updatedAt: 1608015600000
                 concurrency: 50
-                duration: 2
                 status: QUEUED
         '401':
           $ref: '#/components/responses/401'
@@ -1404,7 +1388,6 @@ paths:
         **Special Notes**:
         - Terminating browser cloud is only allowed if it is in `QUEUED`, `PROVISIONING`, and `OPERATIONAL` states.
         - Call to terminate browser cloud in state `TERMINATING` or `TERMINATED` will be rejected with an error.
-        - Terminating the browser cloud in `QUEUED` state will automatically refund credits charged for creating such a browser cloud.
       operationId: terminateBrowserCloud
       parameters:
         - name: project_key
@@ -1443,7 +1426,6 @@ paths:
                 createdAt: 1608012000000
                 updatedAt: 1608015600000
                 concurrency: 50
-                duration: 2
                 status: TERMINATING
         '401':
           $ref: '#/components/responses/401'
@@ -1501,15 +1483,14 @@ paths:
                 $ref: '#/components/schemas/BrowserCloudDetails'
               example:
                 uuid: 1ee796e4-27fe-46e5-9767-56d5352310d0
+                correlationKey: 8502cff5-199a-465a-a1e2-165d82bc30f0
                 status: OPERATIONAL
                 browserName: chrome
                 browserVersion: 90.0.4430.24
-                duration: 1
                 browsersRequestedCount: 500
                 browsersReadyCount: 500
                 browsersStartingCount: 0
                 readyAt: 1625928669754
-                expirationAt: 1625932269754
                 seleniumHubURL: 'https://selenium.perforator.io/d502c7b2-031c-40db-adcf-ec0661715e0a/1ee796e4-27fe-46e5-9767-56d5352310d0/wd/hub'
                 publicIPs:
                   - 123.122.77.88
@@ -12120,10 +12101,10 @@ paths:
       description: |
         Call this operation if you would like to get the credits balance snapshot.
         The following information is returned as a part of the response payload:
-        - `availableCredits` - how many available credits do you have to launch new browser clouds? Its measurement is in Browser/Hours or B/H.
-        - `overallUtilization` - how many credits have you utilized for launching browser clouds since the very beginning of the platform usage? Its measurement is in Browser/Hours or B/H.
-        - `thirtyDaysUtilization` - how many credits have you utilized for launching browser clouds  for the past **30** days? Its measurement is in Browser/Hours or B/H.
-        - `ninetyDaysUtilization` - how many credits have you utilized for launching browser clouds  for the past **90** days? Its measurement is in Browser/Hours or B/H.
+        - `availableCredits` - how many available credits do you have to launch cloud resources? Its measurement is in Compute/Hours or C/H.
+        - `overallUtilization` - how many credits have you utilized for launching cloud resources since the very beginning of the platform usage? Its measurement is in Compute/Hours or C/H.
+        - `thirtyDaysUtilization` - how many credits have you utilized for launching cloud resource for the past **30** days? Its measurement is in Compute/Hours or C/H.
+        - `ninetyDaysUtilization` - how many credits have you utilized for launching cloud resource for the past **90** days? Its measurement is in Compute/Hours or C/H.
       operationId: getCreditsBalance
       parameters: []
       responses:
@@ -12214,11 +12195,14 @@ paths:
       description: |
         Call this operation if you would like to get current limits applied to your account.
         For example, the following limits are currently in place:
+        - `CREDITS_DEBT_SOFT_LIMIT` - soft limit for your compute credits debt. You are allowed to launch new cloud resources before reaching this debt threshold.
+        - `CREDITS_DEBT_HARD_LIMIT` - hard limit for your compute credits debt. All cloud resources will be automatically terminated once your credits debt reaches the threshold.
         - `CONCURRENT_BROWSER_CLOUDS` - how many concurrent browser clouds you can launch at any given moment. Only active browser clouds are counted as a part of this limit verification. The default limit is **one** browser cloud.
         - `CONCURRENT_BROWSERS` - how many concurrent browsers you can requests across all active browser clouds at any given moment. The default limit is **500** browsers.
         - `BROWSER_CLOUD_DURATION_HOURS` - what is the maximum duration(in hours) for any requested browser cloud. The default limit is **4** hours.
         - `CONCURRENT_CLOUD_RUNNERS` - how many concurrent cloud runners you can launch at any given moment. Only active cloud runners are counted as a part of this limit verification. The default limit is **one** cloud runner.
         - `CONCURRENT_CLOUD_RUNNER_CPU_CORES` - how many concurrent CPU cores you can requests across all active cloud runners at any given moment. The default limit is **8** CPU cores.
+        - `CLOUD_RUNNER_DURATION_HOURS` - what is the maximum duration(in hours) for any requested cloud runner. The default limit is **4** hours.
         ***
         Please keep in mind that all the limits are adjustable, so if your current limits are not enough for your performance test requirements - please request limits increase via sending an email to support@perforator.io
       operationId: getLimits
@@ -12234,11 +12218,14 @@ paths:
                   type: integer
                   format: int32
               example:
+                CREDITS_DEBT_SOFT_LIMIT: 1000
+                CREDITS_DEBT_HARD_LIMIT: 2000
                 CONCURRENT_BROWSER_CLOUDS: 1
                 CONCURRENT_BROWSERS: 500
                 BROWSER_CLOUD_DURATION_HOURS: 4
                 CONCURRENT_CLOUD_RUNNERS: 1
                 CONCURRENT_CLOUD_RUNNER_CPU_CORES: 8
+                CLOUD_RUNNER_DURATION_HOURS: 4
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -12265,7 +12252,6 @@ paths:
             example:
               CONCURRENT_BROWSER_CLOUDS: 1
               CONCURRENT_BROWSERS: 250
-              BROWSER_CLOUD_DURATION_HOURS: 2
               CONCURRENT_CLOUD_RUNNERS: 1
               CONCURRENT_CLOUD_RUNNER_CPU_CORES: 8
         required: true
@@ -12288,9 +12274,645 @@ paths:
                 logref: c21f1050-8a33-40e6-a722-b8c9ce5768a1
                 path: /v1/limits/verify
                 message: |
-                  Combination of CONCURRENT_BROWSERS and BROWSER_CLOUD_DURATION_HOURS 
-                  is violated. Required credits balanace is 500, available credits 
+                  Required credits balanace is 500, available credits 
                   balanace is 100
+  /v1/cloud_providers:
+    get:
+      tags:
+        - Cloud Providers
+      summary: List cloud providers
+      description: |
+        Call this operation if you want to get a list of cloud providers available in the system.
+      operationId: listCloudProviders
+      parameters: []
+      responses:
+        '200':
+          description: Returns a list of cloud providers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CloudProvider'
+              example:
+                - uuid: 01666782-ec99-459d-9ac5-497691088d13
+                  type: AWS
+                  purpose: BROWSER_CLOUDS
+                  scope: INTERNAL
+                  supported: true
+                  enabled: true
+                  integrated: true
+                  createdAt: 1709361624163
+                  updatedAt: 1709361624163
+                  regions:
+                    - uuid: 19942894-960e-4c37-83fc-2cd00062a111
+                      supported: true
+                      enabled: true
+                      integrated: true
+                      providerVcpuLimit: 350
+                      platformVcpuLimit: 250
+                      organizationVcpuLimit: 150
+                      createdAt: 1709361624163
+                      updatedAt: 1709361624163
+                      providerRegion: us-east-1
+                      perforatorRegion: aws-us-east-1
+                      location: US East (N. Virginia)
+                      displayName: 'AWS: US East (N. Virginia)'
+                    - uuid: 6f790aad-f634-492e-b298-21b71d26f093
+                      supported: true
+                      enabled: true
+                      integrated: true
+                      providerVcpuLimit: 350
+                      platformVcpuLimit: 250
+                      organizationVcpuLimit: 150
+                      createdAt: 1709361624163
+                      updatedAt: 1709361624163
+                      providerRegion: us-east-2
+                      perforatorRegion: aws-us-east-2
+                      location: US East (Ohio)
+                      displayName: 'AWS: US East (Ohio)'
+                    - uuid: 9ff0e833-2a07-40d2-98e6-fba6afa48cd7
+                      supported: true
+                      enabled: true
+                      integrated: true
+                      providerVcpuLimit: 350
+                      platformVcpuLimit: 250
+                      organizationVcpuLimit: 150
+                      createdAt: 1709361624163
+                      updatedAt: 1709361624163
+                      providerRegion: us-west-1
+                      perforatorRegion: aws-us-west-1
+                      location: US West (N. California)
+                      displayName: 'AWS: US West (N. California)'
+                    - uuid: 1ad9ec20-99da-4aa4-93a2-fa17378a0a4f
+                      supported: true
+                      enabled: true
+                      integrated: true
+                      providerVcpuLimit: 350
+                      platformVcpuLimit: 250
+                      organizationVcpuLimit: 150
+                      createdAt: 1709361624163
+                      updatedAt: 1709361624163
+                      providerRegion: us-west-2
+                      perforatorRegion: aws-us-west-2
+                      location: US West (Oregon)
+                      displayName: 'AWS: US West (Oregon)'
+                - uuid: 2da70373-e760-4b51-9ebf-21785da6e4dd
+                  type: AWS
+                  purpose: CLOUD_RUNNERS
+                  scope: INTERNAL
+                  supported: true
+                  enabled: true
+                  integrated: true
+                  createdAt: 1709361624163
+                  updatedAt: 1709361624163
+                  regions:
+                    - uuid: 9702a6ba-947b-49cf-b6ef-cf60f1fac900
+                      supported: true
+                      enabled: true
+                      integrated: true
+                      providerVcpuLimit: 350
+                      platformVcpuLimit: 250
+                      organizationVcpuLimit: 150
+                      createdAt: 1709361624163
+                      updatedAt: 1709361624163
+                      providerRegion: us-east-1
+                      perforatorRegion: aws-us-east-1
+                      location: US East (N. Virginia)
+                      displayName: 'AWS: US East (N. Virginia)'
+                    - uuid: abc878fb-9459-4f07-a562-2f7cac3f5277
+                      supported: true
+                      enabled: false
+                      integrated: true
+                      providerVcpuLimit: 350
+                      platformVcpuLimit: 250
+                      organizationVcpuLimit: 150
+                      createdAt: 1709361624163
+                      updatedAt: 1709361624163
+                      providerRegion: us-east-2
+                      perforatorRegion: aws-us-east-2
+                      location: US East (Ohio)
+                      displayName: 'AWS: US East (Ohio)'
+                    - uuid: aa23a48f-2f4d-4cf9-8404-20b079797e19
+                      supported: true
+                      enabled: false
+                      integrated: true
+                      providerVcpuLimit: 350
+                      platformVcpuLimit: 250
+                      organizationVcpuLimit: 150
+                      createdAt: 1709361624163
+                      updatedAt: 1709361624163
+                      providerRegion: us-west-1
+                      perforatorRegion: aws-us-west-1
+                      location: US West (N. California)
+                      displayName: 'AWS: US West (N. California)'
+                    - uuid: f33de62f-6e82-4da2-9cff-98d90c36cce2
+                      supported: true
+                      enabled: false
+                      integrated: true
+                      providerVcpuLimit: 350
+                      platformVcpuLimit: 250
+                      organizationVcpuLimit: 150
+                      createdAt: 1709361624163
+                      updatedAt: 1709361624163
+                      providerRegion: us-west-2
+                      perforatorRegion: aws-us-west-2
+                      location: US West (Oregon)
+                      displayName: 'AWS: US West (Oregon)'
+        '401':
+          $ref: '#/components/responses/401'
+  '/v1/cloud_providers/{cloud_provider_key}':
+    get:
+      tags:
+        - Cloud Providers
+      summary: Get Cloud Provider Details
+      description: |
+        Call this operation if you want to get details of the cloud provider
+      operationId: getCloudProvider
+      parameters:
+        - name: cloud_provider_key
+          in: path
+          description: Unique identifier of the cloud provider
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 01666782-ec99-459d-9ac5-497691088d13
+      responses:
+        '200':
+          description: Returns cloud provider details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudProvider'
+              example:
+                uuid: 01666782-ec99-459d-9ac5-497691088d13
+                type: AWS
+                purpose: BROWSER_CLOUDS
+                scope: INTERNAL
+                supported: true
+                enabled: true
+                integrated: true
+                createdAt: 1709361624163
+                updatedAt: 1709361624163
+                regions:
+                  - uuid: 19942894-960e-4c37-83fc-2cd00062a111
+                    supported: true
+                    enabled: true
+                    integrated: true
+                    providerVcpuLimit: 350
+                    platformVcpuLimit: 250
+                    organizationVcpuLimit: 150
+                    createdAt: 1709361624163
+                    updatedAt: 1709361624163
+                    providerRegion: us-east-1
+                    perforatorRegion: aws-us-east-1
+                    location: US East (N. Virginia)
+                    displayName: 'AWS: US East (N. Virginia)'
+                  - uuid: 6f790aad-f634-492e-b298-21b71d26f093
+                    supported: true
+                    enabled: true
+                    integrated: true
+                    providerVcpuLimit: 350
+                    platformVcpuLimit: 250
+                    organizationVcpuLimit: 150
+                    createdAt: 1709361624163
+                    updatedAt: 1709361624163
+                    providerRegion: us-east-2
+                    perforatorRegion: aws-us-east-2
+                    location: US East (Ohio)
+                    displayName: 'AWS: US East (Ohio)'
+                  - uuid: 9ff0e833-2a07-40d2-98e6-fba6afa48cd7
+                    supported: true
+                    enabled: true
+                    integrated: true
+                    providerVcpuLimit: 350
+                    platformVcpuLimit: 250
+                    organizationVcpuLimit: 150
+                    createdAt: 1709361624163
+                    updatedAt: 1709361624163
+                    providerRegion: us-west-1
+                    perforatorRegion: aws-us-west-1
+                    location: US West (N. California)
+                    displayName: 'AWS: US West (N. California)'
+                  - uuid: 1ad9ec20-99da-4aa4-93a2-fa17378a0a4f
+                    supported: true
+                    enabled: true
+                    integrated: true
+                    providerVcpuLimit: 350
+                    platformVcpuLimit: 250
+                    organizationVcpuLimit: 150
+                    createdAt: 1709361624163
+                    updatedAt: 1709361624163
+                    providerRegion: us-west-2
+                    perforatorRegion: aws-us-west-2
+                    location: US West (Oregon)
+                    displayName: 'AWS: US West (Oregon)'
+        '401':
+          $ref: '#/components/responses/401'
+  '/v1/cloud_providers/{cloud_provider_key}/enable':
+    post:
+      tags:
+        - Cloud Providers
+      summary: Enable Cloud Provider
+      description: |
+        Call this operation if you want to enable given cloud provider
+      operationId: enableCloudProvider
+      parameters:
+        - name: cloud_provider_key
+          in: path
+          description: Unique identifier of the cloud provider
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 01666782-ec99-459d-9ac5-497691088d13
+      responses:
+        '200':
+          description: Returns cloud provider details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudProvider'
+              example:
+                uuid: 01666782-ec99-459d-9ac5-497691088d13
+                type: AWS
+                purpose: BROWSER_CLOUDS
+                scope: INTERNAL
+                supported: true
+                enabled: true
+                integrated: true
+                createdAt: 1709361624163
+                updatedAt: 1709361624163
+                regions:
+                  - uuid: 19942894-960e-4c37-83fc-2cd00062a111
+                    supported: true
+                    enabled: true
+                    integrated: true
+                    providerVcpuLimit: 350
+                    platformVcpuLimit: 250
+                    organizationVcpuLimit: 150
+                    createdAt: 1709361624163
+                    updatedAt: 1709361624163
+                    providerRegion: us-east-1
+                    perforatorRegion: aws-us-east-1
+                    location: US East (N. Virginia)
+                    displayName: 'AWS: US East (N. Virginia)'
+                  - uuid: 6f790aad-f634-492e-b298-21b71d26f093
+                    supported: true
+                    enabled: true
+                    integrated: true
+                    providerVcpuLimit: 350
+                    platformVcpuLimit: 250
+                    organizationVcpuLimit: 150
+                    createdAt: 1709361624163
+                    updatedAt: 1709361624163
+                    providerRegion: us-east-2
+                    perforatorRegion: aws-us-east-2
+                    location: US East (Ohio)
+                    displayName: 'AWS: US East (Ohio)'
+                  - uuid: 9ff0e833-2a07-40d2-98e6-fba6afa48cd7
+                    supported: true
+                    enabled: true
+                    integrated: true
+                    providerVcpuLimit: 350
+                    platformVcpuLimit: 250
+                    organizationVcpuLimit: 150
+                    createdAt: 1709361624163
+                    updatedAt: 1709361624163
+                    providerRegion: us-west-1
+                    perforatorRegion: aws-us-west-1
+                    location: US West (N. California)
+                    displayName: 'AWS: US West (N. California)'
+                  - uuid: 1ad9ec20-99da-4aa4-93a2-fa17378a0a4f
+                    supported: true
+                    enabled: true
+                    integrated: true
+                    providerVcpuLimit: 350
+                    platformVcpuLimit: 250
+                    organizationVcpuLimit: 150
+                    createdAt: 1709361624163
+                    updatedAt: 1709361624163
+                    providerRegion: us-west-2
+                    perforatorRegion: aws-us-west-2
+                    location: US West (Oregon)
+                    displayName: 'AWS: US West (Oregon)'
+        '401':
+          $ref: '#/components/responses/401'
+  '/v1/cloud_providers/{cloud_provider_key}/disable':
+    post:
+      tags:
+        - Cloud Providers
+      summary: Disable Cloud Provider
+      description: |
+        Call this operation if you want to disable given cloud provider
+      operationId: disableCloudProvider
+      parameters:
+        - name: cloud_provider_key
+          in: path
+          description: Unique identifier of the cloud provider
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 01666782-ec99-459d-9ac5-497691088d13
+      responses:
+        '200':
+          description: Returns cloud provider details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudProvider'
+              example:
+                uuid: 01666782-ec99-459d-9ac5-497691088d13
+                type: AWS
+                purpose: BROWSER_CLOUDS
+                scope: INTERNAL
+                supported: true
+                enabled: true
+                integrated: true
+                createdAt: 1709361624163
+                updatedAt: 1709361624163
+                regions:
+                  - uuid: 19942894-960e-4c37-83fc-2cd00062a111
+                    supported: true
+                    enabled: true
+                    integrated: true
+                    providerVcpuLimit: 350
+                    platformVcpuLimit: 250
+                    organizationVcpuLimit: 150
+                    createdAt: 1709361624163
+                    updatedAt: 1709361624163
+                    providerRegion: us-east-1
+                    perforatorRegion: aws-us-east-1
+                    location: US East (N. Virginia)
+                    displayName: 'AWS: US East (N. Virginia)'
+                  - uuid: 6f790aad-f634-492e-b298-21b71d26f093
+                    supported: true
+                    enabled: true
+                    integrated: true
+                    providerVcpuLimit: 350
+                    platformVcpuLimit: 250
+                    organizationVcpuLimit: 150
+                    createdAt: 1709361624163
+                    updatedAt: 1709361624163
+                    providerRegion: us-east-2
+                    perforatorRegion: aws-us-east-2
+                    location: US East (Ohio)
+                    displayName: 'AWS: US East (Ohio)'
+                  - uuid: 9ff0e833-2a07-40d2-98e6-fba6afa48cd7
+                    supported: true
+                    enabled: true
+                    integrated: true
+                    providerVcpuLimit: 350
+                    platformVcpuLimit: 250
+                    organizationVcpuLimit: 150
+                    createdAt: 1709361624163
+                    updatedAt: 1709361624163
+                    providerRegion: us-west-1
+                    perforatorRegion: aws-us-west-1
+                    location: US West (N. California)
+                    displayName: 'AWS: US West (N. California)'
+                  - uuid: 1ad9ec20-99da-4aa4-93a2-fa17378a0a4f
+                    supported: true
+                    enabled: true
+                    integrated: true
+                    providerVcpuLimit: 350
+                    platformVcpuLimit: 250
+                    organizationVcpuLimit: 150
+                    createdAt: 1709361624163
+                    updatedAt: 1709361624163
+                    providerRegion: us-west-2
+                    perforatorRegion: aws-us-west-2
+                    location: US West (Oregon)
+                    displayName: 'AWS: US West (Oregon)'
+        '401':
+          $ref: '#/components/responses/401'
+  '/v1/cloud_providers/{cloud_provider_key}/regions':
+    get:
+      tags:
+        - Cloud Providers
+      summary: List Cloud Provider Regions
+      description: |
+        Call this operation if you want to get a list of cloud provider regions available in the system.
+      operationId: listCloudProviderRegions
+      parameters:
+        - name: cloud_provider_key
+          in: path
+          description: Unique identifier of the cloud provider
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 01666782-ec99-459d-9ac5-497691088d13
+      responses:
+        '200':
+          description: Returns a list of cloud provider regions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CloudProviderRegion'
+              example:
+                - uuid: 19942894-960e-4c37-83fc-2cd00062a111
+                  supported: true
+                  enabled: true
+                  integrated: true
+                  providerVcpuLimit: 350
+                  platformVcpuLimit: 250
+                  organizationVcpuLimit: 150
+                  createdAt: 1709361624163
+                  updatedAt: 1709361624163
+                  providerRegion: us-east-1
+                  perforatorRegion: aws-us-east-1
+                  location: US East (N. Virginia)
+                  displayName: 'AWS: US East (N. Virginia)'
+                - uuid: 6f790aad-f634-492e-b298-21b71d26f093
+                  supported: true
+                  enabled: true
+                  integrated: true
+                  providerVcpuLimit: 350
+                  platformVcpuLimit: 250
+                  organizationVcpuLimit: 150
+                  createdAt: 1709361624163
+                  updatedAt: 1709361624163
+                  providerRegion: us-east-2
+                  perforatorRegion: aws-us-east-2
+                  location: US East (Ohio)
+                  displayName: 'AWS: US East (Ohio)'
+                - uuid: 9ff0e833-2a07-40d2-98e6-fba6afa48cd7
+                  supported: true
+                  enabled: true
+                  integrated: true
+                  providerVcpuLimit: 350
+                  platformVcpuLimit: 250
+                  organizationVcpuLimit: 150
+                  createdAt: 1709361624163
+                  updatedAt: 1709361624163
+                  providerRegion: us-west-1
+                  perforatorRegion: aws-us-west-1
+                  location: US West (N. California)
+                  displayName: 'AWS: US West (N. California)'
+                - uuid: 1ad9ec20-99da-4aa4-93a2-fa17378a0a4f
+                  supported: true
+                  enabled: true
+                  integrated: true
+                  providerVcpuLimit: 350
+                  platformVcpuLimit: 250
+                  organizationVcpuLimit: 150
+                  createdAt: 1709361624163
+                  updatedAt: 1709361624163
+                  providerRegion: us-west-2
+                  perforatorRegion: aws-us-west-2
+                  location: US West (Oregon)
+                  displayName: 'AWS: US West (Oregon)'
+        '401':
+          $ref: '#/components/responses/401'
+  '/v1/cloud_providers/{cloud_provider_key}/regions/{region_key}':
+    get:
+      tags:
+        - Cloud Providers
+      summary: Get Cloud Provider Region Details
+      description: |
+        Call this operation if you want to get details of the given cloud provider region
+      operationId: getCloudProviderRegion
+      parameters:
+        - name: cloud_provider_key
+          in: path
+          description: Unique identifier of the cloud provider
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 01666782-ec99-459d-9ac5-497691088d13
+        - name: region_key
+          in: path
+          description: Unique identifier of the region
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 19942894-960e-4c37-83fc-2cd00062a111
+      responses:
+        '200':
+          description: Returns cloud provider region details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudProviderRegion'
+              example:
+                uuid: 19942894-960e-4c37-83fc-2cd00062a111
+                supported: true
+                enabled: true
+                integrated: true
+                providerVcpuLimit: 350
+                platformVcpuLimit: 250
+                organizationVcpuLimit: 150
+                createdAt: 1709361624163
+                updatedAt: 1709361624163
+                providerRegion: us-east-1
+                perforatorRegion: aws-us-east-1
+                location: US East (N. Virginia)
+                displayName: 'AWS: US East (N. Virginia)'
+        '401':
+          $ref: '#/components/responses/401'
+  '/v1/cloud_providers/{cloud_provider_key}/regions/{region_key}/enable':
+    post:
+      tags:
+        - Cloud Providers
+      summary: Enable Cloud Provider Region
+      description: |
+        Call this operation if you want to enable given cloud provider region
+      operationId: enableCloudProviderRegion
+      parameters:
+        - name: cloud_provider_key
+          in: path
+          description: Unique identifier of the cloud provider
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 01666782-ec99-459d-9ac5-497691088d13
+        - name: region_key
+          in: path
+          description: Unique identifier of the region
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 19942894-960e-4c37-83fc-2cd00062a111
+      responses:
+        '200':
+          description: Returns cloud provider region details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudProviderRegion'
+              example:
+                uuid: 19942894-960e-4c37-83fc-2cd00062a111
+                supported: true
+                enabled: true
+                integrated: true
+                providerVcpuLimit: 350
+                platformVcpuLimit: 250
+                organizationVcpuLimit: 150
+                createdAt: 1709361624163
+                updatedAt: 1709361624163
+                providerRegion: us-east-1
+                perforatorRegion: aws-us-east-1
+                location: US East (N. Virginia)
+                displayName: 'AWS: US East (N. Virginia)'
+        '401':
+          $ref: '#/components/responses/401'
+  '/v1/cloud_providers/{cloud_provider_key}/regions/{region_key}/disable':
+    post:
+      tags:
+        - Cloud Providers
+      summary: Disable Cloud Provider Region
+      description: |
+        Call this operation if you want to disable given cloud provider region
+      operationId: disableCloudProviderRegion
+      parameters:
+        - name: cloud_provider_key
+          in: path
+          description: Unique identifier of the cloud provider
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 01666782-ec99-459d-9ac5-497691088d13
+        - name: region_key
+          in: path
+          description: Unique identifier of the region
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 19942894-960e-4c37-83fc-2cd00062a111
+      responses:
+        '200':
+          description: Returns cloud provider region details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudProviderRegion'
+              example:
+                uuid: 19942894-960e-4c37-83fc-2cd00062a111
+                supported: true
+                enabled: true
+                integrated: true
+                providerVcpuLimit: 350
+                platformVcpuLimit: 250
+                organizationVcpuLimit: 150
+                createdAt: 1709361624163
+                updatedAt: 1709361624163
+                providerRegion: us-east-1
+                perforatorRegion: aws-us-east-1
+                location: US East (N. Virginia)
+                displayName: 'AWS: US East (N. Virginia)'
+        '401':
+          $ref: '#/components/responses/401'
 components:
   schemas:
     Project:
@@ -12384,6 +13006,8 @@ components:
       properties:
         uuid:
           type: string
+        correlationKey:
+          type: string
         createdAt:
           type: integer
           format: int64
@@ -12391,9 +13015,6 @@ components:
           type: integer
           format: int64
         concurrency:
-          type: integer
-          format: int32
-        duration:
           type: integer
           format: int32
         status:
@@ -12425,15 +13046,14 @@ components:
       properties:
         uuid:
           type: string
+        correlationKey:
+          type: string
         status:
           type: string
         browserName:
           type: string
         browserVersion:
           type: string
-        duration:
-          type: integer
-          format: int64
         browsersRequestedCount:
           type: integer
           format: int32
@@ -12444,9 +13064,6 @@ components:
           type: integer
           format: int32
         readyAt:
-          type: integer
-          format: int64
-        expirationAt:
           type: integer
           format: int64
         seleniumHubURL:
@@ -12483,9 +13100,9 @@ components:
         - browsersReadyCount
         - browsersRequestedCount
         - browsersStartingCount
-        - duration
         - status
         - uuid
+        - correlationKey
         - usePreAllocatedIPs
         - dataCapturingIncludeRequestHeaders
         - dataCapturingIncludeRequestBody
@@ -14794,11 +15411,102 @@ components:
     PlatformLimit:
       type: string
       enum:
+        - CREDITS_DEBT_SOFT_LIMIT
+        - CREDITS_DEBT_HARD_LIMIT
         - CONCURRENT_BROWSER_CLOUDS
         - CONCURRENT_BROWSERS
         - BROWSER_CLOUD_DURATION_HOURS
         - CONCURRENT_CLOUD_RUNNERS
         - CONCURRENT_CLOUD_RUNNER_CPU_CORES
+        - CLOUD_RUNNER_DURATION_HOURS
+    CloudProvider:
+      type: object
+      properties:
+        uuid:
+          type: string
+        type:
+          type: string
+        purpose:
+          type: string
+        scope:
+          type: string
+        supported:
+          type: boolean
+        enabled:
+          type: boolean
+        integrated:
+          type: boolean
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CloudProviderRegion'
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+      required:
+        - uuid
+        - type
+        - purpose
+        - scope
+        - supported
+        - enabled
+        - integrated
+        - regions
+        - createdAt
+        - updatedAt
+    CloudProviderRegion:
+      type: object
+      properties:
+        uuid:
+          type: string
+        supported:
+          type: boolean
+        enabled:
+          type: boolean
+        integrated:
+          type: boolean
+        providerVcpuLimit:
+          type: integer
+          format: int32
+        platformVcpuLimit:
+          type: integer
+          format: int32
+        organizationVcpuLimit:
+          type: integer
+          format: int32
+        providerRegion:
+          type: string
+        perforatorRegion:
+          type: string
+        location:
+          type: string
+        displayName:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+      required:
+        - uuid
+        - supported
+        - enabled
+        - integrated
+        - providerVcpuLimit
+        - platformVcpuLimit
+        - organizationVcpuLimit
+        - providerRegion
+        - perforatorRegion
+        - location
+        - displayName
+        - createdAt
+        - updatedAt
+    CloudProviderRegionDetails:
+      $ref: '#/components/schemas/CloudProviderRegion'
   responses:
     '401':
       description: Error if the call is not authorized
