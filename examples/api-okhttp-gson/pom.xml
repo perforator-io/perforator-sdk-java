@@ -20,8 +20,8 @@
         
         <!-- dependency versions -->
         <perforator.version>1.6.0-SNAPSHOT</perforator.version>
-        <log4j.version>2.22.0</log4j.version>
-        <junit.version>5.10.1</junit.version>
+        <log4j.version>2.23.1</log4j.version>
+        <junit.version>5.11.0</junit.version>
         <guava.version>33.0.0-jre</guava.version>
     </properties>
     
