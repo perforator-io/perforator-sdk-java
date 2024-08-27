@@ -171,17 +171,6 @@ tags:
       It is preferable to request various metrics within a single API call instead of sending multiple API calls to get individual metrics separately.
       Calculating multiple metrics within a single API call takes almost the same time as calculating a single metric.
       For example, if your request to get a single metric takes 15s and you need four different metrics - it will take 15x4=60s overall, making four individual API calls, while requesting all four metrics within one call still takes 15s overall.
-  - name: Credits
-    description: |
-      You should have enough credits to pay for the provisioned duration of the browser cloud whenever you would like to launch it.
-      Please use the following formula to estimate how many credits you need to launch a new browser cloud: **Concurrency**(in browsers) x **Duration**(in hours).
-      For example, if you need to launch a browser cloud with 500 concurrent browsers for 2 hours - the total cost is 1000 Compute/Hours, calculated as 500x2.
-      All the changes in balance credits are reflected as a part of balance transactions - you can quickly review all such transactions for your reference.
-      You should receive 1,280 Compute/Hours as a free one-time bonus when you sign up for Perforator platform.
-      There are no requirements or limitations to such a bonus - you can use it as a one-shot browser cloud launch with 1000 browsers or multiple launches with smaller clouds spread over time.
-      Creation of the browser clouds is put on hold whenever your credits balance approaches `CREDITS_DEBT_SOFT_LIMIT`(1000 Compute/Hours debt), and any request to launch a new browser cloud will be returned with an error.
-      To continue creating new browser clouds, you should top-up your balance via buying additional credits using your credit card.
-      Please check the following [link](https://www.perforator.io/pricing) to see actual pricing.
   - name: Limits
     description: |
       Launching browser clouds requires a tremendous amount of hardware resources to be provisioned.
@@ -12093,100 +12082,6 @@ paths:
                 logref: c21f1050-8a33-40e6-a722-b8c9ce5768a1
                 path: /v1/projects/8276840e-26ee-41b5-a8ba-ad635759e1dc/executions/ecbacdfe-6535-4cf7-a489-4b1f43ddf933/analytics/records
                 message: filter 'incorrect_filter' is not supported
-  /v1/credits/balance:
-    get:
-      tags:
-        - Credits
-      summary: Get credits balance
-      description: |
-        Call this operation if you would like to get the credits balance snapshot.
-        The following information is returned as a part of the response payload:
-        - `availableCredits` - how many available credits do you have to launch cloud resources? Its measurement is in Compute/Hours or C/H.
-        - `overallUtilization` - how many credits have you utilized for launching cloud resources since the very beginning of the platform usage? Its measurement is in Compute/Hours or C/H.
-        - `thirtyDaysUtilization` - how many credits have you utilized for launching cloud resource for the past **30** days? Its measurement is in Compute/Hours or C/H.
-        - `ninetyDaysUtilization` - how many credits have you utilized for launching cloud resource for the past **90** days? Its measurement is in Compute/Hours or C/H.
-      operationId: getCreditsBalance
-      parameters: []
-      responses:
-        '200':
-          description: Returns payload with the credits balance snapshot
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CreditsBalance'
-              example:
-                availableCredits: 1000
-                overallUtilization: 5000
-                thirtyDaysUtilization: 3500
-                ninetyDaysUtilization: 2500
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-  /v1/credits/transactions:
-    get:
-      tags:
-        - Credits
-      summary: Get balance transactions listing
-      description: |
-        Call this operation if you would like to get a complete listing of balance transactions.
-        The following information is returned for every balance transaction:
-        - `uuid` - unique identifier of the balanace transaction.
-        - `createdAt` - [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time) in milliseconds on when the transaction occurred.
-        - `updatedAt` - [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time) in milliseconds, always equals to `createdAt`.
-        - `transactedAt` - [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time) in milliseconds reflecting when actual transaction happened.
-        - `projectUuid` - optional unique identifier of the project this transaction relates to. This field is populated only when the transaction happens within the project scope, for example, when you launch a new browser cloud.
-        - `executionUuid` - optional unique identifier of the execution this transaction relates to. This field is populated only when the transaction happens within the execution scope, for example, when you launch a new browser cloud.
-        - `transactionType` - the type of the transaction, for example, `purchase`, `signup_bonus`, `browser_cloud_utilization`, etc...
-        - `debit` - the number of credits added to the account. This field is non-zero positive only as a part of transactions increasing balance, for example, `purchase`, `signup_bonus`, etc.
-        - `credit` - the number of credits deducted from the account. This field is non-zero positive only as a part of transactions decreasing balance, for example, `browser_cloud_utilization`.
-        - `receiptUrl` - URL to download/review purchase receipt. This field is optional and populated only for `purchase` transactions.
-      operationId: getCreditsTransactions
-      parameters: []
-      responses:
-        '200':
-          description: Returns payload with the list of balance transactions.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CreditsTransaction'
-              example:
-                - uuid: 0c3d293f-b4f9-4e33-b4ae-fda74365ea10
-                  createdAt: 1626332629319
-                  updatedAt: 1626332629319
-                  transactedAt: 1626332624319
-                  projectUuid: 35246548-f890-427a-abe7-85fb2056ea0e
-                  executionUuid: 5924f4e1-a147-4f59-8fb6-438618bdd08d
-                  transactionType: browser_cloud_utilization
-                  debit: 0
-                  credit: 100
-                - uuid: bc7a8550-506c-4d7a-98a3-c3863400ca53
-                  createdAt: 1626332245563
-                  updatedAt: 1626332245563
-                  transactedAt: 1626332241563
-                  projectUuid: 35246548-f890-427a-abe7-85fb2056ea0e
-                  executionUuid: f2db2a33-8040-4f2d-b0df-e10e68a6f62c
-                  transactionType: browser_cloud_utilization
-                  debit: 0
-                  credit: 100
-                - uuid: 91b0047c-2f0d-11eb-adc1-0242ac120002
-                  createdAt: 1606304220000
-                  updatedAt: 1606304220000
-                  transactedAt: 1606304217300
-                  transactionType: purchase
-                  debit: 10000
-                  credit: 0
-                  receiptUrl: 'https://receipts_domain.com/receipts/9591b8bb-e414-403f-9538-20cd5a8c685d/5c53a66a-83a0-4e65-a09b-1c6ef7a0dff8'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
   /v1/limits:
     get:
       tags:
@@ -12195,8 +12090,12 @@ paths:
       description: |
         Call this operation if you would like to get current limits applied to your account.
         For example, the following limits are currently in place:
-        - `CREDITS_DEBT_SOFT_LIMIT` - soft limit for your compute credits debt. You are allowed to launch new cloud resources before reaching this debt threshold.
-        - `CREDITS_DEBT_HARD_LIMIT` - hard limit for your compute credits debt. All cloud resources will be automatically terminated once your credits debt reaches the threshold.
+        - `UTILIZATION_DAILY_SOFT_LIMIT` - soft limit of utilizing cloud resources daily. You are allowed to launch new cloud resources before reaching this daily threshold.
+        - `UTILIZATION_DAILY_HARD_LIMIT` - hard limit of utilizing cloud resources daily. All active cloud resources will be automatically terminated once you reach this daily threshold.
+        - `UTILIZATION_WEEKLY_SOFT_LIMIT` - soft limit of utilizing cloud resources weekly. You are allowed to launch new cloud resources before reaching this weekly threshold.
+        - `UTILIZATION_WEEKLY_HARD_LIMIT` - hard limit of utilizing cloud resources weekly. All active cloud resources will be automatically terminated once you reach this weekly threshold.  
+        - `UTILIZATION_30_DAYS_SOFT_LIMIT` - soft limit of utilizing cloud resources during thirty days period. You are allowed to launch new cloud resources before reaching this thirty day threshold.
+        - `UTILIZATION_30_DAYS_HARD_LIMIT` - hard limit of utilizing cloud resources during thirty days period. All active cloud resources will be automatically terminated once you reach this thirty day threshold.    
         - `CONCURRENT_BROWSER_CLOUDS` - how many concurrent browser clouds you can launch at any given moment. Only active browser clouds are counted as a part of this limit verification. The default limit is **one** browser cloud.
         - `CONCURRENT_BROWSERS` - how many concurrent browsers you can requests across all active browser clouds at any given moment. The default limit is **500** browsers.
         - `BROWSER_CLOUD_DURATION_HOURS` - what is the maximum duration(in hours) for any requested browser cloud. The default limit is **4** hours.
@@ -12218,8 +12117,12 @@ paths:
                   type: integer
                   format: int32
               example:
-                CREDITS_DEBT_SOFT_LIMIT: 1000
-                CREDITS_DEBT_HARD_LIMIT: 2000
+                UTILIZATION_DAILY_SOFT_LIMIT: 384
+                UTILIZATION_DAILY_HARD_LIMIT: 768
+                UTILIZATION_WEEKLY_SOFT_LIMIT: 512
+                UTILIZATION_WEEKLY_HARD_LIMIT: 1024
+                UTILIZATION_30_DAYS_SOFT_LIMIT: 768
+                UTILIZATION_30_DAYS_HARD_LIMIT: 1536
                 CONCURRENT_BROWSER_CLOUDS: 1
                 CONCURRENT_BROWSERS: 500
                 BROWSER_CLOUD_DURATION_HOURS: 4
@@ -12274,8 +12177,7 @@ paths:
                 logref: c21f1050-8a33-40e6-a722-b8c9ce5768a1
                 path: /v1/limits/verify
                 message: |
-                  Required credits balanace is 500, available credits 
-                  balanace is 100
+                  Utilization limit reached. Daily utilization is 768, limit = 512
   /v1/cloud_providers:
     get:
       tags:
@@ -15332,71 +15234,6 @@ components:
       enum:
         - asc
         - desc
-    CreditsBalance:
-      type: object
-      properties:
-        availableCredits:
-          type: integer
-          format: int32
-        overallUtilization:
-          type: integer
-          format: int32
-        thirtyDaysUtilization:
-          type: integer
-          format: int32
-        ninetyDaysUtilization:
-          type: integer
-          format: int32
-    CreditsTransaction:
-      type: object
-      properties:
-        uuid:
-          type: string
-        createdAt:
-          type: integer
-          format: int64
-        updatedAt:
-          type: integer
-          format: int64
-        transactedAt:
-          type: integer
-          format: int64
-        projectUuid:
-          type: string
-          nullable: true
-        executionUuid:
-          type: string
-          nullable: true
-        transactionType:
-          type: string
-        debit:
-          type: integer
-          format: int32
-        credit:
-          type: integer
-          format: int32
-        receiptUrl:
-          type: string
-          nullable: true
-      required:
-        - createdAt
-        - updatedAt
-        - transactedAt
-        - credit
-        - debit
-        - transactionType
-        - uuid
-    CreditsTransactionType:
-      type: string
-      enum:
-        - purchase
-        - signup_bonus
-        - manual_adjustment
-        - refund
-        - browser_cloud_utilization
-        - browser_cloud_cancelation_user_requested
-        - browser_cloud_cancelation_not_operational
-        - browser_cloud_cancelation_not_provision
     ApiErrorResponse:
       type: object
       properties:
@@ -15411,8 +15248,12 @@ components:
     PlatformLimit:
       type: string
       enum:
-        - CREDITS_DEBT_SOFT_LIMIT
-        - CREDITS_DEBT_HARD_LIMIT
+        - UTILIZATION_DAILY_SOFT_LIMIT
+        - UTILIZATION_DAILY_HARD_LIMIT
+        - UTILIZATION_WEEKLY_SOFT_LIMIT
+        - UTILIZATION_WEEKLY_HARD_LIMIT
+        - UTILIZATION_30_DAYS_SOFT_LIMIT
+        - UTILIZATION_30_DAYS_HARD_LIMIT
         - CONCURRENT_BROWSER_CLOUDS
         - CONCURRENT_BROWSERS
         - BROWSER_CLOUD_DURATION_HOURS

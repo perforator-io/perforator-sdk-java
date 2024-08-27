@@ -32,7 +32,6 @@ public abstract class AbstractApiTest {
     protected ApiClient apiClient;
     
     protected LimitsApi limitsApi;
-    protected CreditsApi creditsApi;
     protected ProjectsApi projectsApi;
     protected ExecutionsApi executionsApi;
     protected AnalyticsApi analyticsApi;
@@ -59,7 +58,6 @@ public abstract class AbstractApiTest {
         
         apiClient = builder.getApiClient();
         limitsApi = builder.getApi(LimitsApi.class);
-        creditsApi = builder.getApi(CreditsApi.class);
         projectsApi = builder.getApi(ProjectsApi.class);
         executionsApi = builder.getApi(ExecutionsApi.class);
         analyticsApi = builder.getApi(AnalyticsApi.class);

@@ -46,10 +46,7 @@ final class ApiClientManagerImpl implements ApiClientManager {
                         .readTimeout(httpReadTimeout)
                         .build()
         );
-
-        loadGeneratorContext.setCreditsApi(
-                apiClientBuilder.getApi(CreditsApi.class)
-        );
+        
         loadGeneratorContext.setLimitsApi(
                 apiClientBuilder.getApi(LimitsApi.class)
         );
@@ -67,7 +64,7 @@ final class ApiClientManagerImpl implements ApiClientManager {
         );
 
         try {
-            loadGeneratorContext.getCreditsApi().getCreditsBalance();
+            loadGeneratorContext.getLimitsApi().getLimits();
         } catch (ApiException e) {
             OAuthProblemException oAuthProblemException = getOAuthProblemException(e);
 

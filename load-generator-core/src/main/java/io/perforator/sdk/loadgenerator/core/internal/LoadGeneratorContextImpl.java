@@ -35,7 +35,6 @@ final class LoadGeneratorContextImpl {
 
     private AsyncHttpClient httpClient;
     private ApiClientParams apiClientParams;
-    private CreditsApi creditsApi;
     private LimitsApi limitsApi;
     private ProjectsApi projectsApi;
     private ExecutionsApi executionsApi;
@@ -94,14 +93,6 @@ final class LoadGeneratorContextImpl {
 
     public void setAsyncHttpClient(AsyncHttpClient httpClient) {
         this.httpClient = httpClient;
-    }
-
-    public CreditsApi getCreditsApi() {
-        return creditsApi;
-    }
-
-    public void setCreditsApi(CreditsApi creditsApi) {
-        this.creditsApi = creditsApi;
     }
 
     public LimitsApi getLimitsApi() {

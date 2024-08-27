@@ -3,7 +3,6 @@ package com.example;
 import io.perforator.sdk.api.okhttpgson.ApiClientBuilder;
 import io.perforator.sdk.api.okhttpgson.operations.AnalyticsApi;
 import io.perforator.sdk.api.okhttpgson.operations.BrowserCloudsApi;
-import io.perforator.sdk.api.okhttpgson.operations.CreditsApi;
 import io.perforator.sdk.api.okhttpgson.operations.ExecutionsApi;
 import io.perforator.sdk.api.okhttpgson.operations.LimitsApi;
 import io.perforator.sdk.api.okhttpgson.operations.ProjectsApi;
@@ -39,10 +38,6 @@ public class ApiClientsExample {
 
         AnalyticsApi analyticsApi = builder.getApi(
                 AnalyticsApi.class
-        );
-
-        CreditsApi creditsApi = builder.getApi(
-                CreditsApi.class
         );
 
         LimitsApi limitsApi = builder.getApi(

@@ -12,8 +12,9 @@ package io.perforator.sdk.api.okhttpgson;
 
 import io.perforator.sdk.api.okhttpgson.invoker.ApiException;
 import io.perforator.sdk.api.okhttpgson.invoker.auth.OAuth;
-import io.perforator.sdk.api.okhttpgson.model.CreditsBalance;
-import io.perforator.sdk.api.okhttpgson.operations.CreditsApi;
+import io.perforator.sdk.api.okhttpgson.operations.LimitsApi;
+import io.perforator.sdk.api.okhttpgson.operations.ProjectsApi;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
@@ -47,11 +48,11 @@ public class ApiClientBuilderTest {
 
     private void createAndVerifyApiClientBuilder(ApiClientParams params) {
         ApiClientBuilder apiClientBuilder = new ApiClientBuilder(params);
-        CreditsBalance balance = assertDoesNotThrow(
-                () -> apiClientBuilder.getApi(CreditsApi.class).getCreditsBalance()
+        Map<String, Integer> limits = assertDoesNotThrow(
+                () -> apiClientBuilder.getApi(LimitsApi.class).getLimits()
         );
 
-        assertNotNull(balance);
+        assertNotNull(limits);
     }
 
     private String generateApiToken() throws ApiException {
@@ -63,7 +64,7 @@ public class ApiClientBuilderTest {
                         .build()
         );
 
-        apiClientBuilder.getApi(CreditsApi.class).getCreditsBalance();
+        apiClientBuilder.getApi(ProjectsApi.class).listProjects();
         return ((OAuth) apiClientBuilder.getApiClient().getAuthentication("OAuth")).getAccessToken();
     }
 

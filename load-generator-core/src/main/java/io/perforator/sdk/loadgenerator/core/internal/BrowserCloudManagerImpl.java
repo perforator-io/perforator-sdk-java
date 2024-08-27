@@ -13,7 +13,6 @@ package io.perforator.sdk.loadgenerator.core.internal;
 import io.perforator.sdk.api.okhttpgson.invoker.ApiException;
 import io.perforator.sdk.api.okhttpgson.model.BrowserCloud;
 import io.perforator.sdk.api.okhttpgson.model.BrowserCloudDetails;
-import io.perforator.sdk.api.okhttpgson.model.CreditsBalance;
 import io.perforator.sdk.api.okhttpgson.model.Execution;
 import io.perforator.sdk.api.okhttpgson.model.PlatformLimit;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
@@ -94,7 +93,7 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
 
         int durationHours = (requiredDuration - 1) / 3600 + 1;
 
-        verifyOrganizationLimitsAndBalance(loadGeneratorContext, durationHours, concurrency);
+        verifyOrganizationLimits(loadGeneratorContext, durationHours, concurrency);
 
         String projectKey = loadGeneratorConfig.getProjectKey();
         String executionKey = loadGeneratorConfig.getExecutionKey();
@@ -401,7 +400,7 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
         });
     }
 
-    private void verifyOrganizationLimitsAndBalance(LoadGeneratorContextImpl loadGeneratorContext, int duration, int concurrency) {
+    private void verifyOrganizationLimits(LoadGeneratorContextImpl loadGeneratorContext, int duration, int concurrency) {
         Map<String, Integer> limits;
         try {
             limits = loadGeneratorContext.getLimitsApi().getLimits();
@@ -433,19 +432,7 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
             });
         }
 
-        verify("credits balance", () -> {
-            CreditsBalance balance = loadGeneratorContext.getCreditsApi().getCreditsBalance();
-            int availableCredits = balance.getAvailableCredits();
-            int requiredCredits = duration * concurrency;
-
-            if (availableCredits < requiredCredits) {
-                throw new RuntimeException(
-                        "Insufficient credits balance: required credits = " + requiredCredits + ", available credits = " + availableCredits
-                );
-            }
-        });
-
-        verify("overall limits and balance all together", () -> {
+        verify("overall limits all together", () -> {
             loadGeneratorContext.getLimitsApi().verifyLimits(Map.of(
                     PlatformLimit.CONCURRENT_BROWSER_CLOUDS.getValue(), 1,
                     PlatformLimit.CONCURRENT_BROWSERS.getValue(), concurrency,
