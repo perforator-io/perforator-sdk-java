@@ -1177,7 +1177,7 @@ paths:
         required: true
       responses:
         '200':
-          description: Returns full payload of the created execution
+          description: Returns full payload of the codeless load generator
           content:
             application/json:
               schema:
@@ -1315,7 +1315,7 @@ paths:
           example: ecbacdfe-6535-4cf7-a489-4b1f43ddf933
       responses:
         '200':
-          description: Returns full payload of the created execution
+          description: Returns full payload of the codeless load generator
           content:
             application/json:
               schema:
@@ -1372,6 +1372,144 @@ paths:
                     dataCapturingIncludeResponseHeaders: true
                     dataCapturingIncludeResponseBody: true
                 status: QUEUED
+                sshPublicKey: |
+                  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCnRFTyimOgh3v+yHUFd/4B7SW88mLysXzSbQWfYpLo 43c85af6-e5a2-4044-8f77-015fdd472d0f@perforator.io
+                sshPrivateKey: |
+                  -----BEGIN OPENSSH PRIVATE KEY-----
+                  b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+                  QyNTUxOQAAACCgp0RU8opjoId7/sh1BXf+Ae0lvPJi8rF80m0Fn2KS6AAAALgyQFvMMkBb
+                  zAAAAAtzc2gtZWQyNTUxOQAAACCgp0RU8opjoId7/sh1BXf+Ae0lvPJi8rF80m0Fn2KS6A
+                  AAAEDehbV+Lf567J/EtwS+Pohbk8qC6FujlmP1/EvzWHYFTaCnRFTyimOgh3v+yHUFd/4B
+                  7SW88mLysXzSbQWfYpLoAAAAMjQzYzg1YWY2LWU1YTItNDA0NC04Zjc3LTAxNWZkZDQ3Mm
+                  QwZkBwZXJmb3JhdG9yLmlvAQID
+                  -----END OPENSSH PRIVATE KEY-----
+                config:
+                  suites:
+                    Default:
+                      concurrency: 16
+                      delay: 0s
+                      duration: 10m
+                      rampUp: 1m
+                      rampDown: 1m
+                      steps:
+                        prepare:
+                          - open: 'https://verifications.perforator.io/'
+                          - sleep: 10s-20s
+                        crawl:
+                          - crawler:
+                              delay: 10s-20s
+                              maxVisitsOverall: 15
+                              maxDuration: 5m
+                configSource: |
+                  suites:
+                    Default:
+                      concurrency: 16
+                      delay: 0s
+                      duration: 10m
+                      rampUp: 1m
+                      rampDown: 1m
+                      steps:
+                        prepare:
+                          - open: https://verifications.perforator.io/
+                          - sleep: 10s-20s
+                        crawl:
+                          - crawler:
+                              delay: 10s-20s
+                              maxVisitsOverall: 15
+                              maxDuration: 5m
+                configSourceType: YAML
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '422':
+          $ref: '#/components/responses/422'
+  '/v1/projects/{project_key}/load_generators/codeless/{execution_key}/terminate':
+    post:
+      tags:
+        - Load Generators
+      summary: Terminate codeless load generator
+      description: |
+        Call this operation if you want to terminate codeless load generator
+      operationId: terminateCodelessLoadGenerator
+      parameters:
+        - name: project_key
+          in: path
+          description: Unique identifier of the project where codeless load generator was created in
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 8276840e-26ee-41b5-a8ba-ad635759e1dc
+        - name: execution_key
+          in: path
+          description: Unique identifier of the execution where codeless load generator was created in
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: ecbacdfe-6535-4cf7-a489-4b1f43ddf933
+      responses:
+        '200':
+          description: Returns full payload of the codeless load generator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CodelessLoadGeneratorDetails'
+              example:
+                project:
+                  uuid: 8276840e-26ee-41b5-a8ba-ad635759e1dc
+                  name: example.com - Stage - Load
+                  notes: Load Testing of example.com in stage environment
+                  createdAt: 1624416790568
+                  updatedAt: 1624502433458
+                execution:
+                  uuid: ecbacdfe-6535-4cf7-a489-4b1f43ddf933
+                  type: CLOUD_NATIVE_CODELESS_LOAD_GENERATOR
+                  name: Preparation for the release on 01/01/2021
+                  notes: 'Concurrency 1000 browsers, duration 2 hours'
+                  createdAt: 1608012000000
+                  updatedAt: 1608015600000
+                cloud_runners:
+                  - uuid: 23c39165-89c1-4afb-80b6-e994cb96a482
+                    status: TERMINATING
+                    hardwareType: C2
+                    hardwareCpu: 2
+                    hardwareMemory: 4
+                    sshUser: perforator
+                    sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCnRFTyimOgh3v+yHUFd/4B7SW88mLysXzSbQWfYpLo 43c85af6-e5a2-4044-8f77-015fdd472d0f@perforator.io
+                    sshHostName: 23c39165-89c1-4afb-80b6-e994cb96a482.runners.perforator.io
+                    sshHostIP: 1.2.3.4
+                    sshPort: 22
+                    createdAt: 1608012000000
+                    updatedAt: 1608015600000
+                    requestedAt: 1608012000000
+                    startingAt: 1608012010000
+                    readyAt: 1608012060000
+                    terminatingAt: 1608012360000
+                    terminatedAt: 1608012460000
+                browser_clouds:
+                  - uuid: 1ee796e4-27fe-46e5-9767-56d5352310d0
+                    correlationKey: 8502cff5-199a-465a-a1e2-165d82bc30f0
+                    status: TERMINATING
+                    browserName: chrome
+                    browserVersion: 90.0.4430.24
+                    browsersRequestedCount: 500
+                    browsersReadyCount: 500
+                    browsersStartingCount: 0
+                    readyAt: 1625928669754
+                    seleniumHubURL: 'https://selenium.perforator.io/d502c7b2-031c-40db-adcf-ec0661715e0a/1ee796e4-27fe-46e5-9767-56d5352310d0/wd/hub'
+                    publicIPs:
+                      - 123.122.77.88
+                      - 34.554.3.55
+                    usePreAllocatedIPs: false
+                    dataCapturingIncludeRequestHeaders: true
+                    dataCapturingIncludeRequestBody: true
+                    dataCapturingIncludeResponseHeaders: true
+                    dataCapturingIncludeResponseBody: true
+                status: TERMINATING
                 sshPublicKey: |
                   ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCnRFTyimOgh3v+yHUFd/4B7SW88mLysXzSbQWfYpLo 43c85af6-e5a2-4044-8f77-015fdd472d0f@perforator.io
                 sshPrivateKey: |
