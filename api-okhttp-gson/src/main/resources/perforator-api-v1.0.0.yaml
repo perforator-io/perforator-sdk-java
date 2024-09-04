@@ -124,6 +124,8 @@ tags:
       - `C16` - 16 CPU cores and 32GB memory  
       - `C36` - 36 CPU cores and 72GB memory  
       - `C72` - 72 CPU cores and 144GB memory  
+  - name: Load Generators
+    description: "Launch config-based load generators in a cloud-native way.  \nCurrently, only codeless load generators can be launched in a cloud-native way.  \n***\n**Important:**\_Cloud-native load generators are a\_`BETA`\_functionality - please use them at your own concerns.\n"
   - name: Analytics
     description: |
       Executing a load test is just a first step in understanding the overall performance of the target system.
@@ -482,11 +484,13 @@ paths:
                   $ref: '#/components/schemas/Execution'
               example:
                 - uuid: ecbacdfe-6535-4cf7-a489-4b1f43ddf933
+                  type: GENERAL
                   name: Preparation for the release on 01/01/2021
                   notes: 'Concurrency 1000 browsers, duration 2 hours'
                   createdAt: 1608012000000
                   updatedAt: 1608015600000
                 - uuid: 6d2f5a5d-6b75-46a7-9803-abea31278b59
+                  type: GENERAL
                   name: Preparation for the release on 07/01/2021
                   notes: 'Concurrency 1000 browsers, duration 2 hours'
                   createdAt: 1592197200000
@@ -508,6 +512,7 @@ paths:
         - `name` is an optional field, so you can skip it if not needed.
         - `notes` is an optional field, so you can skip it if not needed.
         - `uuid` is a system-level field, so it will be ignored even if you try to submit it.
+        - `type` is a system-level field, so it will be ignored even if you try to submit it.
         - `createdAt` is a system-level field, so it will be ignored even if you try to submit it.
         - `updatedAt` is a system-level field, so it will be ignored even if you try to submit it.
       operationId: createExecution
@@ -593,6 +598,7 @@ paths:
                 $ref: '#/components/schemas/Execution'
               example:
                 uuid: ecbacdfe-6535-4cf7-a489-4b1f43ddf933
+                type: GENERAL
                 name: Preparation for the release on 01/01/2021
                 notes: 'Concurrency 1000 browsers, duration 2 hours'
                 createdAt: 1608012000000
@@ -650,6 +656,7 @@ paths:
         The fields below can't be updated, because it is managed on the system-level.
         So, even if you specify any of such fields in the update payload - it will be ignored.
         - **uuid**
+        - **type**
         - **createdAt**
         - **updatedAt**
       operationId: updateExecution
@@ -689,6 +696,7 @@ paths:
                 $ref: '#/components/schemas/Execution'
               example:
                 uuid: ecbacdfe-6535-4cf7-a489-4b1f43ddf933
+                type: GENERAL
                 name: Preparation for the release on 01/01/2021
                 notes: 'Concurrency 1000 browsers, duration 2 hours'
                 createdAt: 1608012000000
@@ -717,6 +725,7 @@ paths:
         The fields below can't be updated, because it is managed on the system-level.
         So, even if you specify any of such fields in the patch payload - it will be ignored.
         - **uuid**
+        - **type**
         - **createdAt**
         - **updatedAt**
       operationId: patchExecution
@@ -764,6 +773,7 @@ paths:
                 $ref: '#/components/schemas/Execution'
               example:
                 uuid: ecbacdfe-6535-4cf7-a489-4b1f43ddf933
+                type: GENERAL
                 name: Preparation for the release on 01/01/2021
                 notes: 'Concurrency 1000 browsers, duration 2 hours'
                 createdAt: 1608012000000
@@ -1093,6 +1103,321 @@ paths:
                 startingAt: 1608012010000
                 readyAt: 1608012060000
                 terminatingAt: 1608012360000
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '422':
+          $ref: '#/components/responses/422'
+  '/v1/projects/{project_key}/load_generators/codeless':
+    post:
+      tags:
+        - Load Generators
+      summary: Launch a new codeless load generator for the given project
+      description: |
+        Call this operation if you want to launch a new codeless load generator within a project.
+      externalDocs:
+        description: Guide
+        url: 'https://www.perforator.io/guide/load_generator/codeless/usage'
+      operationId: launchCodelessLoadGenerator
+      parameters:
+        - name: project_key
+          in: path
+          description: Unique identifier of the project for execution to be created in
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 8276840e-26ee-41b5-a8ba-ad635759e1dc
+      requestBody:
+        description: Codeless Load Generator Config
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              suites:
+                Default:
+                  concurrency: 16
+                  delay: 0s
+                  duration: 10m
+                  rampUp: 1m
+                  rampDown: 1m
+                  steps:
+                    prepare:
+                      - open: 'https://verifications.perforator.io/'
+                      - sleep: 10s-20s
+                    crawl:
+                      - crawler:
+                          delay: 10s-20s
+                          maxVisitsOverall: 15
+                          maxDuration: 5m
+          application/yaml:
+            schema:
+              type: object
+            example:
+              suites:
+                Default:
+                  concurrency: 16
+                  delay: 0s
+                  duration: 10m
+                  rampUp: 1m
+                  rampDown: 1m
+                  steps:
+                    prepare:
+                      - open: 'https://verifications.perforator.io/'
+                      - sleep: 10s-20s
+                    crawl:
+                      - crawler:
+                          delay: 10s-20s
+                          maxVisitsOverall: 15
+                          maxDuration: 5m
+        required: true
+      responses:
+        '200':
+          description: Returns full payload of the created execution
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CodelessLoadGeneratorDetails'
+              example:
+                project:
+                  uuid: 8276840e-26ee-41b5-a8ba-ad635759e1dc
+                  name: example.com - Stage - Load
+                  notes: Load Testing of example.com in stage environment
+                  createdAt: 1624416790568
+                  updatedAt: 1624502433458
+                execution:
+                  uuid: ecbacdfe-6535-4cf7-a489-4b1f43ddf933
+                  type: CLOUD_NATIVE_CODELESS_LOAD_GENERATOR
+                  name: Preparation for the release on 01/01/2021
+                  notes: 'Concurrency 1000 browsers, duration 2 hours'
+                  createdAt: 1608012000000
+                  updatedAt: 1608015600000
+                cloud_runners:
+                  - uuid: 23c39165-89c1-4afb-80b6-e994cb96a482
+                    status: OPERATIONAL
+                    hardwareType: C2
+                    hardwareCpu: 2
+                    hardwareMemory: 4
+                    sshUser: perforator
+                    sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCnRFTyimOgh3v+yHUFd/4B7SW88mLysXzSbQWfYpLo 43c85af6-e5a2-4044-8f77-015fdd472d0f@perforator.io
+                    sshHostName: 23c39165-89c1-4afb-80b6-e994cb96a482.runners.perforator.io
+                    sshHostIP: 1.2.3.4
+                    sshPort: 22
+                    createdAt: 1608012000000
+                    updatedAt: 1608015600000
+                    requestedAt: 1608012000000
+                    startingAt: 1608012010000
+                    readyAt: 1608012060000
+                    terminatingAt: 1608012360000
+                    terminatedAt: 1608012460000
+                browser_clouds:
+                  - uuid: 1ee796e4-27fe-46e5-9767-56d5352310d0
+                    correlationKey: 8502cff5-199a-465a-a1e2-165d82bc30f0
+                    status: OPERATIONAL
+                    browserName: chrome
+                    browserVersion: 90.0.4430.24
+                    browsersRequestedCount: 500
+                    browsersReadyCount: 500
+                    browsersStartingCount: 0
+                    readyAt: 1625928669754
+                    seleniumHubURL: 'https://selenium.perforator.io/d502c7b2-031c-40db-adcf-ec0661715e0a/1ee796e4-27fe-46e5-9767-56d5352310d0/wd/hub'
+                    publicIPs:
+                      - 123.122.77.88
+                      - 34.554.3.55
+                    usePreAllocatedIPs: false
+                    dataCapturingIncludeRequestHeaders: true
+                    dataCapturingIncludeRequestBody: true
+                    dataCapturingIncludeResponseHeaders: true
+                    dataCapturingIncludeResponseBody: true
+                status: QUEUED
+                sshPublicKey: |
+                  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCnRFTyimOgh3v+yHUFd/4B7SW88mLysXzSbQWfYpLo 43c85af6-e5a2-4044-8f77-015fdd472d0f@perforator.io
+                sshPrivateKey: |
+                  -----BEGIN OPENSSH PRIVATE KEY-----
+                  b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+                  QyNTUxOQAAACCgp0RU8opjoId7/sh1BXf+Ae0lvPJi8rF80m0Fn2KS6AAAALgyQFvMMkBb
+                  zAAAAAtzc2gtZWQyNTUxOQAAACCgp0RU8opjoId7/sh1BXf+Ae0lvPJi8rF80m0Fn2KS6A
+                  AAAEDehbV+Lf567J/EtwS+Pohbk8qC6FujlmP1/EvzWHYFTaCnRFTyimOgh3v+yHUFd/4B
+                  7SW88mLysXzSbQWfYpLoAAAAMjQzYzg1YWY2LWU1YTItNDA0NC04Zjc3LTAxNWZkZDQ3Mm
+                  QwZkBwZXJmb3JhdG9yLmlvAQID
+                  -----END OPENSSH PRIVATE KEY-----
+                config:
+                  suites:
+                    Default:
+                      concurrency: 16
+                      delay: 0s
+                      duration: 10m
+                      rampUp: 1m
+                      rampDown: 1m
+                      steps:
+                        prepare:
+                          - open: 'https://verifications.perforator.io/'
+                          - sleep: 10s-20s
+                        crawl:
+                          - crawler:
+                              delay: 10s-20s
+                              maxVisitsOverall: 15
+                              maxDuration: 5m
+                configSource: |
+                  suites:
+                    Default:
+                      concurrency: 16
+                      delay: 0s
+                      duration: 10m
+                      rampUp: 1m
+                      rampDown: 1m
+                      steps:
+                        prepare:
+                          - open: https://verifications.perforator.io/
+                          - sleep: 10s-20s
+                        crawl:
+                          - crawler:
+                              delay: 10s-20s
+                              maxVisitsOverall: 15
+                              maxDuration: 5m
+                configSourceType: YAML
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '422':
+          $ref: '#/components/responses/422'
+  '/v1/projects/{project_key}/load_generators/codeless/{execution_key}':
+    get:
+      tags:
+        - Load Generators
+      summary: Get codeless load generator details
+      description: |
+        Call this operation if you want to get codeless load generator details
+      operationId: getCodelessLoadGeneratorDetails
+      parameters:
+        - name: project_key
+          in: path
+          description: Unique identifier of the project where codeless load generator was created in
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: 8276840e-26ee-41b5-a8ba-ad635759e1dc
+        - name: execution_key
+          in: path
+          description: Unique identifier of the execution where codeless load generator was created in
+          required: true
+          allowEmptyValue: false
+          schema:
+            type: string
+          example: ecbacdfe-6535-4cf7-a489-4b1f43ddf933
+      responses:
+        '200':
+          description: Returns full payload of the created execution
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CodelessLoadGeneratorDetails'
+              example:
+                project:
+                  uuid: 8276840e-26ee-41b5-a8ba-ad635759e1dc
+                  name: example.com - Stage - Load
+                  notes: Load Testing of example.com in stage environment
+                  createdAt: 1624416790568
+                  updatedAt: 1624502433458
+                execution:
+                  uuid: ecbacdfe-6535-4cf7-a489-4b1f43ddf933
+                  type: CLOUD_NATIVE_CODELESS_LOAD_GENERATOR
+                  name: Preparation for the release on 01/01/2021
+                  notes: 'Concurrency 1000 browsers, duration 2 hours'
+                  createdAt: 1608012000000
+                  updatedAt: 1608015600000
+                cloud_runners:
+                  - uuid: 23c39165-89c1-4afb-80b6-e994cb96a482
+                    status: OPERATIONAL
+                    hardwareType: C2
+                    hardwareCpu: 2
+                    hardwareMemory: 4
+                    sshUser: perforator
+                    sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCnRFTyimOgh3v+yHUFd/4B7SW88mLysXzSbQWfYpLo 43c85af6-e5a2-4044-8f77-015fdd472d0f@perforator.io
+                    sshHostName: 23c39165-89c1-4afb-80b6-e994cb96a482.runners.perforator.io
+                    sshHostIP: 1.2.3.4
+                    sshPort: 22
+                    createdAt: 1608012000000
+                    updatedAt: 1608015600000
+                    requestedAt: 1608012000000
+                    startingAt: 1608012010000
+                    readyAt: 1608012060000
+                    terminatingAt: 1608012360000
+                    terminatedAt: 1608012460000
+                browser_clouds:
+                  - uuid: 1ee796e4-27fe-46e5-9767-56d5352310d0
+                    correlationKey: 8502cff5-199a-465a-a1e2-165d82bc30f0
+                    status: OPERATIONAL
+                    browserName: chrome
+                    browserVersion: 90.0.4430.24
+                    browsersRequestedCount: 500
+                    browsersReadyCount: 500
+                    browsersStartingCount: 0
+                    readyAt: 1625928669754
+                    seleniumHubURL: 'https://selenium.perforator.io/d502c7b2-031c-40db-adcf-ec0661715e0a/1ee796e4-27fe-46e5-9767-56d5352310d0/wd/hub'
+                    publicIPs:
+                      - 123.122.77.88
+                      - 34.554.3.55
+                    usePreAllocatedIPs: false
+                    dataCapturingIncludeRequestHeaders: true
+                    dataCapturingIncludeRequestBody: true
+                    dataCapturingIncludeResponseHeaders: true
+                    dataCapturingIncludeResponseBody: true
+                status: QUEUED
+                sshPublicKey: |
+                  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCnRFTyimOgh3v+yHUFd/4B7SW88mLysXzSbQWfYpLo 43c85af6-e5a2-4044-8f77-015fdd472d0f@perforator.io
+                sshPrivateKey: |
+                  -----BEGIN OPENSSH PRIVATE KEY-----
+                  b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+                  QyNTUxOQAAACCgp0RU8opjoId7/sh1BXf+Ae0lvPJi8rF80m0Fn2KS6AAAALgyQFvMMkBb
+                  zAAAAAtzc2gtZWQyNTUxOQAAACCgp0RU8opjoId7/sh1BXf+Ae0lvPJi8rF80m0Fn2KS6A
+                  AAAEDehbV+Lf567J/EtwS+Pohbk8qC6FujlmP1/EvzWHYFTaCnRFTyimOgh3v+yHUFd/4B
+                  7SW88mLysXzSbQWfYpLoAAAAMjQzYzg1YWY2LWU1YTItNDA0NC04Zjc3LTAxNWZkZDQ3Mm
+                  QwZkBwZXJmb3JhdG9yLmlvAQID
+                  -----END OPENSSH PRIVATE KEY-----
+                config:
+                  suites:
+                    Default:
+                      concurrency: 16
+                      delay: 0s
+                      duration: 10m
+                      rampUp: 1m
+                      rampDown: 1m
+                      steps:
+                        prepare:
+                          - open: 'https://verifications.perforator.io/'
+                          - sleep: 10s-20s
+                        crawl:
+                          - crawler:
+                              delay: 10s-20s
+                              maxVisitsOverall: 15
+                              maxDuration: 5m
+                configSource: |
+                  suites:
+                    Default:
+                      concurrency: 16
+                      delay: 0s
+                      duration: 10m
+                      rampUp: 1m
+                      rampDown: 1m
+                      steps:
+                        prepare:
+                          - open: https://verifications.perforator.io/
+                          - sleep: 10s-20s
+                        crawl:
+                          - crawler:
+                              delay: 10s-20s
+                              maxVisitsOverall: 15
+                              maxDuration: 5m
+                configSourceType: YAML
         '401':
           $ref: '#/components/responses/401'
         '403':
@@ -12837,6 +13162,8 @@ components:
       properties:
         uuid:
           type: string
+        type:
+          type: string
         name:
           type: string
         notes:
@@ -12847,6 +13174,11 @@ components:
         updatedAt:
           type: integer
           format: int64
+    ExecutionType:
+      type: string
+      enum:
+        - GENERAL
+        - CLOUD_NATIVE_CODELESS_LOAD_GENERATOR
     CloudRunner:
       type: object
       properties:
@@ -12903,6 +13235,44 @@ components:
         - C16
         - C36
         - C72
+    CodelessLoadGeneratorDetails:
+      type: object
+      properties:
+        project:
+          $ref: '#/components/schemas/Project'
+        execution:
+          $ref: '#/components/schemas/Execution'
+        cloudRunners:
+          type: array
+          items:
+            $ref: '#/components/schemas/CloudRunner'
+        browserClouds:
+          type: array
+          items:
+            $ref: '#/components/schemas/BrowserCloudDetails'
+        status:
+          type: string
+        sshPrivateKey:
+          type: string
+        sshPublicKey:
+          type: string
+        config:
+          type: object
+        configSource:
+          type: string
+        configSourceType:
+          type: string
+      required:
+        - project
+        - execution
+        - cloudRunners
+        - browserClouds
+        - status
+        - sshPrivateKey
+        - sshPublicKey
+        - config
+        - configSource
+        - configSourceType
     BrowserCloud:
       type: object
       properties:
