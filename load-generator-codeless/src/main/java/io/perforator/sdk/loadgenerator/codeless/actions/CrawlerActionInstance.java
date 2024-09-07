@@ -10,12 +10,12 @@
  */
 package io.perforator.sdk.loadgenerator.codeless.actions;
 
+import io.perforator.sdk.loadgenerator.codeless.RandomDuration;
+import java.time.Duration;
+import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.FieldNameConstants;
-
-import java.time.Duration;
-import java.util.List;
 
 @Value
 @FieldNameConstants
@@ -38,7 +38,7 @@ public class CrawlerActionInstance implements ActionInstance<CrawlerActionConfig
     private final boolean randomize;
 
     @FieldNameConstants.Include
-    private final Duration delay;
+    private final RandomDuration delay;
 
     @FieldNameConstants.Include
     private final int maxVisitsPerUrl;

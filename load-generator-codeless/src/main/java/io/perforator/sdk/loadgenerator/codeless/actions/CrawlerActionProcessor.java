@@ -235,7 +235,7 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                                 CrawlerActionInstance.Fields.delay,
                                 actionConfig.getDelay(),
                                 formatter
-                        ).random()
+                        )
                 )
                 .maxVisitsPerUrl(
                         buildIntegerForActionInstance(
@@ -367,7 +367,7 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                     )
             );
             
-            Perforator.sleep(actionInstance.getDelay().toMillis());
+            Perforator.sleep(actionInstance.getDelay().random().toMillis());
         }
     }
 

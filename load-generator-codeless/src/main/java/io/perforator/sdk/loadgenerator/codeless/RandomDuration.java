@@ -51,5 +51,18 @@ public class RandomDuration {
     public Duration getTo() {
         return to;
     }
+
+    @Override
+    public String toString() {
+        if (from == null && to == null) {
+            return "0s";
+        } else if (from == null) {
+            return to.toString();
+        } else if (to == null) {
+            return from.toString();
+        } else {
+            return from + "-" + to;
+        }
+    }
     
 }
