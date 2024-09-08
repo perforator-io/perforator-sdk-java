@@ -41,12 +41,61 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
     public static final String DEFAULT_MAX_QUEUE_SIZE = "4096";
     public static final String DEFAULT_MAX_DURATION = "5m";
     public static final String DEFAULT_DELAY = "5s";
+    public static final String DEFAULT_SCROLL = "false";
+    public static final String DEFAULT_SCROLL_DELAY = "5s";
+    public static final String DEFAULT_CLICK = "false";
+    public static final String DEFAULT_CLICK_DELAY = "5s";
+    
+    public static final String DEFAULT_SCROLL_SCRIPT = ""
+            + "const domains=arguments[0];"
+            + "window.scrollTo(0,document.documentElement.scrollHeight);";
+    
+    public static final String DEFAULT_CLICK_SCRIPT = ""
+            + "const domains=arguments[0];"
+            + "const linksToClick = [];"
+            + "const links = document.querySelectorAll(\"a[href]:not([href^='javascript']):not([href^='void']):not([href='#'])\");"
+            + "const maxChecks = Math.min(links.length, 512);"
+            + "for(var i=0; i < maxChecks; i++){"
+            + "    if(links[i].checkVisibility({ opacityProperty: true, visibilityProperty: true, contentVisibilityAuto: true,})) {"
+            + "        try {"
+            + "            let url = new URL(links[i].href);"
+            + "            for(var j=0; j < domains.length; j++){"
+            + "                if(url.hostname === domains[j]) {"
+            + "                    linksToClick.push(links[i]);"
+            + "                }"
+            + "            }"
+            + "        } catch (error) {}"
+            + "    }"
+            + "}"
+            + "if(linksToClick.length > 0){"
+            + "    for(var i=0; i < 10; i++){"
+            + "        try {"
+            + "            let linkToClick = linksToClick[Math.floor(Math.random()*linksToClick.length)];"
+            + "            if(\"_blank\" === linkToClick.getAttribute(\"target\")) {"
+            + "                linkToClick.removeAttribute(\"target\");"
+            + "            }"
+            + "            linkToClick.click();"
+            + "            return;"
+            + "        } catch (error) {}"
+            + "    }"
+            + "}";
     
     public static final String DEFAULT_LINKS_EXTRACTOR_SCRIPT = ""
+            + "const domains=arguments[0];"
             + "const result = [];"
             + "const links = document.querySelectorAll(\"a[href]:not([href^='javascript']):not([href^='void']):not([href='#'])\");"
-            + "for(var i=0; i < links.length; i++){"
-            + "    result.push(links[i].href);"
+            + "const maxChecks = Math.min(links.length, 512);"
+            + "for(var i=0; i < maxChecks; i++){"
+            + "    if(links[i].checkVisibility({ opacityProperty: true, visibilityProperty: true, contentVisibilityAuto: true,})) {"
+            + "        try {"
+            + "            let url = new URL(links[i].href);"
+            + "            for(var j=0; j < domains.length; j++){"
+            + "                if(url.hostname === domains[j]) {"
+            + "                    result.push(links[i].href);"
+            + "                }"
+            + "            }"
+            + "        } catch (error) {}"
+            + "    }"
             + "}"
             + "return result;";
 
@@ -133,6 +182,48 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                                 CrawlerActionConfig.Fields.randomize,
                                 actionValue,
                                 DEFAULT_RANDOMIZE
+                        )
+                )
+                .scroll(
+                        getOptionalNestedField(
+                                CrawlerActionConfig.Fields.scroll,
+                                actionValue,
+                                DEFAULT_SCROLL
+                        )
+                )
+                .scrollScript(
+                        getOptionalNestedField(
+                                CrawlerActionConfig.Fields.scrollScript,
+                                actionValue,
+                                DEFAULT_SCROLL_SCRIPT
+                        )
+                )
+                .scrollDelay(
+                        getOptionalNestedField(
+                                CrawlerActionConfig.Fields.scrollDelay,
+                                actionValue,
+                                DEFAULT_SCROLL_DELAY
+                        )
+                )
+                .click(
+                        getOptionalNestedField(
+                                CrawlerActionConfig.Fields.click,
+                                actionValue,
+                                DEFAULT_CLICK
+                        )
+                )
+                .clickScript(
+                        getOptionalNestedField(
+                                CrawlerActionConfig.Fields.clickScript,
+                                actionValue,
+                                DEFAULT_CLICK_SCRIPT
+                        )
+                )
+                .clickDelay(
+                        getOptionalNestedField(
+                                CrawlerActionConfig.Fields.clickDelay,
+                                actionValue,
+                                DEFAULT_CLICK_DELAY
                         )
                 )
                 .delay(
@@ -230,6 +321,48 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                                 formatter
                         )
                 )
+                .scroll(
+                        buildBooleanForActionInstance(
+                                CrawlerActionInstance.Fields.scroll,
+                                actionConfig.getScroll(),
+                                formatter
+                        )
+                )
+                .scrollScript(
+                        buildStringForActionInstance(
+                                CrawlerActionInstance.Fields.scrollScript,
+                                actionConfig.getScrollScript(),
+                                formatter
+                        )
+                )
+                .scrollDelay(
+                        buildRandomDurationForActionInstance(
+                                CrawlerActionInstance.Fields.scrollDelay,
+                                actionConfig.getScrollDelay(),
+                                formatter
+                        )
+                )
+                .click(
+                        buildBooleanForActionInstance(
+                                CrawlerActionInstance.Fields.click,
+                                actionConfig.getClick(),
+                                formatter
+                        )
+                )
+                .clickScript(
+                        buildStringForActionInstance(
+                                CrawlerActionInstance.Fields.clickScript,
+                                actionConfig.getClickScript(),
+                                formatter
+                        )
+                )
+                .clickDelay(
+                        buildRandomDurationForActionInstance(
+                                CrawlerActionInstance.Fields.clickDelay,
+                                actionConfig.getClickDelay(),
+                                formatter
+                        )
+                )
                 .delay(
                         buildRandomDurationForActionInstance(
                                 CrawlerActionInstance.Fields.delay,
@@ -296,19 +429,19 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
     @Override
     public void processActionInstance(RemoteWebDriver driver, CrawlerActionInstance actionInstance) {
         long endTime = System.currentTimeMillis() + actionInstance.getMaxDuration().toMillis();
-        
-        if(actionInstance.getPageLoadTimeout() != null) {
+
+        if (actionInstance.getPageLoadTimeout() != null) {
             driver.manage().timeouts().pageLoadTimeout(
                     actionInstance.getPageLoadTimeout()
             );
         }
-        
-        if(actionInstance.getScriptTimeout() != null) {
+
+        if (actionInstance.getScriptTimeout() != null) {
             driver.manage().timeouts().scriptTimeout(
                     actionInstance.getScriptTimeout()
             );
         }
-        
+
         String startingUrl;
         if (actionInstance.getUrl() == null || actionInstance.getUrl().isBlank()) {
             startingUrl = driver.getCurrentUrl();
@@ -352,30 +485,62 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                 crawlerQueue.destroy();
                 return;
             }
-            
+
             driver.navigate().to(url);
-            
+
             if (endTime <= System.currentTimeMillis()) {
                 crawlerQueue.destroy();
                 return;
             }
-
-            crawlerQueue.pushAll(
-                    collectUrlsFromThePage(
-                            driver,
-                            actionInstance.getLinksExtractorScript()
-                    )
-            );
             
-            Perforator.sleep(actionInstance.getDelay().random().toMillis());
+            long actionDelay = actionInstance.getDelay().random().toMillis();
+            long actionCutOffTime = System.currentTimeMillis() + actionDelay;
+            if (actionCutOffTime < endTime) {
+                Perforator.sleep(actionDelay);
+                crawlerQueue.pushAll(
+                        collectUrlsFromThePage(
+                                driver,
+                                domains,
+                                actionInstance.getLinksExtractorScript()
+                        )
+                );
+            } else {
+                crawlerQueue.destroy();
+                return;
+            }
+
+            if (actionInstance.isScroll()) {
+                long scrollDelay = actionInstance.getScrollDelay().random().toMillis();
+                long scrollCutOffTime = System.currentTimeMillis() + scrollDelay;
+                if (scrollCutOffTime < endTime) {
+                    driver.executeScript(actionInstance.getScrollScript(), domains);
+                    Perforator.sleep(scrollDelay);
+                } else {
+                    crawlerQueue.destroy();
+                    return;
+                }
+            }
+            
+            if (actionInstance.isClick()) {
+                long clickDelay = actionInstance.getClickDelay().random().toMillis();
+                long clickCutOffTime = System.currentTimeMillis() + clickDelay;
+                if (clickCutOffTime < endTime) {
+                    driver.executeScript(actionInstance.getClickScript(), domains);
+                    Perforator.sleep(clickDelay);
+                } else {
+                    crawlerQueue.destroy();
+                    return;
+                }
+            }
         }
     }
 
     private Set<String> collectUrlsFromThePage(
             RemoteWebDriver driver,
+            Set<String> domains,
             String linksExtractorScript
     ) {
-        Object scriptResult = driver.executeScript(linksExtractorScript);
+        Object scriptResult = driver.executeScript(linksExtractorScript, domains);
         
         if(scriptResult == null) {
             return Collections.EMPTY_SET;

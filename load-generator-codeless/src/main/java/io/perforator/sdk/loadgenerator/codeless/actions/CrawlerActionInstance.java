@@ -36,6 +36,24 @@ public class CrawlerActionInstance implements ActionInstance<CrawlerActionConfig
 
     @FieldNameConstants.Include
     private final boolean randomize;
+    
+    @FieldNameConstants.Include
+    private final boolean scroll;
+    
+    @FieldNameConstants.Include
+    private final String scrollScript;
+    
+    @FieldNameConstants.Include
+    private final RandomDuration scrollDelay;
+    
+    @FieldNameConstants.Include
+    private final boolean click;
+    
+    @FieldNameConstants.Include
+    private final String clickScript;
+    
+    @FieldNameConstants.Include
+    private final RandomDuration clickDelay;
 
     @FieldNameConstants.Include
     private final RandomDuration delay;
@@ -71,6 +89,18 @@ public class CrawlerActionInstance implements ActionInstance<CrawlerActionConfig
                 .append(CrawlerActionInstance.Fields.linksExtractorScript).append(" = ").append(linksExtractorScript)
                 .append(", ")
                 .append(CrawlerActionInstance.Fields.randomize).append(" = ").append(randomize)
+                .append(", ")
+                .append(CrawlerActionInstance.Fields.scroll).append(" = ").append(scroll)
+                .append(", ")
+                .append(CrawlerActionInstance.Fields.scrollScript).append(" = ").append(scrollScript)
+                .append(", ")
+                .append(CrawlerActionInstance.Fields.scrollDelay).append(" = ").append(scrollDelay)
+                .append(", ")
+                .append(CrawlerActionInstance.Fields.click).append(" = ").append(click)
+                .append(", ")
+                .append(CrawlerActionInstance.Fields.clickScript).append(" = ").append(clickScript)
+                .append(", ")
+                .append(CrawlerActionInstance.Fields.clickDelay).append(" = ").append(clickDelay)
                 .append(", ")
                 .append(CrawlerActionInstance.Fields.delay).append(" = ").append(delay)
                 .append(", ")

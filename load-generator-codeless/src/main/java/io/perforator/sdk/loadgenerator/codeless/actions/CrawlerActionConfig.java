@@ -37,7 +37,25 @@ public class CrawlerActionConfig implements ActionConfig {
 
     @FieldNameConstants.Include
     private final String randomize;
-
+    
+    @FieldNameConstants.Include
+    private final String scroll;
+    
+    @FieldNameConstants.Include
+    private final String scrollScript;
+    
+    @FieldNameConstants.Include
+    private final String scrollDelay;
+    
+    @FieldNameConstants.Include
+    private final String click;
+    
+    @FieldNameConstants.Include
+    private final String clickScript;
+    
+    @FieldNameConstants.Include
+    private final String clickDelay;
+    
     @FieldNameConstants.Include
     private final String delay;
 

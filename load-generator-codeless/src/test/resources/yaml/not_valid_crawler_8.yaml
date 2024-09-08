@@ -15,14 +15,5 @@ suites:
         - sleep: 0.1s
         - crawler:
             url: https://verifications.perforator.io
-            domains:
-              - www.perforator.io
-              - verifications.perforator.io
-            randomize: false
-            scroll: true
-            scrollDelay: 2s-4s
             click: true
-            clickDelay: 2s-4s
-            delay: 5s-7s
-            maxDuration: 10s-20s
-            scriptTimeout: 15s
+            clickDelay: invalid
