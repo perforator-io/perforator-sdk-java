@@ -1029,8 +1029,61 @@ a look at the below docs describing available options for the config.yml
         # the queue of uncovered links. The crawler will visit uncovered links #
         # in natural order if you disable this flag.                           #
         #                                                                      #
-        # - delay - delay to wait before visiting the next link available      #
-        # in the crawling queue. The default value is 5s                       #
+        # - delay - delay to wait before extracting links available on the page#
+        # and adding them to the crawling queue.                               #
+        # The default value is 5s                                              #
+        #                                                                      #
+        # - scroll - flag controlling if automatic scrolling to the page bottom#
+        # should be executed.                                                  #
+        # The default value is false                                           #
+        #                                                                      #
+        # - scrollDelay - delay to wait after executing scroll action (if enabled)#
+        # The default value is 5s                                              #
+        #                                                                      #
+        # - scrollScript - JS script to execute scroll action(if enabled)      #
+        # The default script is below:                                         #
+        #                                                                      #
+        # const domains=arguments[0];                                          #
+        # window.scrollTo(0,document.documentElement.scrollHeight);            #
+        #                                                                      #
+        # - click - flag controlling if automatic click on a random link       #
+        # should be executed.                                                  #
+        # The default value is false                                           #
+        #                                                                      #
+        # - clickDelay - delay to wait after executing click action (if enabled)#
+        # The default value is 5s                                              #
+        #                                                                      #
+        # - clickScript - JS script to execute click action(if enabled)        #
+        # The default script is below:                                         #
+        #                                                                      #
+        #  const domains=arguments[0];
+        #  const linksToClick = [];
+        #  const links = document.querySelectorAll("a[href]:not([href^='javascript']):not([href^='void']):not([href='#'])");
+        #  const maxChecks = Math.min(links.length, 512);
+        #  for(var i=0; i < maxChecks; i++){
+        #      if(links[i].checkVisibility({ opacityProperty: true, visibilityProperty: true, contentVisibilityAuto: true,})) {
+        #          try {
+        #              let url = new URL(links[i].href);
+        #              for(var j=0; j < domains.length; j++){
+        #                  if(url.hostname === domains[j]) {
+        #                      linksToClick.push(links[i]);
+        #                  }
+        #              }
+        #          } catch (error) {}
+        #      }
+        #  }
+        #  if(linksToClick.length > 0){
+        #      for(var i=0; i < 10; i++){
+        #          try {
+        #              let linkToClick = linksToClick[Math.floor(Math.random()*linksToClick.length)];
+        #              if("_blank" === linkToClick.getAttribute("target")) {
+        #                  linkToClick.removeAttribute("target");
+        #              }
+        #              linkToClick.click();
+        #              return;
+        #          } catch (error) {}
+        #      }
+        #  }
         #                                                                      #
         # - maxVisitsPerUrl - setting controlling how many times the crawler   #
         # should visit uncovered link/url. The default value is 1              #
@@ -1056,12 +1109,23 @@ a look at the below docs describing available options for the config.yml
         # on every visited page to add new items into the crawling queue.      #
         # The default script is below:                                         #
         #                                                                      #
-        # const result = [];                                                   #
+        # const domains=arguments[0];
+        # const result = [];
         # const links = document.querySelectorAll("a[href]:not([href^='javascript']):not([href^='void']):not([href='#'])");
-        # for(var i=0; i < links.length; i++){                                 #
-        #   result.push(links[i].href);                                        #
-        # }                                                                    #
-        # return result;                                                       #
+        # const maxChecks = Math.min(links.length, 512);
+        # for(var i=0; i < maxChecks; i++){
+        #     if(links[i].checkVisibility({ opacityProperty: true, visibilityProperty: true, contentVisibilityAuto: true,})) {
+        #         try {
+        #             let url = new URL(links[i].href);
+        #             for(var j=0; j < domains.length; j++){
+        #                 if(url.hostname === domains[j]) {
+        #                     result.push(links[i].href);
+        #                 }
+        #             }
+        #         } catch (error) {}
+        #     }
+        # }
+        # return result;
         #                                                                      #
         # Examples:                                                            #
         #                                                                      #
@@ -1070,7 +1134,9 @@ a look at the below docs describing available options for the config.yml
         #     url: https://verifications.perforator.io/                        #
         # - crawler:                                                           #
         #     url: https://verifications.perforator.io/                        #
-        #     delay: 30s                                                       #
+        #     delay: 5s                                                        #
+        #     scroll: true                                                     #
+        #     click: true                                                      #
         #     maxVisitsOverall: 15                                             #
         #     maxDuration: 15m                                                 #
         ########################################################################

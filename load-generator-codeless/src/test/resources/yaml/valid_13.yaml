@@ -22,8 +22,9 @@ suites:
             scrollScript: |
               const domains=arguments[0];
               window.scrollTo(0,document.documentElement.scrollHeight);
-            clcikDelay: 2s-4s
-            clcikScript: |
+            click: true
+            clickDelay: 2s-4s
+            clickScript: |
               const domains=arguments[0];
               const linksToClick = [];
               const links = document.querySelectorAll("a[href]:not([href^='javascript']):not([href^='void']):not([href='#'])");
