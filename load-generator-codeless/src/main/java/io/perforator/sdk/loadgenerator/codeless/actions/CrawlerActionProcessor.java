@@ -26,6 +26,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+import org.openqa.selenium.InvalidElementStateException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 @SuppressWarnings("rawtypes")
@@ -52,8 +55,8 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
     
     public static final String DEFAULT_CLICK_SCRIPT = ""
             + "const domains=arguments[0];"
-            + "const linksToClick = [];"
-            + "const links = document.querySelectorAll(\"a[href]:not([href^='javascript']):not([href^='void']):not([href='#'])\");"
+            + "const result = [];"
+            + "const links = document.querySelectorAll(\"a[href]:not([href^='javascript']):not([href^='void']):not([href^='#'])\");"
             + "const maxChecks = Math.min(links.length, 512);"
             + "for(var i=0; i < maxChecks; i++){"
             + "    if(links[i].checkVisibility({ opacityProperty: true, visibilityProperty: true, contentVisibilityAuto: true,})) {"
@@ -61,24 +64,13 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
             + "            let url = new URL(links[i].href);"
             + "            for(var j=0; j < domains.length; j++){"
             + "                if(url.hostname === domains[j]) {"
-            + "                    linksToClick.push(links[i]);"
+            + "                    result.push(links[i]);"
             + "                }"
             + "            }"
             + "        } catch (error) {}"
             + "    }"
             + "}"
-            + "if(linksToClick.length > 0){"
-            + "    for(var i=0; i < 10; i++){"
-            + "        try {"
-            + "            let linkToClick = linksToClick[Math.floor(Math.random()*linksToClick.length)];"
-            + "            if(\"_blank\" === linkToClick.getAttribute(\"target\")) {"
-            + "                linkToClick.removeAttribute(\"target\");"
-            + "            }"
-            + "            linkToClick.click();"
-            + "            return;"
-            + "        } catch (error) {}"
-            + "    }"
-            + "}";
+            + "return result;";
     
     public static final String DEFAULT_LINKS_EXTRACTOR_SCRIPT = ""
             + "const domains=arguments[0];"
@@ -443,6 +435,7 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
         }
 
         String startingUrl;
+        boolean skipNavigation;
         if (actionInstance.getUrl() == null || actionInstance.getUrl().isBlank()) {
             startingUrl = driver.getCurrentUrl();
             if (startingUrl == null || startingUrl.isBlank()) {
@@ -450,8 +443,10 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                         "Action '" + actionInstance.getConfig().getActionName() + "' can't be started - there is no page openned"
                 );
             }
+            skipNavigation = true;
         } else {
             startingUrl = actionInstance.getUrl();
+            skipNavigation = false;
         }
 
         Set<String> domains = new HashSet<>();
@@ -486,7 +481,11 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                 return;
             }
 
-            driver.navigate().to(url);
+            if(skipNavigation) {
+                skipNavigation = false;
+            } else {
+                driver.navigate().to(url);
+            }
 
             if (endTime <= System.currentTimeMillis()) {
                 crawlerQueue.destroy();
@@ -525,14 +524,57 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                 long clickDelay = actionInstance.getClickDelay().random().toMillis();
                 long clickCutOffTime = System.currentTimeMillis() + clickDelay;
                 if (clickCutOffTime < endTime) {
-                    driver.executeScript(actionInstance.getClickScript(), domains);
-                    Perforator.sleep(clickDelay);
+                    boolean clicked = randomClick(
+                            driver, 
+                            domains,
+                            actionInstance.getClickScript(), 
+                            clickCutOffTime
+                    );
+                    if(clicked) {
+                        Perforator.sleep(clickDelay);
+                    }
                 } else {
                     crawlerQueue.destroy();
                     return;
                 }
             }
         }
+    }
+    
+    private boolean randomClick(
+            RemoteWebDriver driver,
+            Set<String> domains,
+            String clickScript,
+            long cutOffTime
+    ) {
+        List<WebElement> elements = (List<WebElement>) driver.executeScript(
+                clickScript,
+                domains
+        );
+
+        if (elements == null || elements.isEmpty()) {
+            return false;
+        }
+
+        Collections.shuffle(elements);
+        for (WebElement element : elements) {
+            if (System.currentTimeMillis() >= cutOffTime) {
+                return false;
+            }
+
+            try {
+                driver.executeScript(
+                        "arguments[0].scrollIntoView();arguments[0].removeAttribute('target');",
+                        element
+                );
+                element.click();
+                return true;
+            } catch (StaleElementReferenceException | InvalidElementStateException e) {
+                //ignore and continue
+            }
+        }
+        
+        return false;
     }
 
     private Set<String> collectUrlsFromThePage(

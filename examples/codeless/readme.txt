@@ -1056,34 +1056,23 @@ a look at the below docs describing available options for the config.yml
         # - clickScript - JS script to execute click action(if enabled)        #
         # The default script is below:                                         #
         #                                                                      #
-        #  const domains=arguments[0];
-        #  const linksToClick = [];
-        #  const links = document.querySelectorAll("a[href]:not([href^='javascript']):not([href^='void']):not([href='#'])");
-        #  const maxChecks = Math.min(links.length, 512);
-        #  for(var i=0; i < maxChecks; i++){
-        #      if(links[i].checkVisibility({ opacityProperty: true, visibilityProperty: true, contentVisibilityAuto: true,})) {
+        # const domains=arguments[0];
+        # const result = [];
+        # const links = document.querySelectorAll("a[href]:not([href^='javascript']):not([href^='void']):not([href^='#'])");
+        # const maxChecks = Math.min(links.length, 512);
+        # for(var i=0; i < maxChecks; i++){
+        #     if(links[i].checkVisibility({ opacityProperty: true, visibilityProperty: true, contentVisibilityAuto: true,})) {
         #          try {
         #              let url = new URL(links[i].href);
         #              for(var j=0; j < domains.length; j++){
         #                  if(url.hostname === domains[j]) {
-        #                      linksToClick.push(links[i]);
+        #                      result.push(links[i]);
         #                  }
         #              }
         #          } catch (error) {}
         #      }
         #  }
-        #  if(linksToClick.length > 0){
-        #      for(var i=0; i < 10; i++){
-        #          try {
-        #              let linkToClick = linksToClick[Math.floor(Math.random()*linksToClick.length)];
-        #              if("_blank" === linkToClick.getAttribute("target")) {
-        #                  linkToClick.removeAttribute("target");
-        #              }
-        #              linkToClick.click();
-        #              return;
-        #          } catch (error) {}
-        #      }
-        #  }
+        #  return result;  
         #                                                                      #
         # - maxVisitsPerUrl - setting controlling how many times the crawler   #
         # should visit uncovered link/url. The default value is 1              #
@@ -1111,7 +1100,7 @@ a look at the below docs describing available options for the config.yml
         #                                                                      #
         # const domains=arguments[0];
         # const result = [];
-        # const links = document.querySelectorAll("a[href]:not([href^='javascript']):not([href^='void']):not([href='#'])");
+        # const links = document.querySelectorAll("a[href]:not([href^='javascript']):not([href^='void']):not([href^='#'])");
         # const maxChecks = Math.min(links.length, 512);
         # for(var i=0; i < maxChecks; i++){
         #     if(links[i].checkVisibility({ opacityProperty: true, visibilityProperty: true, contentVisibilityAuto: true,})) {
