@@ -247,8 +247,12 @@ final class BrowserCloudManagerImpl implements BrowserCloudManager {
         }
     }
 
-    private String mergeExecutionNotes(String ... notes) {
-        return Stream.of(notes).collect(Collectors.joining("<br/>"));
+    private String mergeExecutionNotes(String... notes) {
+        return Stream.of(notes).filter(
+                n -> n != null && !n.isBlank()
+        ).collect(
+                Collectors.joining("<br/>")
+        );
     }
 
     @Override
