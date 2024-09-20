@@ -2,7 +2,7 @@ This is an example of the load-generator integrated with the Perforator platform
 using pure Java logic to process your load testing suite.
 
 Requirements:
-- JDK 11+ is required.
+- JDK 17+ is required.
 - Maven 3.6.3+ is required
 - java executable should be available via shell path.
 - mvn executable should be available via shell path.

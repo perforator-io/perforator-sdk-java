@@ -4,7 +4,7 @@ You only need to populate configuration in config.yml file and run it via shell
 script(s).
 
 Requirements:
-- JDK 11+ is required.
+- JDK 17+ is required.
 - java executable should be available via shell path.
 
 The prebuilt example comes with a set of handy scripts targeted to execute 
