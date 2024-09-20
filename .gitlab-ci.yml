@@ -63,7 +63,7 @@ stages:
   
 build:
   stage: build
-  image: maven:3.9-amazoncorretto-11-debian
+  image: maven:3.9-amazoncorretto-17-debian
   script:
     - mvn clean package -s .gitlab-mvn-settings.xml -DskipTests $MAVEN_CLI_OPTS
     - echo "PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> build.env
@@ -102,22 +102,18 @@ test:
     matrix:
       # google-chrome-stable versions listing is available here: https://www.ubuntuupdates.org/package/google_chrome/stable/main/base/google-chrome-stable
       - JDK_VERSION: 
-          - "11"
-        CHROME_VERSION: 
-          - "123.0.6312.122-1"
-          - "124.0.6367.207-1"
-          - "125.0.6422.141-1"
-          - "126.0.6478.182-1"
-          - "127.0.6533.119-1"
-      - JDK_VERSION: 
           - "17"
           - "21"
         CHROME_VERSION: 
+          - "125.0.6422.141-1"
+          - "126.0.6478.182-1"
+          - "127.0.6533.119-1"
           - "128.0.6613.84-1"
+          - "129.0.6668.58-1"
 
 deploy:
   stage: deploy
-  image: maven:3.9-amazoncorretto-11-debian
+  image: maven:3.9-amazoncorretto-17-debian
   script:
     - export BUILD_DIR=$(pwd)
     - apt-get update -qqy && apt-get install zip curl -qqy

@@ -12,7 +12,7 @@
     
     <properties>
         <!-- build level versions -->
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <maven.minimal.version>3.8.1</maven.minimal.version>
         <maven.enforcer.plugin.version>3.4.1</maven.enforcer.plugin.version>
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
