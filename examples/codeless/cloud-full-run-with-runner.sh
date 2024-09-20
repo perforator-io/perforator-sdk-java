@@ -114,7 +114,7 @@ function getCloudRunnerUser () {
 function getCloudRunnerHost () {
   if [ ! -z "${1}" ] && [ ! -z "${2}" ] && [ ! -z "${3}" ] && [ ! -z "${4}" ] && [ ! -z "${5}" ]; then 
     local details=`getCloudRunnerDetails "$1" "$2" "$3" "$4" "$5"`
-    echo $details | yq '.sshHostName'
+    echo $details | yq '.sshHostIP'
   else 
     return 1
   fi
