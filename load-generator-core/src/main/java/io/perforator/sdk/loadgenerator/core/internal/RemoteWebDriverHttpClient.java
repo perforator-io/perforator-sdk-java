@@ -11,22 +11,22 @@
 package io.perforator.sdk.loadgenerator.core.internal;
 
 import io.perforator.sdk.loadgenerator.core.AbstractLoadGenerator;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.RequestBuilder;
+import org.openqa.selenium.remote.http.Contents;
 import org.openqa.selenium.remote.http.HttpClient;
 import org.openqa.selenium.remote.http.HttpMethod;
 import org.openqa.selenium.remote.http.HttpRequest;
 import org.openqa.selenium.remote.http.HttpResponse;
-
-import static io.perforator.sdk.loadgenerator.core.Threaded.sleep;
-import java.io.UncheckedIOException;
-import java.util.concurrent.ExecutionException;
 import org.openqa.selenium.remote.http.WebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static io.perforator.sdk.loadgenerator.core.Threaded.sleep;
 
 final class RemoteWebDriverHttpClient implements HttpClient {
     
@@ -250,10 +250,17 @@ final class RemoteWebDriverHttpClient implements HttpClient {
     private static HttpResponse toSeleniumResponse(org.asynchttpclient.Response response) {
         HttpResponse toReturn = new HttpResponse();
 
+        if (response.hasResponseBody()) {
+            toReturn.setContent(
+                    Contents.bytes(response.getResponseBodyAsBytes())
+            );
+        } else {
+            toReturn.setContent(
+                    Contents.bytes(new byte[0])
+            );
+        }
+
         toReturn.setStatus(response.getStatusCode());
-        toReturn.setContent(!response.hasResponseBody()
-                ? () -> new ByteArrayInputStream(new byte[0])
-                : () -> response.getResponseBodyAsStream());
 
         for (String name : response.getHeaders().names()) {
             for (String value : response.getHeaders(name)) {

@@ -87,8 +87,7 @@ public class OpenActionProcessor extends AbstractActionProcessor<OpenActionConfi
     @Override
     public void processActionInstance(RemoteWebDriver driver, OpenActionInstance actionInstance) {
         driver.manage().timeouts().pageLoadTimeout(
-                actionInstance.getTimeout().toMillis(),
-                TimeUnit.MILLISECONDS
+                actionInstance.getTimeout()
         );
 
         driver.navigate().to(actionInstance.getUrl());

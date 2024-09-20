@@ -16,7 +16,6 @@ import io.perforator.sdk.loadgenerator.core.configs.SuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.WebDriverMode;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -141,22 +140,19 @@ public class RemoteWebDriverHelper {
 
         if (suiteConfig.getWebDriverSessionImplicitlyWait() != null) {
             remoteWebDriver.manage().timeouts().implicitlyWait(
-                    suiteConfig.getWebDriverSessionImplicitlyWait().toMillis(),
-                    TimeUnit.MILLISECONDS
+                    suiteConfig.getWebDriverSessionImplicitlyWait()
             );
         }
 
         if (suiteConfig.getWebDriverSessionPageLoadTimeout() != null) {
             remoteWebDriver.manage().timeouts().pageLoadTimeout(
-                    suiteConfig.getWebDriverSessionPageLoadTimeout().toMillis(),
-                    TimeUnit.MILLISECONDS
+                    suiteConfig.getWebDriverSessionPageLoadTimeout()
             );
         }
 
         if (suiteConfig.getWebDriverSessionScriptTimeout() != null) {
-            remoteWebDriver.manage().timeouts().setScriptTimeout(
-                    suiteConfig.getWebDriverSessionScriptTimeout().toMillis(),
-                    TimeUnit.MILLISECONDS
+            remoteWebDriver.manage().timeouts().scriptTimeout(
+                    suiteConfig.getWebDriverSessionScriptTimeout()
             );
         }
 

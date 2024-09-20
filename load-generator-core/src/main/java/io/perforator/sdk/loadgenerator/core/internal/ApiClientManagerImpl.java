@@ -15,11 +15,11 @@ import io.perforator.sdk.api.okhttpgson.ApiClientParams;
 import io.perforator.sdk.api.okhttpgson.invoker.ApiException;
 import io.perforator.sdk.api.okhttpgson.operations.*;
 import io.perforator.sdk.loadgenerator.core.configs.LoadGeneratorConfig;
-import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
-
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
+import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 
 final class ApiClientManagerImpl implements ApiClientManager {
 
@@ -151,7 +151,7 @@ final class ApiClientManagerImpl implements ApiClientManager {
         } else {
             URL url;
             try {
-                url = new URL(loadGeneratorConfig.getApiBaseUrl());
+                url = URI.create(loadGeneratorConfig.getApiBaseUrl()).toURL();
             } catch (MalformedURLException e) {
                 throw new IllegalArgumentException(
                         LoadGeneratorConfig.DEFAULTS_FIELD_PREFIX

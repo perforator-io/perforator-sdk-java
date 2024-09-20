@@ -13,7 +13,7 @@ package io.perforator.sdk.loadgenerator.core.internal;
 import io.perforator.sdk.api.okhttpgson.model.BrowserCloudDetails;
 import io.perforator.sdk.loadgenerator.core.context.BrowserCloudContext;
 import java.net.MalformedURLException;
-
+import java.net.URI;
 import java.net.URL;
 
 final class BrowserCloudContextImpl implements BrowserCloudContext {
@@ -52,7 +52,7 @@ final class BrowserCloudContextImpl implements BrowserCloudContext {
     
     private static URL toUrl(String url) {
         try {
-            return new URL(url);
+            return URI.create(url).toURL();
         } catch (MalformedURLException e) {
             throw new RuntimeException("URL " + url + " is incorrect", e);
         }

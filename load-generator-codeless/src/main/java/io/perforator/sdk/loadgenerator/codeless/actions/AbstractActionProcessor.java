@@ -18,7 +18,7 @@ import io.perforator.sdk.loadgenerator.codeless.config.CodelessSuiteConfig;
 import io.perforator.sdk.loadgenerator.core.configs.StringConverter;
 import java.lang.reflect.ParameterizedType;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -482,7 +482,7 @@ public abstract class AbstractActionProcessor<T extends ActionConfig, V extends 
         }
 
         try {
-            return new URL(formattedUrl).toString();
+            return URI.create(formattedUrl).toURL().toString();
         } catch (MalformedURLException e) {
             throw new RuntimeException(
                     actionName

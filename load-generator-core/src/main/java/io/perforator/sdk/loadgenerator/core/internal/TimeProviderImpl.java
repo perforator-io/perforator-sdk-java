@@ -10,14 +10,14 @@
  */
 package io.perforator.sdk.loadgenerator.core.internal;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.time.Duration;
+import java.util.Arrays;
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Arrays;
 
 final class TimeProviderImpl implements TimeProvider {
 
@@ -43,7 +43,7 @@ final class TimeProviderImpl implements TimeProvider {
         }
         
         NTPUDPClient timeClient = new NTPUDPClient();
-        timeClient.setDefaultTimeout(5000);
+        timeClient.setDefaultTimeout(Duration.ofSeconds(5));
         Exception lastException = null;
 
         for (String server : TIME_SERVERS) {
