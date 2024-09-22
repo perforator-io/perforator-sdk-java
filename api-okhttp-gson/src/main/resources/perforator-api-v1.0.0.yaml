@@ -117,13 +117,35 @@ tags:
       Currently, all cloud runners are launched in **AWS US-EAST-1** region only to be 
       located as close as possible to the Perforator platform infrastructure.  
       ***
-      Perforator supports the following cloud runner types:  
-      - `C2` - 2 CPU cores and 4GB memory  
-      - `C4` - 4 CPU cores and 8GB memory  
-      - `C8` - 8 CPU cores and 16GB memory  
-      - `C16` - 16 CPU cores and 32GB memory  
-      - `C36` - 36 CPU cores and 72GB memory  
-      - `C72` - 72 CPU cores and 144GB memory  
+      Perforator supports the following cloud runner types:    
+      - `aws:t3.small` - 2 CPU cores and 2GB memory  
+      - `aws:t3.medium` - 2 CPU cores and 4GB memory  
+      - `aws:c5.large` - 2 CPU cores and 4GB memory  
+      - `aws:c5.xlarge` - 4 CPU cores and 8GB memory  
+      - `aws:c5.2xlarge` - 8 CPU cores and 16GB memory  
+      - `aws:c5.4xlarge` - 16 CPU cores and 32GB memory  
+      - `aws:c5.9xlarge` - 36 CPU cores and 72GB memory  
+      - `aws:c5.18xlarge` - 72 CPU cores and 144GB memory  
+      - `aws:c7a.medium` - 1 CPU cores and 2GB memory  
+      - `aws:c7a.large` - 2 CPU cores and 4GB memory  
+      - `aws:c7a.xlarge` - 4 CPU cores and 8GB memory  
+      - `aws:c7a.2xlarge` - 8 CPU cores and 16GB memory  
+      - `aws:c7a.4xlarge` - 16 CPU cores and 32GB memory  
+      - `aws:c7a.8xlarge` - 32 CPU cores and 64GB memory  
+      - `aws:c7a.12xlarge` - 48 CPU cores and 96GB memory  
+      - `aws:c7a.16xlarge` - 64 CPU cores and 128GB memory  
+      - `aws:c7a.24xlarge` - 96 CPU cores and 192GB memory  
+      - `aws:c7a.32xlarge` - 128 CPU cores and 256GB memory  
+      - `aws:c7a.48xlarge` - 192 CPU cores and 384GB memory  
+      - `aws:c7i.large` - 2 CPU cores and 4GB memory  
+      - `aws:c7i.xlarge` - 4 CPU cores and 8GB memory  
+      - `aws:c7i.2xlarge` - 8 CPU cores and 16GB memory  
+      - `aws:c7i.4xlarge` - 16 CPU cores and 32GB memory  
+      - `aws:c7i.8xlarge` - 32 CPU cores and 64GB memory  
+      - `aws:c7i.12xlarge` - 48 CPU cores and 96GB memory  
+      - `aws:c7i.16xlarge` - 64 CPU cores and 128GB memory  
+      - `aws:c7i.24xlarge` - 96 CPU cores and 192GB memory  
+      - `aws:c7i.48xlarge` - 192 CPU cores and 384GB memory  
   - name: Load Generators
     description: "Launch config-based load generators in a cloud-native way.  \nCurrently, only codeless load generators can be launched in a cloud-native way.  \n***\n**Important:**\_Cloud-native load generators are a\_`BETA`\_functionality - please use them at your own concerns.\n"
   - name: Analytics
@@ -821,7 +843,7 @@ paths:
                   $ref: '#/components/schemas/CloudRunner'
               example:
                 - uuid: b553dc6c-4fef-4a9f-bc16-ee2c88664dd0
-                  hardwareType: C2
+                  hardwareType: 'aws:c5.large'
                   hardwareCpu: 2
                   hardwareMemory: 4
                   status: QUEUED
@@ -829,7 +851,7 @@ paths:
                   updatedAt: 1608015600000
                   requestedAt: 1608012000000
                 - uuid: 1af84de8-f9b6-4964-9b24-b9dee489529e
-                  hardwareType: C2
+                  hardwareType: 'aws:c5.large'
                   hardwareCpu: 2
                   hardwareMemory: 4
                   status: PROVISIONING
@@ -838,7 +860,7 @@ paths:
                   requestedAt: 1608012000000
                   startingAt: 1608012010000
                 - uuid: bb04d3e4-e9b4-47d6-ae8f-371bd0d68fc0
-                  hardwareType: C2
+                  hardwareType: 'aws:c5.large'
                   hardwareCpu: 2
                   hardwareMemory: 4
                   status: OPERATIONAL
@@ -849,12 +871,11 @@ paths:
                   readyAt: 1608012060000
                 - uuid: 23c39165-89c1-4afb-80b6-e994cb96a482
                   status: TERMINATED
-                  hardwareType: C2
+                  hardwareType: 'aws:c5.large'
                   hardwareCpu: 2
                   hardwareMemory: 4
                   sshUser: perforator
                   sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILhKzVzL8RYBFDZblagiF1fPKLiI9JRYw8CrU2lrCwVN user@example.com
-                  sshHostName: 23c39165-89c1-4afb-80b6-e994cb96a482.runners.perforator.io
                   sshHostIP: 1.2.3.4
                   sshPort: 22
                   createdAt: 1608012000000
@@ -909,7 +930,7 @@ paths:
             examples:
               Start cloud runner:
                 value:
-                  hardwareType: C2
+                  hardwareType: 'aws:c5.large'
                   sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILhKzVzL8RYBFDZblagiF1fPKLiI9JRYw8CrU2lrCwVN user@example.com
         required: true
       responses:
@@ -921,7 +942,7 @@ paths:
                 $ref: '#/components/schemas/CloudRunner'
               example:
                 uuid: b553dc6c-4fef-4a9f-bc16-ee2c88664dd0
-                hardwareType: C2
+                hardwareType: 'aws:c5.large'
                 hardwareCpu: 2
                 hardwareMemory: 4
                 status: QUEUED
@@ -979,12 +1000,11 @@ paths:
               example:
                 uuid: 23c39165-89c1-4afb-80b6-e994cb96a482
                 status: TERMINATED
-                hardwareType: C2
+                hardwareType: 'aws:c5.large'
                 hardwareCpu: 2
                 hardwareMemory: 4
                 sshUser: perforator
                 sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILhKzVzL8RYBFDZblagiF1fPKLiI9JRYw8CrU2lrCwVN user@example.com
-                sshHostName: 23c39165-89c1-4afb-80b6-e994cb96a482.runners.perforator.io
                 sshHostIP: 1.2.3.4
                 sshPort: 22
                 createdAt: 1608012000000
@@ -1089,12 +1109,11 @@ paths:
               example:
                 uuid: 23c39165-89c1-4afb-80b6-e994cb96a482
                 status: TERMINATING
-                hardwareType: C2
+                hardwareType: 'aws:c5.large'
                 hardwareCpu: 2
                 hardwareMemory: 4
                 sshUser: perforator
                 sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILhKzVzL8RYBFDZblagiF1fPKLiI9JRYw8CrU2lrCwVN user@example.com
-                sshHostName: 23c39165-89c1-4afb-80b6-e994cb96a482.runners.perforator.io
                 sshHostIP: 1.2.3.4
                 sshPort: 22
                 createdAt: 1608012000000
@@ -1199,12 +1218,11 @@ paths:
                 cloud_runners:
                   - uuid: 23c39165-89c1-4afb-80b6-e994cb96a482
                     status: OPERATIONAL
-                    hardwareType: C2
+                    hardwareType: 'aws:c5.large'
                     hardwareCpu: 2
                     hardwareMemory: 4
                     sshUser: perforator
                     sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCnRFTyimOgh3v+yHUFd/4B7SW88mLysXzSbQWfYpLo 43c85af6-e5a2-4044-8f77-015fdd472d0f@perforator.io
-                    sshHostName: 23c39165-89c1-4afb-80b6-e994cb96a482.runners.perforator.io
                     sshHostIP: 1.2.3.4
                     sshPort: 22
                     createdAt: 1608012000000
@@ -1337,12 +1355,11 @@ paths:
                 cloud_runners:
                   - uuid: 23c39165-89c1-4afb-80b6-e994cb96a482
                     status: OPERATIONAL
-                    hardwareType: C2
+                    hardwareType: 'aws:c5.large'
                     hardwareCpu: 2
                     hardwareMemory: 4
                     sshUser: perforator
                     sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCnRFTyimOgh3v+yHUFd/4B7SW88mLysXzSbQWfYpLo 43c85af6-e5a2-4044-8f77-015fdd472d0f@perforator.io
-                    sshHostName: 23c39165-89c1-4afb-80b6-e994cb96a482.runners.perforator.io
                     sshHostIP: 1.2.3.4
                     sshPort: 22
                     createdAt: 1608012000000
@@ -1475,12 +1492,11 @@ paths:
                 cloud_runners:
                   - uuid: 23c39165-89c1-4afb-80b6-e994cb96a482
                     status: TERMINATING
-                    hardwareType: C2
+                    hardwareType: 'aws:c5.large'
                     hardwareCpu: 2
                     hardwareMemory: 4
                     sshUser: perforator
                     sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCnRFTyimOgh3v+yHUFd/4B7SW88mLysXzSbQWfYpLo 43c85af6-e5a2-4044-8f77-015fdd472d0f@perforator.io
-                    sshHostName: 23c39165-89c1-4afb-80b6-e994cb96a482.runners.perforator.io
                     sshHostIP: 1.2.3.4
                     sshPort: 22
                     createdAt: 1608012000000
@@ -13342,8 +13358,6 @@ components:
           type: string
         sshPublicKey:
           type: string
-        sshHostName:
-          type: string
         sshHostIP:
           type: string
         sshPort:
@@ -13367,12 +13381,34 @@ components:
     CloudRunnerHardwareType:
       type: string
       enum:
-        - C2
-        - C4
-        - C8
-        - C16
-        - C36
-        - C72
+        - 'aws:t3.small'
+        - 'aws:t3.medium'
+        - 'aws:c5.large'
+        - 'aws:c5.xlarge'
+        - 'aws:c5.2xlarge'
+        - 'aws:c5.4xlarge'
+        - 'aws:c5.9xlarge'
+        - 'aws:c5.18xlarge'
+        - 'aws:c7a.medium'
+        - 'aws:c7a.large'
+        - 'aws:c7a.xlarge'
+        - 'aws:c7a.2xlarge'
+        - 'aws:c7a.4xlarge'
+        - 'aws:c7a.8xlarge'
+        - 'aws:c7a.12xlarge'
+        - 'aws:c7a.16xlarge'
+        - 'aws:c7a.24xlarge'
+        - 'aws:c7a.32xlarge'
+        - 'aws:c7a.48xlarge'
+        - 'aws:c7i.large'
+        - 'aws:c7i.xlarge'
+        - 'aws:c7i.2xlarge'
+        - 'aws:c7i.4xlarge'
+        - 'aws:c7i.8xlarge'
+        - 'aws:c7i.12xlarge'
+        - 'aws:c7i.16xlarge'
+        - 'aws:c7i.24xlarge'
+        - 'aws:c7i.48xlarge'
     CodelessLoadGeneratorDetails:
       type: object
       properties:
