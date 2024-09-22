@@ -21,7 +21,7 @@ public class TerminateCloudRunnerExampleTest extends AbstractExampleTest<Termina
 
         cloudRunner = new CloudRunner();
         cloudRunner.setSshPublicKey("ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILhKzVzL8RYBFDZblagiF1fPKLiI9JRYw8CrU2lrCwVN user@example.com");
-        cloudRunner.setHardwareType(CloudRunnerHardwareType.C2.toString());
+        cloudRunner.setHardwareType(CloudRunnerHardwareType.T3_SMALL.toString());
         cloudRunner = cloudRunnersApi.startCloudRunner(
                 projectKey,
                 execution.getUuid(),
