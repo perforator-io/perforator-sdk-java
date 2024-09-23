@@ -20,13 +20,18 @@ function getConfigProperty () {
 }
 
 function getCloudRunnerType () {
-  if [ -z "${1}" ]; then echo 'C2';
-  elif [ "$1" -ge 8000 ]; then echo 'C72';
-  elif [ "$1" -ge 4000 ]; then echo 'C36';
-  elif [ "$1" -ge 2000 ]; then echo 'C16';
-  elif [ "$1" -ge 1000 ]; then echo 'C8';
-  elif [ "$1" -ge 500 ]; then echo 'C4';
-  else echo 'C2'; fi
+  if [ -z "${1}" ]; then echo 'aws:t3.small';
+  elif [ "$1" -le 16 ]; then echo 'aws:t3.small';
+  elif [ "$1" -le 64 ]; then echo 'aws:t3.medium';
+  elif [ "$1" -le 512 ]; then echo 'aws:c7i.large';
+  elif [ "$1" -le 1024 ]; then echo 'aws:c7i.xlarge';
+  elif [ "$1" -le 2048 ]; then echo 'aws:c7i.2xlarge';
+  elif [ "$1" -le 4096 ]; then echo 'aws:c7i.4xlarge';
+  elif [ "$1" -le 8192 ]; then echo 'aws:c7i.8xlarge';
+  elif [ "$1" -le 12288 ]; then echo 'aws:c7i.12xlarge';
+  elif [ "$1" -le 16384 ]; then echo 'aws:c7i.16xlarge';
+  elif [ "$1" -le 24576 ]; then echo 'aws:c7i.24xlarge';
+  else echo 'aws:c7i.48xlarge'; fi
 }
 
 function getSshPublicKey () {
