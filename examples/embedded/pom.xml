@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.perforator.sdk.examples</groupId>
     <artifactId>perforator-sdk-examples-embedded</artifactId>
-    <version>1.7.0</version>
+    <version>1.7.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     
     <properties>
@@ -14,7 +14,7 @@
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         
         <!-- dependency versions -->
-        <perforator.version>1.7.0</perforator.version>
+        <perforator.version>1.7.1-SNAPSHOT</perforator.version>
         <log4j.version>2.24.0</log4j.version>
     </properties>
     
