@@ -80,7 +80,7 @@ public class AnalyticsApiTest extends AbstractApiTest {
         
         assertNotNull(response);
         assertFalse(response.isEmpty());
-        assertEquals(3, response.size());
+        assertEquals(2, response.size());
     }
     
     private List<String> getNamespaces(String project, String execution) throws Exception {

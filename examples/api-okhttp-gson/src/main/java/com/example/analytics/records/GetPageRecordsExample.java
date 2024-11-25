@@ -47,8 +47,7 @@ public class GetPageRecordsExample {
                 PagesField.FINISH_TIME.getValue(),
                 PagesField.DOM_CONTENT_LOAD.getValue(),
                 PagesField.PAGE_LOAD.getValue(),
-                PagesField.REQUESTS_COUNT.getValue(),
-                PagesField.PROBLEMATIC_REQUESTS_PERCENTAGE.getValue()
+                PagesField.REQUESTS_COUNT.getValue()
         ));
         request.setFilters(List.of(
                 filter(
