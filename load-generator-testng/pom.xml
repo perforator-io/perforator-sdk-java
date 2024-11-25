@@ -14,7 +14,7 @@
     <parent>
         <groupId>io.perforator.sdk</groupId>
         <artifactId>perforator-sdk-parent</artifactId>
-        <version>1.7.0-SNAPSHOT</version>
+        <version>1.7.0</version>
     </parent>
     <artifactId>perforator-sdk-load-generator-testng</artifactId>
     <packaging>jar</packaging>
