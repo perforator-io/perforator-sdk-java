@@ -44,8 +44,7 @@ public class GetPulseNamespaceMetricsExample {
         List<AnalyticsMetricInfo> metrics = analyticsApi.getNamespaceMetrics(
                 projectKey,
                 executionKey,
-                AnalyticsNamespace.PULSE.getValue(),
-                false
+                AnalyticsNamespace.PULSE.getValue()
         );
         
         logger.info(

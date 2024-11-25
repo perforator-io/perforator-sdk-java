@@ -57,21 +57,6 @@ public class AnalyticsApiTest extends AbstractApiTest {
                 TransactionsBasicMetrics.DURATION_SD.getValue()
         ));
         
-        AnalyticsOverallStatisticsRequest sessions = new AnalyticsOverallStatisticsRequest();
-        sessions.setNamespace(AnalyticsNamespace.SESSIONS.getValue());
-        sessions.setMetrics(List.of(
-                SessionsBasicMetrics.COUNT.getValue(), 
-                SessionsBasicMetrics.DURATION_AVG.getValue(), 
-                SessionsBasicMetrics.DURATION_MIN.getValue(), 
-                SessionsBasicMetrics.DURATION_MAX.getValue(), 
-                SessionsBasicMetrics.DURATION_P50.getValue(), 
-                SessionsBasicMetrics.DURATION_P75.getValue(), 
-                SessionsBasicMetrics.DURATION_P90.getValue(), 
-                SessionsBasicMetrics.DURATION_P95.getValue(), 
-                SessionsBasicMetrics.DURATION_P99.getValue(), 
-                SessionsBasicMetrics.DURATION_SD.getValue()
-        ));
-        
         AnalyticsOverallStatisticsRequest requests = new AnalyticsOverallStatisticsRequest();
         requests.setNamespace(AnalyticsNamespace.REQUESTS.getValue());
         requests.setMetrics(List.of(
@@ -90,7 +75,7 @@ public class AnalyticsApiTest extends AbstractApiTest {
         List<AnalyticsOverallStatisticsResult> response = analyticsApi.getOverallStatistics(
                 projectKey, 
                 executionKey, 
-                List.of(transactions, sessions, requests)
+                List.of(transactions, requests)
         );
         
         assertNotNull(response);
@@ -117,8 +102,7 @@ public class AnalyticsApiTest extends AbstractApiTest {
         return analyticsApi.getNamespaceMetrics(
                 project, 
                 execution, 
-                namespace,
-                false
+                namespace
         ).stream().map(AnalyticsMetricInfo::getName).collect(Collectors.toList());
     }
     

@@ -44,8 +44,7 @@ public class GetPagesNamespaceAdvancedMetricsExample {
         List<AnalyticsMetricInfo> metrics = analyticsApi.getNamespaceMetrics(
                 projectKey,
                 executionKey,
-                AnalyticsNamespace.PAGES.getValue(),
-                true
+                AnalyticsNamespace.PAGES.getValue()
         );
         
         logger.info(

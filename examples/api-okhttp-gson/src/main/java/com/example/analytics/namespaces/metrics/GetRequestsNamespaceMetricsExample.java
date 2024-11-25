@@ -44,8 +44,7 @@ public class GetRequestsNamespaceMetricsExample {
         List<AnalyticsMetricInfo> metrics = analyticsApi.getNamespaceMetrics(
                 projectKey,
                 executionKey,
-                AnalyticsNamespace.REQUESTS.getValue(),
-                false
+                AnalyticsNamespace.REQUESTS.getValue()
         );
         
         logger.info(

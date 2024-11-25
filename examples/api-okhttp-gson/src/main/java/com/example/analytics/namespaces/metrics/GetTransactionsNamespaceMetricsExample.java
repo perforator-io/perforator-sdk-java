@@ -44,8 +44,7 @@ public class GetTransactionsNamespaceMetricsExample {
         List<AnalyticsMetricInfo> metrics = analyticsApi.getNamespaceMetrics(
                 projectKey,
                 executionKey,
-                AnalyticsNamespace.TRANSACTIONS.getValue(),
-                false
+                AnalyticsNamespace.TRANSACTIONS.getValue()
         );
         
         logger.info(
