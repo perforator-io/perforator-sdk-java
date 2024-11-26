@@ -41,9 +41,6 @@ public class CrawlerActionInstance implements ActionInstance<CrawlerActionConfig
     private final boolean scroll;
     
     @FieldNameConstants.Include
-    private final String scrollScript;
-    
-    @FieldNameConstants.Include
     private final RandomDuration scrollDelay;
     
     @FieldNameConstants.Include
@@ -91,8 +88,6 @@ public class CrawlerActionInstance implements ActionInstance<CrawlerActionConfig
                 .append(CrawlerActionInstance.Fields.randomize).append(" = ").append(randomize)
                 .append(", ")
                 .append(CrawlerActionInstance.Fields.scroll).append(" = ").append(scroll)
-                .append(", ")
-                .append(CrawlerActionInstance.Fields.scrollScript).append(" = ").append(scrollScript)
                 .append(", ")
                 .append(CrawlerActionInstance.Fields.scrollDelay).append(" = ").append(scrollDelay)
                 .append(", ")

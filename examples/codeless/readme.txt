@@ -1040,12 +1040,6 @@ a look at the below docs describing available options for the config.yml
         # - scrollDelay - delay to wait after executing scroll action (if enabled)#
         # The default value is 5s                                              #
         #                                                                      #
-        # - scrollScript - JS script to execute scroll action(if enabled)      #
-        # The default script is below:                                         #
-        #                                                                      #
-        # const domains=arguments[0];                                          #
-        # window.scrollTo(0,document.documentElement.scrollHeight);            #
-        #                                                                      #
         # - click - flag controlling if automatic click on a random link       #
         # should be executed.                                                  #
         # The default value is false                                           #

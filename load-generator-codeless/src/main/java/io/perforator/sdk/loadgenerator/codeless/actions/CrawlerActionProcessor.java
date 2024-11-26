@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import org.openqa.selenium.InvalidElementStateException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 @SuppressWarnings("rawtypes")
@@ -48,10 +49,6 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
     public static final String DEFAULT_SCROLL_DELAY = "5s";
     public static final String DEFAULT_CLICK = "false";
     public static final String DEFAULT_CLICK_DELAY = "5s";
-    
-    public static final String DEFAULT_SCROLL_SCRIPT = ""
-            + "const domains=arguments[0];"
-            + "window.scrollTo(0,document.documentElement.scrollHeight);";
     
     public static final String DEFAULT_CLICK_SCRIPT = ""
             + "const domains=arguments[0];"
@@ -183,13 +180,6 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                                 DEFAULT_SCROLL
                         )
                 )
-                .scrollScript(
-                        getOptionalNestedField(
-                                CrawlerActionConfig.Fields.scrollScript,
-                                actionValue,
-                                DEFAULT_SCROLL_SCRIPT
-                        )
-                )
                 .scrollDelay(
                         getOptionalNestedField(
                                 CrawlerActionConfig.Fields.scrollDelay,
@@ -317,13 +307,6 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                         buildBooleanForActionInstance(
                                 CrawlerActionInstance.Fields.scroll,
                                 actionConfig.getScroll(),
-                                formatter
-                        )
-                )
-                .scrollScript(
-                        buildStringForActionInstance(
-                                CrawlerActionInstance.Fields.scrollScript,
-                                actionConfig.getScrollScript(),
                                 formatter
                         )
                 )
@@ -512,8 +495,13 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                 long scrollDelay = actionInstance.getScrollDelay().random().toMillis();
                 long scrollCutOffTime = System.currentTimeMillis() + scrollDelay;
                 if (scrollCutOffTime < endTime) {
-                    driver.executeScript(actionInstance.getScrollScript(), domains);
-                    Perforator.sleep(scrollDelay);
+                    scrollToPageBottom(driver);
+                    Perforator.sleep(
+                            Math.max(
+                                    0,
+                                    scrollCutOffTime - System.currentTimeMillis()
+                            )
+                    );
                 } else {
                     crawlerQueue.destroy();
                     return;
@@ -539,6 +527,19 @@ public class CrawlerActionProcessor extends AbstractActionProcessor<CrawlerActio
                 }
             }
         }
+    }
+    
+    private void scrollToPageBottom(RemoteWebDriver driver) {
+        new Actions(driver).scrollByAmount(
+                0, 
+                getDocumentHeight(driver)
+        ).perform();
+    }
+    
+    private int getDocumentHeight(RemoteWebDriver driver) {
+        return Math.toIntExact(
+                (Long) driver.executeScript("return document.documentElement.scrollHeight;")
+        );
     }
     
     private boolean randomClick(

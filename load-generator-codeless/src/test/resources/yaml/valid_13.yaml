@@ -19,9 +19,6 @@ suites:
             pageLoadTimeout: 30s
             scroll: true
             scrollDelay: 2s-4s
-            scrollScript: |
-              const domains=arguments[0];
-              window.scrollTo(0,document.documentElement.scrollHeight);
             click: true
             clickDelay: 2s-4s
             clickScript: |

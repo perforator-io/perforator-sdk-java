@@ -42,9 +42,6 @@ public class CrawlerActionConfig implements ActionConfig {
     private final String scroll;
     
     @FieldNameConstants.Include
-    private final String scrollScript;
-    
-    @FieldNameConstants.Include
     private final String scrollDelay;
     
     @FieldNameConstants.Include

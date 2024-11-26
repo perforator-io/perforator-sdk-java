@@ -50,7 +50,6 @@ public class CrawlerActionProcessorTest extends AbstractActionProcessorTest<Craw
                         Map.entry(CrawlerActionConfig.Fields.enabled, "true"),
                         Map.entry(CrawlerActionConfig.Fields.scroll, "true"),
                         Map.entry(CrawlerActionConfig.Fields.scrollDelay, "0.5s-1s"),
-                        Map.entry(CrawlerActionConfig.Fields.scrollScript, CrawlerActionProcessor.DEFAULT_SCROLL_SCRIPT),
                         Map.entry(CrawlerActionConfig.Fields.click, "true"),
                         Map.entry(CrawlerActionConfig.Fields.clickDelay, "0.5s-1s"),
                         Map.entry(CrawlerActionConfig.Fields.clickScript, CrawlerActionProcessor.DEFAULT_CLICK_SCRIPT)
@@ -91,7 +90,6 @@ public class CrawlerActionProcessorTest extends AbstractActionProcessorTest<Craw
                                 Map.entry(CrawlerActionConfig.Fields.maxDuration, new TextNode("${" + CrawlerActionConfig.Fields.maxDuration + "}")),
                                 Map.entry(CrawlerActionConfig.Fields.scroll, new TextNode("${" + CrawlerActionConfig.Fields.scroll + "}")),
                                 Map.entry(CrawlerActionConfig.Fields.scrollDelay, new TextNode("${" + CrawlerActionConfig.Fields.scrollDelay + "}")),
-                                Map.entry(CrawlerActionConfig.Fields.scrollScript, new TextNode("${" + CrawlerActionConfig.Fields.scrollScript + "}")),
                                 Map.entry(CrawlerActionConfig.Fields.click, new TextNode("${" + CrawlerActionConfig.Fields.click + "}")),
                                 Map.entry(CrawlerActionConfig.Fields.clickDelay, new TextNode("${" + CrawlerActionConfig.Fields.clickDelay + "}")),
                                 Map.entry(CrawlerActionConfig.Fields.clickScript, new TextNode("${" + CrawlerActionConfig.Fields.clickScript + "}"))
